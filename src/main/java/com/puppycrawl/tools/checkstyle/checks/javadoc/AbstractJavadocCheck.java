@@ -273,11 +273,6 @@ public abstract class AbstractJavadocCheck extends AbstractCheck {
     }
 
     @Override
-    public final void finishTree(DetailAST rootAST) {
-        // No code by default
-    }
-
-    @Override
     public final void visitToken(DetailAST blockCommentNode) {
         if (JavadocUtil.isJavadocComment(blockCommentNode)) {
             // store as field, to share with child Checks
