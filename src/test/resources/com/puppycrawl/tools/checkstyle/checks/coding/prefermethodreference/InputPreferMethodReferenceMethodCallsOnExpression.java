@@ -13,10 +13,10 @@ import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 
 /**
- * Config = default
+ * Config: detectForExpression = true
  * Method calls cases
  */
-public class InputPreferMethodReferenceMethodCalls {
+public class InputPreferMethodReferenceMethodCallsOnExpression {
     String field;
     List<String> list;
     // method calls

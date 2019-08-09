@@ -36,9 +36,10 @@ public class PreferMethodReferenceCheckTest extends AbstractModuleTestSupport {
     }
 
     @Test
-    public void testMethodCalls() throws Exception {
+    public void testMethodCallsOnEverything() throws Exception {
         final DefaultConfiguration checkConfig =
             createModuleConfig(PreferMethodReferenceCheck.class);
+        checkConfig.addAttribute("detectForExpression", "true");
         final String[] expected = {
             "23:28: " + getCheckMessage(MSG_METHOD_REF),
             "24:40: " + getCheckMessage(MSG_METHOD_REF),
@@ -60,13 +61,31 @@ public class PreferMethodReferenceCheckTest extends AbstractModuleTestSupport {
             "42:36: " + getCheckMessage(MSG_METHOD_REF),
             "43:60: " + getCheckMessage(MSG_METHOD_REF),
         };
-        verify(checkConfig, getPath("InputPreferMethodReferenceMethodCalls.java"), expected);
+        verify(checkConfig, getPath("InputPreferMethodReferenceMethodCallsOnExpression.java"), expected);
     }
 
     @Test
-    public void testStatementsLists() throws Exception {
+    public void testMethodCallsNoExpressions() throws Exception {
         final DefaultConfiguration checkConfig =
             createModuleConfig(PreferMethodReferenceCheck.class);
+        checkConfig.addAttribute("detectForExpression", "true");
+        final String[] expected = {
+            "13:36: " + getCheckMessage(MSG_METHOD_REF),
+            "14:37: " + getCheckMessage(MSG_METHOD_REF),
+            "15:38: " + getCheckMessage(MSG_METHOD_REF),
+            "16:38: " + getCheckMessage(MSG_METHOD_REF),
+            "17:60: " + getCheckMessage(MSG_METHOD_REF),
+            "18:52: " + getCheckMessage(MSG_METHOD_REF),
+            "20:36: " + getCheckMessage(MSG_METHOD_REF),
+        };
+        verify(checkConfig, getPath("InputPreferMethodReferenceMethodCallsDefault.java"), expected);
+    }
+
+    @Test
+    public void testStatementsListsWithExpressions() throws Exception {
+        final DefaultConfiguration checkConfig =
+            createModuleConfig(PreferMethodReferenceCheck.class);
+        checkConfig.addAttribute("detectForExpression", "true");
         final String[] expected = {
             "23:29: " + getCheckMessage(MSG_METHOD_REF),
             "24:41: " + getCheckMessage(MSG_METHOD_REF),
@@ -97,7 +116,43 @@ public class PreferMethodReferenceCheckTest extends AbstractModuleTestSupport {
             "54:38: " + getCheckMessage(MSG_METHOD_REF),
             "55:38: " + getCheckMessage(MSG_METHOD_REF),
         };
-        verify(checkConfig, getPath("InputPreferMethodReferenceStatements.java"), expected);
+        verify(checkConfig, getPath("InputPreferMethodReferenceStatementsOnExpression.java"), expected);
+    }
+
+    @Test
+    public void testStatementsListsNoExpressions() throws Exception {
+        final DefaultConfiguration checkConfig =
+            createModuleConfig(PreferMethodReferenceCheck.class);
+        checkConfig.addAttribute("detectForExpression", "true");
+        final String[] expected = {
+            "23:41: " + getCheckMessage(MSG_METHOD_REF),
+            "24:34: " + getCheckMessage(MSG_METHOD_REF),
+            "25:37: " + getCheckMessage(MSG_METHOD_REF),
+            "26:40: " + getCheckMessage(MSG_METHOD_REF),
+            "27:38: " + getCheckMessage(MSG_METHOD_REF),
+            "28:53: " + getCheckMessage(MSG_METHOD_REF),
+            "30:15: " + getCheckMessage(MSG_METHOD_REF),
+            "31:32: " + getCheckMessage(MSG_METHOD_REF),
+            "32:40: " + getCheckMessage(MSG_METHOD_REF),
+            "33:40: " + getCheckMessage(MSG_METHOD_REF),
+            "34:40: " + getCheckMessage(MSG_METHOD_REF),
+            "35:40: " + getCheckMessage(MSG_METHOD_REF),
+            "36:21: " + getCheckMessage(MSG_METHOD_REF),
+            "39:52: " + getCheckMessage(MSG_METHOD_REF),
+            "41:16: " + getCheckMessage(MSG_METHOD_REF),
+            "42:38: " + getCheckMessage(MSG_METHOD_REF),
+            "43:40: " + getCheckMessage(MSG_METHOD_REF),
+            "44:32: " + getCheckMessage(MSG_METHOD_REF),
+            "45:41: " + getCheckMessage(MSG_METHOD_REF),
+            "47:38: " + getCheckMessage(MSG_METHOD_REF),
+            "48:46: " + getCheckMessage(MSG_METHOD_REF),
+            "50:43: " + getCheckMessage(MSG_METHOD_REF),
+            "51:52: " + getCheckMessage(MSG_METHOD_REF),
+            "53:36: " + getCheckMessage(MSG_METHOD_REF),
+            "54:38: " + getCheckMessage(MSG_METHOD_REF),
+            "55:38: " + getCheckMessage(MSG_METHOD_REF),
+        };
+        verify(checkConfig, getPath("InputPreferMethodReferenceStatementsOnExpression.java"), expected);
     }
 
     @Test

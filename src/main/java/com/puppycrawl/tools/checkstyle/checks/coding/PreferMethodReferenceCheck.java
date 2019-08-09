@@ -61,7 +61,7 @@ import com.puppycrawl.tools.checkstyle.utils.TokenUtil;
  *     a -&gt; (Object) "string".concat(a); // no violation because of cast
  * </pre>
  *
- * @since 8.23
+ * @since 8.24
  */
 @StatelessCheck
 public class PreferMethodReferenceCheck extends AbstractCheck {
@@ -88,6 +88,14 @@ public class PreferMethodReferenceCheck extends AbstractCheck {
         TokenTypes.LITERAL_TRY,
         TokenTypes.LITERAL_WHILE
     );
+
+    /** Enable detection of expressions */
+    private boolean detectForExpression;
+
+    /** Setter to enable detection of expressions */
+    public void setDetectForExpression(boolean detectForExpression) {
+        this.detectForExpression = detectForExpression;
+    }
 
     @Override
     public int[] getDefaultTokens() {
@@ -140,7 +148,7 @@ public class PreferMethodReferenceCheck extends AbstractCheck {
      * @param args lambda arguments
      * @return true if can be replaced, false otherwise
      */
-    private static boolean checkExpr(DetailAST expr, List<String> args) {
+    private boolean checkExpr(DetailAST expr, List<String> args) {
         final DetailAST child = expr.getFirstChild();
         final boolean result;
         switch (child.getType()) {
@@ -175,14 +183,30 @@ public class PreferMethodReferenceCheck extends AbstractCheck {
      * @param args lambda args
      * @return true if method can be replaced with method reference, false otherwise.
      */
-    private static boolean checkMethodCall(DetailAST ast, List<String> args) {
+    private boolean checkMethodCall(DetailAST ast, List<String> args) {
         final DetailAST elist = ast.findFirstToken(TokenTypes.ELIST);
         final boolean matchesMethodArgs = hasSameArgs(args, elist)
-            && Collections.disjoint(args, getMethodInvocationIdents(ast));
+            && shouldCheck(ast, args);
         final boolean matchesFirstArgCall = !args.isEmpty()
             && isCallOnArg(ast, args.get(0))
             && hasSameArgs(args.subList(1, args.size()), elist);
         return matchesMethodArgs || matchesFirstArgCall;
+    }
+
+    private boolean shouldCheck(DetailAST ast, List<String> args) {
+        final DetailAST dot = ast.findFirstToken(TokenTypes.DOT);
+        boolean result;
+        if (dot == null) {
+            result = true;
+        }
+        else if (dot.getChildCount(TokenTypes.IDENT) == 2) {
+            result = !args.contains(dot.findFirstToken(TokenTypes.IDENT).getText());
+        }
+        else {
+            result = detectForExpression
+                        && Collections.disjoint(args, getMethodInvocationIdents(ast));
+        }
+        return result;
     }
 
     /**

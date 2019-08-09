@@ -3978,7 +3978,7 @@ public class AnnotationLocationCheck extends AbstractCheck {
     </section>
 
     <section name="PreferMethodReference">
-      <p>Since Checkstyle 8.23</p>
+      <p>Since Checkstyle 8.24</p>
       <subsection name="Description" id="PreferMethodReference_Description">
         <p>
           Checks that lambda usage can be replaced with method reference.

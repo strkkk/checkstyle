@@ -12,10 +12,10 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * Config = default
+ * Config: detectForExpression = true
  * Braced statements cases
  */
-public class InputPreferMethodReferenceStatements {
+public class InputPreferMethodReferenceStatementsOnExpression {
     int field;
     String field2;
     List<String> list;
