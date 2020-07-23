@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,9 @@
 package com.puppycrawl.tools.checkstyle.checks.javadoc;
 
 import static com.puppycrawl.tools.checkstyle.checks.javadoc.NonEmptyAtclauseDescriptionCheck.MSG_KEY;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
@@ -41,8 +41,8 @@ public class NonEmptyAtclauseDescriptionCheckTest
         final NonEmptyAtclauseDescriptionCheck checkObj =
             new NonEmptyAtclauseDescriptionCheck();
         final int[] expected = {TokenTypes.BLOCK_COMMENT_BEGIN};
-        assertArrayEquals("Default acceptable tokens are invalid",
-            expected, checkObj.getAcceptableTokens());
+        assertArrayEquals(expected, checkObj.getAcceptableTokens(),
+                "Default acceptable tokens are invalid");
     }
 
     @Test
@@ -50,8 +50,8 @@ public class NonEmptyAtclauseDescriptionCheckTest
         final NonEmptyAtclauseDescriptionCheck checkObj =
             new NonEmptyAtclauseDescriptionCheck();
         final int[] expected = {TokenTypes.BLOCK_COMMENT_BEGIN};
-        assertArrayEquals("Default required tokens are invalid",
-            expected, checkObj.getRequiredTokens());
+        assertArrayEquals(expected, checkObj.getRequiredTokens(),
+                "Default required tokens are invalid");
     }
 
     @Test
@@ -60,17 +60,17 @@ public class NonEmptyAtclauseDescriptionCheckTest
         final DefaultConfiguration checkConfig =
                 createModuleConfig(NonEmptyAtclauseDescriptionCheck.class);
         final String[] expected = {
-            //this is a case with description that is sequences of spaces
+            // this is a case with description that is sequences of spaces
             "26: " + getCheckMessage(MSG_KEY),
-            //this is a case with description that is sequences of spaces
+            // this is a case with description that is sequences of spaces
             "27: " + getCheckMessage(MSG_KEY),
-            //this is a case with description that is sequences of spaces
+            // this is a case with description that is sequences of spaces
             "28: " + getCheckMessage(MSG_KEY),
-            //this is a case with description that is sequences of spaces
+            // this is a case with description that is sequences of spaces
             "37: " + getCheckMessage(MSG_KEY),
-            //this is a case with description that is sequences of spaces
+            // this is a case with description that is sequences of spaces
             "38: " + getCheckMessage(MSG_KEY),
-            //this is a case with description that is sequences of spaces
+            // this is a case with description that is sequences of spaces
             "39: " + getCheckMessage(MSG_KEY),
             "75: " + getCheckMessage(MSG_KEY),
             "76: " + getCheckMessage(MSG_KEY),

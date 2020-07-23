@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -25,9 +25,54 @@ import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 
 /**
- * Checks that no method having zero parameters is defined
- * using the name <em>finalize</em>.
+ * <p>
+ * Checks that there is no method {@code finalize} with zero parameters.
+ * </p>
+ * <p>
+ * See
+ * <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#finalize()">
+ * Object.finalize()</a>
+ * </p>
+ * <p>
+ * Rationale: Finalizers are unpredictable, often dangerous, and generally unnecessary.
+ * Their use can cause erratic behavior, poor performance, and portability problems.
+ * For more information for the finalize method and its issues, see Effective Java:
+ * Programming Language Guide Third Edition by Joshua Bloch, &#167;8.
+ * </p>
+ * <p>
+ * To configure the check:
+ * </p>
+ * <pre>
+ * &lt;module name=&quot;NoFinalizer&quot;/&gt;
+ * </pre>
+ * <p>Example:</p>
+ * <pre>
+ *  public class Test {
  *
+ *      protected void finalize() throws Throwable { // violation
+ *          try {
+ *             System.out.println("overriding finalize()");
+ *          } catch (Throwable t) {
+ *             throw t;
+ *          } finally {
+ *             super.finalize();
+ *          }
+ *      }
+ *  }
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code avoid.finalizer.method}
+ * </li>
+ * </ul>
+ *
+ * @since 5.0
  */
 @StatelessCheck
 public class NoFinalizerCheck extends AbstractCheck {
@@ -54,17 +99,17 @@ public class NoFinalizerCheck extends AbstractCheck {
     }
 
     @Override
-    public void visitToken(DetailAST aAST) {
-        final DetailAST mid = aAST.findFirstToken(TokenTypes.IDENT);
+    public void visitToken(DetailAST ast) {
+        final DetailAST mid = ast.findFirstToken(TokenTypes.IDENT);
         final String name = mid.getText();
 
         if ("finalize".equals(name)) {
-            final DetailAST params = aAST.findFirstToken(TokenTypes.PARAMETERS);
+            final DetailAST params = ast.findFirstToken(TokenTypes.PARAMETERS);
             final boolean hasEmptyParamList =
                 params.findFirstToken(TokenTypes.PARAMETER_DEF) == null;
 
             if (hasEmptyParamList) {
-                log(aAST.getLineNo(), MSG_KEY);
+                log(ast, MSG_KEY);
             }
         }
     }

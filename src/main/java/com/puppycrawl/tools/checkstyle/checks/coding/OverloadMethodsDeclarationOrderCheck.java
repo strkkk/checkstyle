@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -29,23 +29,49 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 
 /**
  * <p>
- * Checks that overload methods are grouped together. Example:
+ * Checks that overloaded methods are grouped together. Overloaded methods have the same
+ * name but different signatures where the signature can differ by the number of
+ * input parameters or type of input parameters or both.
+ * </p>
+ * <p>
+ * To configure the check:
  * </p>
  * <pre>
- * {@code
- * public void foo(int i) {}
- * public void foo(String s) {}
- * public void notFoo() {} // Have to be after foo(int i, String s)
- * public void foo(int i, String s) {}
- * }
+ * &lt;module name=&quot;OverloadMethodsDeclarationOrder&quot;/&gt;
  * </pre>
  * <p>
- * An example of how to configure the check is:
+ * Example of correct grouping of overloaded methods:
  * </p>
- *
  * <pre>
- * &lt;module name="OverloadMethodsDeclarationOrder"/&gt;
+ * public void foo(int i) {}
+ * public void foo(String s) {}
+ * public void foo(String s, int i) {}
+ * public void foo(int i, String s) {}
+ * public void notFoo() {}
  * </pre>
+ * <p>
+ * Example of incorrect grouping of overloaded methods:
+ * </p>
+ * <pre>
+ * public void foo(int i) {} // OK
+ * public void foo(String s) {} // OK
+ * public void notFoo() {} // violation. Have to be after foo(String s, int i)
+ * public void foo(int i, String s) {}
+ * public void foo(String s, int i) {}
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code overload.methods.declaration}
+ * </li>
+ * </ul>
+ *
+ * @since 5.8
  */
 @StatelessCheck
 public class OverloadMethodsDeclarationOrderCheck extends AbstractCheck {
@@ -87,6 +113,7 @@ public class OverloadMethodsDeclarationOrderCheck extends AbstractCheck {
     /**
      * Checks that if overload methods are grouped together they should not be
      * separated from each other.
+     *
      * @param objectBlock
      *        is a class, interface or enum object block.
      */
@@ -106,7 +133,7 @@ public class OverloadMethodsDeclarationOrderCheck extends AbstractCheck {
                     if (currentIndex - previousIndex > allowedDistance) {
                         final int previousLineWithOverloadMethod =
                                 methodLineNumberMap.get(methodName);
-                        log(currentToken.getLineNo(), MSG_KEY,
+                        log(currentToken, MSG_KEY,
                                 previousLineWithOverloadMethod);
                     }
                 }

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -24,46 +24,77 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public abstract class AbstractPathTestSupport {
 
-    protected static final String LF_REGEX = "\\\\n";
+    // we are using positive lookahead here, to convert \r\n to \n
+    // and \\r\\n to \\n (for parse tree dump files),
+    // by replacing the full match with the empty string
+    private static final String CR_FOLLOWED_BY_LF_REGEX = "(?x)\\\\r(?=\\\\n)|\\r(?=\\n)";
 
-    protected static final String CRLF_REGEX = "\\\\r\\\\n";
+    private static final String EOL = System.lineSeparator();
 
     /**
      * Returns the exact location for the package where the file is present.
+     *
      * @return path for the package name for the file.
      */
     protected abstract String getPackageLocation();
+
+    /**
+     * Retrieves the name of the folder location for resources.
+     *
+     * @return The name of the folder.
+     */
+    protected String getResourceLocation() {
+        return "test";
+    }
 
     /**
      * Returns canonical path for the file with the given file name.
      * The path is formed base on the root location.
      * This implementation uses 'src/test/resources/'
      * as a root location.
+     *
      * @param filename file name.
      * @return canonical path for the file name.
      * @throws IOException if I/O exception occurs while forming the path.
      */
     protected final String getPath(String filename) throws IOException {
-        return new File("src/test/resources/" + getPackageLocation() + "/" + filename)
-                .getCanonicalPath();
+        return new File("src/" + getResourceLocation() + "/resources/" + getPackageLocation() + "/"
+                + filename).getCanonicalPath();
     }
 
     protected final String getResourcePath(String filename) {
         return "/" + getPackageLocation() + "/" + filename;
     }
 
-    /** Reads the contents of a file.
+    /**
+     * Reads the contents of a file.
+     *
      * @param filename the name of the file whose contents are to be read
      * @return contents of the file with all {@code \r\n} replaced by {@code \n}
      * @throws IOException if I/O exception occurs while reading
      */
     protected static String readFile(String filename) throws IOException {
-        return new String(Files.readAllBytes(
-                Paths.get(filename)), StandardCharsets.UTF_8)
-                .replaceAll(CRLF_REGEX, LF_REGEX);
+        return toLfLineEnding(new String(Files.readAllBytes(
+                Paths.get(filename)), StandardCharsets.UTF_8));
+    }
+
+    /**
+     * Join given strings with {@link #EOL} delimiter and add EOL at the end.
+     *
+     * @param strings strings to join
+     * @return joined strings
+     */
+    public static String addEndOfLine(String... strings) {
+        return Stream.of(strings).collect(Collectors.joining(EOL, "", EOL));
+    }
+
+    protected static String toLfLineEnding(String text) {
+        return text.replaceAll(CR_FOLLOWED_BY_LF_REGEX, "");
     }
 
 }

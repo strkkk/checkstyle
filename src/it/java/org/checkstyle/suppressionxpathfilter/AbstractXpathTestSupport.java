@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,22 +19,24 @@
 
 package org.checkstyle.suppressionxpathfilter;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
-import org.junit.Rule;
-import org.junit.rules.TemporaryFolder;
+import org.checkstyle.base.AbstractCheckstyleModuleTestSupport;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
-import com.google.checkstyle.test.base.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
 import com.puppycrawl.tools.checkstyle.JavaParser;
 import com.puppycrawl.tools.checkstyle.TreeWalker;
@@ -44,7 +46,7 @@ import com.puppycrawl.tools.checkstyle.filters.SuppressionXpathFilter;
 import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
 import com.puppycrawl.tools.checkstyle.xpath.XpathQueryGenerator;
 
-public abstract class AbstractXpathTestSupport extends AbstractModuleTestSupport {
+public abstract class AbstractXpathTestSupport extends AbstractCheckstyleModuleTestSupport {
 
     private static final int DEFAULT_TAB_WIDTH = 4;
 
@@ -53,16 +55,55 @@ public abstract class AbstractXpathTestSupport extends AbstractModuleTestSupport
     private static final Pattern LINE_COLUMN_NUMBER_REGEX =
             Pattern.compile("([0-9]+):([0-9]+):");
 
-    @Rule
-    public final TemporaryFolder temporaryFolder = new TemporaryFolder();
+    /**
+     * <p>
+     * The temporary folder to hold intermediate files.
+     * </p>
+     * <p>
+     * Till https://github.com/junit-team/junit5/issues/1786
+     * we need to create and clean it manually.
+     * Once this issue will be resolved, it should be annotated with &#64;TempDir
+     * and methods setupTemporaryFolder and removeTemporaryFolder should be dropped.
+     * </p>
+     */
+    private Path temporaryFolder;
 
     protected abstract String getCheckName();
+
+    /**
+     * <p>
+     * Creates temporary folder for intermediate files.
+     * </p>
+     *
+     * @throws IOException if an IO error occurs
+     */
+    @BeforeEach
+    public void setupTemporaryFolder() throws IOException {
+        temporaryFolder = Files.createTempDirectory("xpath-test");
+    }
+
+    /**
+     * <p>
+     * Removes temporary folder with intermediate files.
+     * </p>
+     *
+     * @throws IOException if an IO error occurs
+     */
+    @AfterEach
+    public void removeTemporaryFolder() throws IOException {
+        try (DirectoryStream<Path> paths = Files.newDirectoryStream(temporaryFolder)) {
+            for (Path path : paths) {
+                Files.delete(path);
+            }
+        }
+        Files.delete(temporaryFolder);
+    }
 
     @Override
     protected String getPackageLocation() {
         final String subpackage = getCheckName().toLowerCase(Locale.ENGLISH)
                 .replace("check", "");
-        return "org/checkstyle/suppressionxpathfilter" + "/" + subpackage;
+        return "org/checkstyle/suppressionxpathfilter/" + subpackage;
     }
 
     private static List<String> generateXpathQueries(File fileToProcess,
@@ -81,16 +122,16 @@ public abstract class AbstractXpathTestSupport extends AbstractModuleTestSupport
 
     private static void verifyXpathQueries(List<String> generatedXpathQueries,
                                            List<String> expectedXpathQueries) {
-        assertEquals("Generated queries do not match expected ones", expectedXpathQueries,
-                generatedXpathQueries);
+        assertEquals(expectedXpathQueries,
+                generatedXpathQueries, "Generated queries do not match expected ones");
     }
 
     private String createSuppressionsXpathConfigFile(String checkName,
                                                      List<String> xpathQueries)
             throws Exception {
-
-        final File suppressionsXpathConfigFile = temporaryFolder.newFile();
-        try (Writer bw = Files.newBufferedWriter(suppressionsXpathConfigFile.toPath(),
+        final Path suppressionsXpathConfigPath =
+                Files.createTempFile(temporaryFolder, "", "");
+        try (Writer bw = Files.newBufferedWriter(suppressionsXpathConfigPath,
                 StandardCharsets.UTF_8)) {
             bw.write("<?xml version=\"1.0\"?>\n");
             bw.write("<!DOCTYPE suppressions PUBLIC\n");
@@ -104,12 +145,12 @@ public abstract class AbstractXpathTestSupport extends AbstractModuleTestSupport
             bw.write(checkName);
             bw.write("\"\n");
             bw.write("       query=\"");
-            bw.write(xpathQueries.stream().collect(Collectors.joining(DELIMITER)));
+            bw.write(String.join(DELIMITER, xpathQueries));
             bw.write("\"/>\n");
             bw.write("</suppressions>");
         }
 
-        return suppressionsXpathConfigFile.getPath();
+        return suppressionsXpathConfigPath.toString();
     }
 
     private DefaultConfiguration createSuppressionXpathFilter(String checkName,
@@ -142,6 +183,7 @@ public abstract class AbstractXpathTestSupport extends AbstractModuleTestSupport
      * xpath queries.
      * Third one constructs new configuration with {@code SuppressionXpathFilter} using generated
      * xpath queries, executes checker and checks if no violation occurred.
+     *
      * @param moduleConfig module configuration.
      * @param fileToProcess input class file.
      * @param expectedViolations expected violation messages.

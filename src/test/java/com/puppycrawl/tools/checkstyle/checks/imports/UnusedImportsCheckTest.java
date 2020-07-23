@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,13 +20,13 @@
 package com.puppycrawl.tools.checkstyle.checks.imports;
 
 import static com.puppycrawl.tools.checkstyle.checks.imports.UnusedImportsCheck.MSG_KEY;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableMap;
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
@@ -80,7 +80,7 @@ public class UnusedImportsCheckTest extends AbstractModuleTestSupport {
             "20:8: " + getCheckMessage(MSG_KEY, "javax.swing.JToggleButton"),
             "22:8: " + getCheckMessage(MSG_KEY, "javax.swing.BorderFactory"),
             "27:15: " + getCheckMessage(MSG_KEY, "java.io.File.createTempFile"),
-            //"29:8: Unused import - java.awt.Component.", // Should be detected
+            // "29:8: Unused import - java.awt.Component.", // Should be detected
             "30:8: " + getCheckMessage(MSG_KEY, "java.awt.Graphics2D"),
             "31:8: " + getCheckMessage(MSG_KEY, "java.awt.HeadlessException"),
             "32:8: " + getCheckMessage(MSG_KEY, "java.awt.Label"),
@@ -118,7 +118,7 @@ public class UnusedImportsCheckTest extends AbstractModuleTestSupport {
             "20:8: " + getCheckMessage(MSG_KEY, "javax.swing.JToggleButton"),
             "22:8: " + getCheckMessage(MSG_KEY, "javax.swing.BorderFactory"),
             "27:15: " + getCheckMessage(MSG_KEY, "java.io.File.createTempFile"),
-            //"29:8: Unused import - java.awt.Component.", // Should be detected
+            // "29:8: Unused import - java.awt.Component.", // Should be detected
             "32:8: " + getCheckMessage(MSG_KEY, "java.awt.Label"),
             "44:8: " + getCheckMessage(MSG_KEY, "com.puppycrawl.tools.checkstyle.DefaultLogger"),
         };
@@ -182,7 +182,7 @@ public class UnusedImportsCheckTest extends AbstractModuleTestSupport {
             TokenTypes.VARIABLE_DEF,
         };
 
-        assertArrayEquals("Default required tokens are invalid", expected, actual);
+        assertArrayEquals(expected, actual, "Default required tokens are invalid");
     }
 
     @Test
@@ -207,7 +207,7 @@ public class UnusedImportsCheckTest extends AbstractModuleTestSupport {
             TokenTypes.VARIABLE_DEF,
         };
 
-        assertArrayEquals("Default acceptable tokens are invalid", expected, actual);
+        assertArrayEquals(expected, actual, "Default acceptable tokens are invalid");
     }
 
     @Test
@@ -247,6 +247,16 @@ public class UnusedImportsCheckTest extends AbstractModuleTestSupport {
             "4:8: " + getCheckMessage(MSG_KEY, "java.util.List"),
         };
         verify(checkConfig, getPath("InputUnusedImportsJavadocQualifiedName.java"), expected);
+    }
+
+    @Test
+    public void testSingleWordPackage() throws Exception {
+        final DefaultConfiguration checkConfig = createModuleConfig(UnusedImportsCheck.class);
+        final String[] expected = {
+            "3:8: " + getCheckMessage(MSG_KEY, "module"),
+        };
+        verify(checkConfig, getNonCompilablePath("InputUnusedImportsSingleWordPackage.java"),
+                expected);
     }
 
 }

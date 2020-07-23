@@ -1,15 +1,16 @@
 language: java
 
 jdk:
-  - oraclejdk8
+  - openjdk8
 
 env:
   matrix:
     # we skip openjdk till we find way to install "hg" to shippable image
-    #- CMD="./.ci/shippable.sh no-exception-openjdk7-openjdk8"
+    # - CMD="./.ci/shippable.sh no-exception-openjdk7-openjdk8"
     - CMD="./.ci/shippable.sh no-exception-openjdk9-lucene-and-others"
     - CMD="./.ci/shippable.sh no-exception-cassandra-storm-tapestry"
     - CMD="./.ci/shippable.sh no-exception-hadoop-apache-groovy-scouter"
+    - CMD="./.ci/shippable.sh no-exception-only-javadoc"
 
 branches:
   only:
@@ -21,12 +22,10 @@ build:
     - /root/.m2
     - /root/groovy-2.4.7
 
-  # default is drydock/u14javall with jdk 1.8.0.25
-  # that make pitest make different results with latest jdk builds,
-  # "v5.9.4" is latest jdk8_144, versions above 5.9.4 use jdk9
   pre_ci_boot:
+    # This version should match version defined in "Node Pools" in Shippable UI
     image_name: drydock/u16javall
-    image_tag: v5.9.4
+    image_tag: v7.2.4
 
   ci:
     # we skip PRs and commits that are not for Issues, as pitest is too time consuming
@@ -40,24 +39,25 @@ build:
       fi
       # load custom PATH
       export PATH=/root/groovy-2.4.7/bin:$PATH
-      SKIP_FILES1="appveyor.yml|codeship-*|buddy.yml|circleci|distelli-manifest.yml|.travis.yml"
+      SKIP_FILES1="appveyor.yml|codeship-*|buddy.yml|circleci|.travis.yml"
       SKIP_FILES2="|wercker.yml|wercker.sh|fast-forward-merge.sh|LICENSE|LICENSE.apache20|README.md"
       SKIP_FILES3="|release.sh|RIGHTS.antlr|intellij-idea-inspections.xml"
       SKIP_FILES4="|org.eclipse.jdt.core.prefs"
       SKIP_FILES5="|Jenkinsfile"
       SKIP_FILES=$SKIP_FILES1$SKIP_FILES2$SKIP_FILES3$SKIP_FILES4$SKIP_FILES5
-      SKIP_CI=false
-      if [[ $(git diff --name-only HEAD HEAD~1 | grep -vE "$SKIP_FILES" | cat | wc -c) > 0 ]]; then
-        SKIP_CI=false;
-      else
-        SKIP_CI=true;
-      fi
-      echo "SKIP_CI="$SKIP_CI
-      if [[ $SKIP_CI == 'false' ]];
+      export RUN_JOB=1
+      source ./.ci/common.sh
+      # should_run_job will change RUN_JOB variable
+      should_run_job "recheck" $SKIP_FILES
+      if [[ $RUN_JOB == 1 ]];
       then
-        echo "Command: $CMD"
+        echo "eval of CMD is starting"
+        echo "CMD=$CMD"
         eval $CMD
+        echo "eval of CMD is completed"
       else
-        echo "Build is skipped, changed files:"
-        git diff --name-only HEAD HEAD~1
+        echo "Build is skipped"
       fi
+  post-ci:
+    - CMD="./.ci/shippable.sh validate-ci-temp-empty"
+    - CMD="./.ci/shippable.sh git-status"

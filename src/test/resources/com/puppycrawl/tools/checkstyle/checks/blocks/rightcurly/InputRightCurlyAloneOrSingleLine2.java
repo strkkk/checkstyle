@@ -58,15 +58,21 @@ public class InputRightCurlyAloneOrSingleLine2 {
                 .collect(java.util.stream.Collectors.toList());
     }
 
-    class TestClass { private int field; }
-
-    class TestClass2 { private int field; };  //violation
-
-    class TestClass3 {
-        private int field;
-    };  //violation
-
     class TestClass4 { }
 
-    class TestClass5 { } { }
+    class TestClass5 { } { } //violation
+
+    interface Interface1
+    {
+        int i = 1;
+        public void meth1(); } // violation
+
+    interface Interface2
+    { int i = 1; public void meth1(); }
+
+    interface Interface3 {
+        void display();
+        interface Interface4 {
+            void myMethod();
+        }} // violation - for both of the right curly braces
 }

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,10 +19,10 @@
 
 package com.puppycrawl.tools.checkstyle.api;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -33,13 +33,14 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedSet;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import com.puppycrawl.tools.checkstyle.AbstractPathTestSupport;
+import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
+import com.puppycrawl.tools.checkstyle.DetailAstImpl;
 import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
 
-public class AbstractCheckTest extends AbstractPathTestSupport {
+public class AbstractCheckTest extends AbstractModuleTestSupport {
 
     @Override
     protected String getPackageLocation() {
@@ -65,8 +66,8 @@ public class AbstractCheckTest extends AbstractPathTestSupport {
             }
         };
         // Eventually it will become clear abstract method
-        assertArrayEquals("Invalid number of tokens, should be empty",
-                CommonUtil.EMPTY_INT_ARRAY, check.getRequiredTokens());
+        assertArrayEquals(CommonUtil.EMPTY_INT_ARRAY, check.getRequiredTokens(),
+                "Invalid number of tokens, should be empty");
     }
 
     @Test
@@ -88,8 +89,8 @@ public class AbstractCheckTest extends AbstractPathTestSupport {
             }
         };
         // Eventually it will become clear abstract method
-        assertArrayEquals("Invalid number of tokens, should be empty",
-                CommonUtil.EMPTY_INT_ARRAY, check.getAcceptableTokens());
+        assertArrayEquals(CommonUtil.EMPTY_INT_ARRAY, check.getAcceptableTokens(),
+                "Invalid number of tokens, should be empty");
     }
 
     @Test
@@ -111,7 +112,7 @@ public class AbstractCheckTest extends AbstractPathTestSupport {
             }
         };
 
-        assertFalse("unexpected result", check.isCommentNodesRequired());
+        assertFalse(check.isCommentNodesRequired(), "unexpected result");
     }
 
     @Test
@@ -134,9 +135,8 @@ public class AbstractCheckTest extends AbstractPathTestSupport {
         };
 
         check.setTokens("IDENT, EXPR, ELIST");
-        assertArrayEquals("unexpected result",
-            new String[] {"IDENT, EXPR, ELIST"},
-            check.getTokenNames().toArray());
+        assertArrayEquals(new String[] {"IDENT, EXPR, ELIST"},
+            check.getTokenNames().toArray(), "unexpected result");
     }
 
     @Test
@@ -145,7 +145,7 @@ public class AbstractCheckTest extends AbstractPathTestSupport {
         // Eventually it will become clear abstract method
         check.visitToken(null);
 
-        assertEquals("expected call count", 1, check.count);
+        assertEquals(1, check.count, "expected call count");
     }
 
     @Test
@@ -170,7 +170,7 @@ public class AbstractCheckTest extends AbstractPathTestSupport {
             new File(getPath("InputAbstractCheckTestFileContents.java")),
             Charset.defaultCharset().name())));
 
-        assertEquals("Invalid line content", " * I'm a javadoc", check.getLine(3));
+        assertEquals(" * I'm a javadoc", check.getLine(3), "Invalid line content");
     }
 
     @Test
@@ -194,7 +194,7 @@ public class AbstractCheckTest extends AbstractPathTestSupport {
         final int tabWidth = 4;
         check.setTabWidth(tabWidth);
 
-        assertEquals("Invalid tab width", tabWidth, check.getTabWidth());
+        assertEquals(tabWidth, check.getTabWidth(), "Invalid tab width");
     }
 
     @Test
@@ -216,35 +216,12 @@ public class AbstractCheckTest extends AbstractPathTestSupport {
             }
         };
         final String[] lines = {"test"};
-        final FileContents fileContents = new FileContents("fileName", lines);
+        final FileContents fileContents = new FileContents(
+                new FileText(new File("filename"), Arrays.asList(lines)));
         check.setFileContents(fileContents);
 
-        assertSame("Invalid file contents", fileContents, check.getFileContents());
-        assertArrayEquals("Invalid lines", lines, check.getLines());
-    }
-
-    @Test
-    public void testGetClassLoader() {
-        final AbstractCheck check = new AbstractCheck() {
-            @Override
-            public int[] getDefaultTokens() {
-                return CommonUtil.EMPTY_INT_ARRAY;
-            }
-
-            @Override
-            public int[] getAcceptableTokens() {
-                return getDefaultTokens();
-            }
-
-            @Override
-            public int[] getRequiredTokens() {
-                return getDefaultTokens();
-            }
-        };
-        final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        check.setClassLoader(classLoader);
-
-        assertEquals("Invalid classloader", classLoader, check.getClassLoader());
+        assertSame(fileContents, check.getFileContents(), "Invalid file contents");
+        assertArrayEquals(lines, check.getLines(), "Invalid lines");
     }
 
     @Test
@@ -269,12 +246,9 @@ public class AbstractCheckTest extends AbstractPathTestSupport {
             }
         };
 
-        assertArrayEquals("Invalid default tokens",
-                defaultTokens, check.getDefaultTokens());
-        assertArrayEquals("Invalid acceptable tokens",
-                defaultTokens, check.getAcceptableTokens());
-        assertArrayEquals("Invalid required tokens",
-                requiredTokens, check.getRequiredTokens());
+        assertArrayEquals(defaultTokens, check.getDefaultTokens(), "Invalid default tokens");
+        assertArrayEquals(defaultTokens, check.getAcceptableTokens(), "Invalid acceptable tokens");
+        assertArrayEquals(requiredTokens, check.getRequiredTokens(), "Invalid required tokens");
     }
 
     @Test
@@ -282,9 +256,9 @@ public class AbstractCheckTest extends AbstractPathTestSupport {
         final AbstractCheck check = new DummyAbstractCheck();
 
         check.log(1, "key", "args");
-        assertEquals("Invalid message size", 1, check.getMessages().size());
+        assertEquals(1, check.getMessages().size(), "Invalid message size");
         check.clearMessages();
-        assertEquals("Invalid message size", 0, check.getMessages().size());
+        assertEquals(0, check.getMessages().size(), "Invalid message size");
     }
 
     @Test
@@ -300,17 +274,17 @@ public class AbstractCheckTest extends AbstractPathTestSupport {
 
         final SortedSet<LocalizedMessage> internalMessages = check.getMessages();
 
-        assertEquals("Internal message should only have 2", 2, internalMessages.size());
+        assertEquals(2, internalMessages.size(), "Internal message should only have 2");
 
         final Iterator<LocalizedMessage> iterator = internalMessages.iterator();
 
         final LocalizedMessage firstMessage = iterator.next();
-        assertEquals("expected line", 1, firstMessage.getLineNo());
-        assertEquals("expected column", 0, firstMessage.getColumnNo());
+        assertEquals(1, firstMessage.getLineNo(), "expected line");
+        assertEquals(0, firstMessage.getColumnNo(), "expected column");
 
         final LocalizedMessage secondMessage = iterator.next();
-        assertEquals("expected line", 1, secondMessage.getLineNo());
-        assertEquals("expected column", 6, secondMessage.getColumnNo());
+        assertEquals(1, secondMessage.getLineNo(), "expected line");
+        assertEquals(6, secondMessage.getColumnNo(), "expected column");
     }
 
     @Test
@@ -323,21 +297,31 @@ public class AbstractCheckTest extends AbstractPathTestSupport {
         check.setFileContents(new FileContents(theText));
         check.clearMessages();
 
-        final DetailAST ast = new DetailAST();
+        final DetailAstImpl ast = new DetailAstImpl();
         ast.setLineNo(1);
         ast.setColumnNo(4);
         check.visitToken(ast);
 
         final SortedSet<LocalizedMessage> internalMessages = check.getMessages();
 
-        assertEquals("Internal message should only have 1", 1, internalMessages.size());
+        assertEquals(1, internalMessages.size(), "Internal message should only have 1");
 
         final LocalizedMessage firstMessage = internalMessages.iterator().next();
-        assertEquals("expected line", 1, firstMessage.getLineNo());
-        assertEquals("expected column", 5, firstMessage.getColumnNo());
+        assertEquals(1, firstMessage.getLineNo(), "expected line");
+        assertEquals(5, firstMessage.getColumnNo(), "expected column");
     }
 
-    private static final class DummyAbstractCheck extends AbstractCheck {
+    @Test
+    public void testCheck() throws Exception {
+        final DefaultConfiguration checkConfig = createModuleConfig(ViolationAstCheck.class);
+
+        final String[] expected = {
+            "1:1: Violation.",
+        };
+        verify(checkConfig, getPath("InputAbstractCheckTestFileContents.java"), expected);
+    }
+
+    public static final class DummyAbstractCheck extends AbstractCheck {
 
         private static final int[] DUMMY_ARRAY = {6};
 
@@ -365,7 +349,7 @@ public class AbstractCheckTest extends AbstractPathTestSupport {
 
     }
 
-    private static final class VisitCounterCheck extends AbstractCheck {
+    public static final class VisitCounterCheck extends AbstractCheck {
 
         private int count;
 
@@ -391,7 +375,7 @@ public class AbstractCheckTest extends AbstractPathTestSupport {
         }
     }
 
-    private static class ViolationCheck extends AbstractCheck {
+    public static class ViolationCheck extends AbstractCheck {
 
         private static final String MSG_KEY = "Violation.";
 
@@ -418,23 +402,25 @@ public class AbstractCheckTest extends AbstractPathTestSupport {
 
     }
 
-    private static class ViolationAstCheck extends AbstractCheck {
+    public static class ViolationAstCheck extends AbstractCheck {
 
         private static final String MSG_KEY = "Violation.";
 
         @Override
         public int[] getDefaultTokens() {
-            return CommonUtil.EMPTY_INT_ARRAY;
+            return getRequiredTokens();
         }
 
         @Override
         public int[] getAcceptableTokens() {
-            return CommonUtil.EMPTY_INT_ARRAY;
+            return getRequiredTokens();
         }
 
         @Override
         public int[] getRequiredTokens() {
-            return CommonUtil.EMPTY_INT_ARRAY;
+            return new int[] {
+                TokenTypes.PACKAGE_DEF,
+            };
         }
 
         @Override

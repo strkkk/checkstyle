@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,16 +20,16 @@
 package com.puppycrawl.tools.checkstyle.xpath;
 
 import static com.puppycrawl.tools.checkstyle.internal.utils.XpathUtil.getXpathItems;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractPathTestSupport;
 import com.puppycrawl.tools.checkstyle.JavaParser;
@@ -38,6 +38,7 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 import net.sf.saxon.om.AxisInfo;
 import net.sf.saxon.om.NamespaceBinding;
 import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.tree.iter.AxisIterator;
 import net.sf.saxon.tree.iter.EmptyIterator;
 
 public class RootNodeTest extends AbstractPathTestSupport {
@@ -49,7 +50,7 @@ public class RootNodeTest extends AbstractPathTestSupport {
         return "com/puppycrawl/tools/checkstyle/xpath/xpathmapper";
     }
 
-    @Before
+    @BeforeEach
     public void init() throws Exception {
         final File file = new File(getPath("InputXpathMapperAst.java"));
         final DetailAST rootAst = JavaParser.parseFile(file, JavaParser.Options.WITHOUT_COMMENTS);
@@ -57,49 +58,86 @@ public class RootNodeTest extends AbstractPathTestSupport {
     }
 
     @Test
+    public void testCompareOrder() {
+        try {
+            rootNode.compareOrder(null);
+            fail("Exception is excepted");
+        }
+        catch (UnsupportedOperationException ex) {
+            assertEquals("Operation is not supported",
+                ex.getMessage(), "Invalid exception message");
+        }
+    }
+
+    @Test
     public void testXpath() throws Exception {
         final String xpath = "/";
         final List<NodeInfo> nodes = getXpathItems(xpath, rootNode);
-        assertEquals("Invalid number of nodes", 1, nodes.size());
-        assertTrue("Should return true, because selected node is RootNode",
-                nodes.get(0) instanceof RootNode);
-        assertEquals("Result node should have same reference as expected",
-                nodes.get(0),
-                rootNode);
+        assertEquals(1, nodes.size(), "Invalid number of nodes");
+        final NodeInfo firstNode = nodes.get(0);
+        assertTrue(firstNode instanceof RootNode,
+                "Should return true, because selected node is RootNode");
+        assertEquals(firstNode, rootNode, "Result node should have same reference as expected");
     }
 
     @Test
     public void testGetTokenType() {
-        assertEquals("Invalid token type", TokenTypes.EOF, rootNode.getTokenType());
+        assertEquals(TokenTypes.EOF, rootNode.getTokenType(), "Invalid token type");
     }
 
     @Test
     public void testGetLineNumber() {
-        assertEquals("Invalid line number", 1, rootNode.getLineNumber());
+        assertEquals(1, rootNode.getLineNumber(), "Invalid line number");
     }
 
     @Test
     public void testGetColumnNumber() {
-        assertEquals("Invalid column number", 0, rootNode.getColumnNumber());
+        assertEquals(0, rootNode.getColumnNumber(), "Invalid column number");
     }
 
     @Test
     public void testGetLocalPart() {
-        assertEquals("Invalid local part", "ROOT", rootNode.getLocalPart());
-    }
-
-    @Test
-    public void testGetStringValue() {
-        assertEquals("Invalid string value", "ROOT", rootNode.getStringValue());
+        assertEquals("ROOT", rootNode.getLocalPart(), "Invalid local part");
     }
 
     @Test
     public void testIterate() {
-        assertEquals("Result iterator does not match expected",
-                EmptyIterator.OfNodes.THE_INSTANCE, rootNode.iterateAxis(AxisInfo.PARENT));
-        assertEquals("Result iterator does not match expected",
-                EmptyIterator.OfNodes.THE_INSTANCE, rootNode.iterateAxis(AxisInfo.PARENT,
-                        null));
+        try (AxisIterator following = rootNode.iterateAxis(AxisInfo.FOLLOWING)) {
+            assertEquals(EmptyIterator.OfNodes.THE_INSTANCE, following,
+                    "Result iterator does not match expected");
+        }
+        try (AxisIterator followingSibling = rootNode.iterateAxis(AxisInfo.FOLLOWING_SIBLING)) {
+            assertEquals(EmptyIterator.OfNodes.THE_INSTANCE, followingSibling,
+                    "Result iterator does not match expected");
+        }
+        try (AxisIterator preceding = rootNode.iterateAxis(AxisInfo.PRECEDING)) {
+            assertEquals(EmptyIterator.OfNodes.THE_INSTANCE, preceding,
+                    "Result iterator does not match expected");
+        }
+        try (AxisIterator precedingSibling = rootNode.iterateAxis(AxisInfo.PRECEDING_SIBLING)) {
+            assertEquals(EmptyIterator.OfNodes.THE_INSTANCE, precedingSibling,
+                    "Result iterator does not match expected");
+        }
+        try (AxisIterator parent = rootNode.iterateAxis(AxisInfo.PARENT)) {
+            assertEquals(EmptyIterator.OfNodes.THE_INSTANCE, parent,
+                    "Result iterator does not match expected");
+        }
+        try (AxisIterator parentNull = rootNode.iterateAxis(AxisInfo.PARENT, null)) {
+            assertEquals(EmptyIterator.OfNodes.THE_INSTANCE, parentNull,
+                    "Result iterator does not match expected");
+        }
+    }
+
+    @Test
+    public void testGetStringValue() {
+        try {
+            rootNode.getStringValue();
+            fail("Exception is excepted");
+        }
+        catch (UnsupportedOperationException ex) {
+            assertEquals("Operation is not supported",
+                    ex.getMessage(), "Invalid exception message");
+        }
     }
 
     @Test
@@ -109,25 +147,21 @@ public class RootNodeTest extends AbstractPathTestSupport {
             fail("Exception is excepted");
         }
         catch (UnsupportedOperationException ex) {
-            assertEquals(
-                "Invalid exception message",
-                "Operation is not supported",
-                ex.getMessage());
+            assertEquals("Operation is not supported",
+                ex.getMessage(), "Invalid exception message");
         }
     }
 
     @Test
     public void testGetDeclaredNamespaces() {
+        final NamespaceBinding[] namespaceBindings = {new NamespaceBinding("prefix", "uri")};
         try {
-            rootNode.getDeclaredNamespaces(
-                    new NamespaceBinding[] {new NamespaceBinding("prefix", "uri")});
+            rootNode.getDeclaredNamespaces(namespaceBindings);
             fail("Exception is excepted");
         }
         catch (UnsupportedOperationException ex) {
-            assertEquals(
-                "Invalid exception message",
-                "Operation is not supported",
-                ex.getMessage());
+            assertEquals("Operation is not supported",
+                ex.getMessage(), "Invalid exception message");
         }
     }
 
@@ -138,10 +172,8 @@ public class RootNodeTest extends AbstractPathTestSupport {
             fail("Exception is excepted");
         }
         catch (UnsupportedOperationException ex) {
-            assertEquals(
-                "Invalid exception message",
-                "Operation is not supported",
-                ex.getMessage());
+            assertEquals("Operation is not supported",
+                ex.getMessage(), "Invalid exception message");
         }
     }
 
@@ -152,10 +184,8 @@ public class RootNodeTest extends AbstractPathTestSupport {
             fail("Exception is excepted");
         }
         catch (UnsupportedOperationException ex) {
-            assertEquals(
-                "Invalid exception message",
-                "Operation is not supported",
-                ex.getMessage());
+            assertEquals("Operation is not supported",
+                ex.getMessage(), "Invalid exception message");
         }
     }
 
@@ -166,10 +196,8 @@ public class RootNodeTest extends AbstractPathTestSupport {
             fail("Exception is excepted");
         }
         catch (UnsupportedOperationException ex) {
-            assertEquals(
-                "Invalid exception message",
-                "Operation is not supported",
-                ex.getMessage());
+            assertEquals("Operation is not supported",
+                ex.getMessage(), "Invalid exception message");
         }
     }
 
@@ -180,10 +208,8 @@ public class RootNodeTest extends AbstractPathTestSupport {
             fail("Exception is excepted");
         }
         catch (UnsupportedOperationException ex) {
-            assertEquals(
-                "Invalid exception message",
-                "Operation is not supported",
-                ex.getMessage());
+            assertEquals("Operation is not supported",
+                ex.getMessage(), "Invalid exception message");
         }
     }
 
@@ -194,10 +220,8 @@ public class RootNodeTest extends AbstractPathTestSupport {
             fail("Exception is excepted");
         }
         catch (UnsupportedOperationException ex) {
-            assertEquals(
-                "Invalid exception message",
-                "Operation is not supported",
-                ex.getMessage());
+            assertEquals("Operation is not supported",
+                ex.getMessage(), "Invalid exception message");
         }
     }
 
@@ -208,10 +232,8 @@ public class RootNodeTest extends AbstractPathTestSupport {
             fail("Exception is excepted");
         }
         catch (UnsupportedOperationException ex) {
-            assertEquals(
-                "Invalid exception message",
-                "Operation is not supported",
-                ex.getMessage());
+            assertEquals("Operation is not supported",
+                ex.getMessage(), "Invalid exception message");
         }
     }
 
@@ -222,10 +244,8 @@ public class RootNodeTest extends AbstractPathTestSupport {
             fail("Exception is excepted");
         }
         catch (UnsupportedOperationException ex) {
-            assertEquals(
-                "Invalid exception message",
-                "Operation is not supported",
-                ex.getMessage());
+            assertEquals("Operation is not supported",
+                ex.getMessage(), "Invalid exception message");
         }
     }
 
@@ -236,10 +256,8 @@ public class RootNodeTest extends AbstractPathTestSupport {
             fail("Exception is excepted");
         }
         catch (UnsupportedOperationException ex) {
-            assertEquals(
-                "Invalid exception message",
-                "Operation is not supported",
-                ex.getMessage());
+            assertEquals("Operation is not supported",
+                ex.getMessage(), "Invalid exception message");
         }
     }
 
@@ -250,10 +268,8 @@ public class RootNodeTest extends AbstractPathTestSupport {
             fail("Exception is excepted");
         }
         catch (UnsupportedOperationException ex) {
-            assertEquals(
-                "Invalid exception message",
-                "Operation is not supported",
-                ex.getMessage());
+            assertEquals("Operation is not supported",
+                ex.getMessage(), "Invalid exception message");
         }
     }
 
@@ -264,10 +280,8 @@ public class RootNodeTest extends AbstractPathTestSupport {
             fail("Exception is excepted");
         }
         catch (UnsupportedOperationException ex) {
-            assertEquals(
-                "Invalid exception message",
-                "Operation is not supported",
-                ex.getMessage());
+            assertEquals("Operation is not supported",
+                ex.getMessage(), "Invalid exception message");
         }
     }
 
@@ -278,10 +292,8 @@ public class RootNodeTest extends AbstractPathTestSupport {
             fail("Exception is excepted");
         }
         catch (UnsupportedOperationException ex) {
-            assertEquals(
-                "Invalid exception message",
-                "Operation is not supported",
-                ex.getMessage());
+            assertEquals("Operation is not supported",
+                ex.getMessage(), "Invalid exception message");
         }
     }
 
@@ -292,10 +304,8 @@ public class RootNodeTest extends AbstractPathTestSupport {
             fail("Exception is excepted");
         }
         catch (UnsupportedOperationException ex) {
-            assertEquals(
-                "Invalid exception message",
-                "Operation is not supported",
-                ex.getMessage());
+            assertEquals("Operation is not supported",
+                ex.getMessage(), "Invalid exception message");
         }
     }
 
@@ -306,10 +316,8 @@ public class RootNodeTest extends AbstractPathTestSupport {
             fail("Exception is excepted");
         }
         catch (UnsupportedOperationException ex) {
-            assertEquals(
-                "Invalid exception message",
-                "Operation is not supported",
-                ex.getMessage());
+            assertEquals("Operation is not supported",
+                ex.getMessage(), "Invalid exception message");
         }
     }
 
@@ -320,10 +328,8 @@ public class RootNodeTest extends AbstractPathTestSupport {
             fail("Exception is excepted");
         }
         catch (UnsupportedOperationException ex) {
-            assertEquals(
-                "Invalid exception message",
-                "Operation is not supported",
-                ex.getMessage());
+            assertEquals("Operation is not supported",
+                ex.getMessage(), "Invalid exception message");
         }
     }
 
@@ -334,10 +340,8 @@ public class RootNodeTest extends AbstractPathTestSupport {
             fail("Exception is excepted");
         }
         catch (UnsupportedOperationException ex) {
-            assertEquals(
-                "Invalid exception message",
-                "Operation is not supported",
-                ex.getMessage());
+            assertEquals("Operation is not supported",
+                ex.getMessage(), "Invalid exception message");
         }
     }
 
@@ -348,10 +352,8 @@ public class RootNodeTest extends AbstractPathTestSupport {
             fail("Exception is excepted");
         }
         catch (UnsupportedOperationException ex) {
-            assertEquals(
-                "Invalid exception message",
-                "Operation is not supported",
-                ex.getMessage());
+            assertEquals("Operation is not supported",
+                ex.getMessage(), "Invalid exception message");
         }
     }
 
@@ -362,10 +364,8 @@ public class RootNodeTest extends AbstractPathTestSupport {
             fail("Exception is excepted");
         }
         catch (UnsupportedOperationException ex) {
-            assertEquals(
-                "Invalid exception message",
-                "Operation is not supported",
-                ex.getMessage());
+            assertEquals("Operation is not supported",
+                ex.getMessage(), "Invalid exception message");
         }
     }
 
@@ -376,19 +376,17 @@ public class RootNodeTest extends AbstractPathTestSupport {
             fail("Exception is excepted");
         }
         catch (UnsupportedOperationException ex) {
-            assertEquals(
-                "Invalid exception message",
-                "Operation is not supported",
-                ex.getMessage());
+            assertEquals("Operation is not supported",
+                ex.getMessage(), "Invalid exception message");
         }
     }
 
     @Test
     public void testSameNodeInfo() {
-        assertTrue("Should return true, because object is being compared to itself",
-                rootNode.isSameNodeInfo(rootNode));
-        assertFalse("Should return false, because object does not equal null",
-                rootNode.isSameNodeInfo(null));
+        assertTrue(rootNode.isSameNodeInfo(rootNode),
+                "Should return true, because object is being compared to itself");
+        assertFalse(rootNode.isSameNodeInfo(null),
+                "Should return false, because object does not equal null");
     }
 
 }

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -77,6 +77,7 @@ public class ForHandler extends BlockParentHandler {
 
     /**
      * Returns right parenthesis of for-loop statement.
+     *
      * @param literalForAst
      *          literal-for ast node(TokenTypes.LITERAL_FOR)
      * @return right parenthesis of for-loop statement.

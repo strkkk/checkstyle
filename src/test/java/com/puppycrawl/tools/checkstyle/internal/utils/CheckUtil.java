@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -22,6 +22,7 @@ package com.puppycrawl.tools.checkstyle.internal.utils;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -39,6 +40,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.google.common.reflect.ClassPath;
+import com.puppycrawl.tools.checkstyle.api.FileText;
 import com.puppycrawl.tools.checkstyle.checks.regexp.RegexpMultilineCheck;
 import com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineCheck;
 import com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck;
@@ -47,6 +49,8 @@ import com.puppycrawl.tools.checkstyle.utils.ModuleReflectionUtil;
 import com.puppycrawl.tools.checkstyle.utils.TokenUtil;
 
 public final class CheckUtil {
+
+    public static final String CRLF = "\r\n";
 
     private CheckUtil() {
     }
@@ -66,6 +70,7 @@ public final class CheckUtil {
     /**
      * Retrieves a list of class names, removing 'Check' from the end if the class is
      * a checkstyle check.
+     *
      * @param checks class instances.
      * @return a set of simple names.
      */
@@ -132,6 +137,7 @@ public final class CheckUtil {
 
     /**
      * Gets all checkstyle's non-abstract checks.
+     *
      * @return the set of checkstyle's non-abstract check classes.
      * @throws IOException if the attempt to read class path resources failed.
      */
@@ -146,6 +152,7 @@ public final class CheckUtil {
 
     /**
      * Gets all checkstyle's modules.
+     *
      * @return the set of checkstyle's module classes.
      * @throws IOException if the attempt to read class path resources failed.
      */
@@ -158,6 +165,7 @@ public final class CheckUtil {
 
     /**
      * Gets checkstyle's modules in the given package recursively.
+     *
      * @param packageName the package name to use
      * @param loader the class loader used to load Checkstyle package name
      * @return the set of checkstyle's module classes
@@ -170,15 +178,25 @@ public final class CheckUtil {
         return classPath.getTopLevelClassesRecursive(packageName).stream()
                 .map(ClassPath.ClassInfo::load)
                 .filter(ModuleReflectionUtil::isCheckstyleModule)
-                .filter(cls -> !cls.getCanonicalName()
-                        .startsWith("com.puppycrawl.tools.checkstyle.internal.testmodules"))
-                .filter(cls -> !cls.getCanonicalName()
-                        .startsWith("com.puppycrawl.tools.checkstyle.packageobjectfactory"))
+                .filter(CheckUtil::isFromAllowedPackages)
                 .collect(Collectors.toSet());
     }
 
     /**
+     * Checks that class is from allowed packages.
+     *
+     * @param cls class to check
+     * @return true if class is from allowed packages, false otherwise
+     */
+    private static boolean isFromAllowedPackages(Class<?> cls) {
+        final String canonicalName = cls.getCanonicalName();
+        return !canonicalName.startsWith("com.puppycrawl.tools.checkstyle.packageobjectfactory")
+            && !canonicalName.startsWith("com.puppycrawl.tools.checkstyle.internal.testmodules");
+    }
+
+    /**
      * Get's the check's messages.
+     *
      * @param module class to examine.
      * @return a set of checkstyle's module message fields.
      * @throws ClassNotFoundException if the attempt to read a protected class fails.
@@ -340,4 +358,27 @@ public final class CheckUtil {
         return result.toString();
     }
 
+    public static String getLineSeparatorForFile(String filepath, Charset charset)
+            throws IOException {
+        final boolean[] crFound = {false};
+        new FileText(new File(filepath), charset.name())
+                .getFullText()
+                .chars()
+                .peek(character -> {
+                    if (character == '\r') {
+                        crFound[0] = true;
+                    }
+                })
+                .filter(character -> character == '\n')
+                .findFirst();
+
+        final String result;
+        if (crFound[0]) {
+            result = CRLF;
+        }
+        else {
+            result = "\n";
+        }
+        return result;
+    }
 }

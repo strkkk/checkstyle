@@ -15,7 +15,7 @@
     <inspection_tool class="AbstractClassNeverImplemented" enabled="true" level="ERROR"
                      enabled_by_default="true"/>
     <!-- we are not limited in resources
-         and we a library so there are more usages outside of our code-->
+         and we a library so there are more usages outside of our code -->
     <inspection_tool class="AbstractClassWithOnlyOneDirectInheritor" enabled="false" level="ERROR"
                      enabled_by_default="true"/>
     <inspection_tool class="AbstractClassWithoutAbstractMethods" enabled="true" level="ERROR"
@@ -1335,9 +1335,9 @@
                      enabled_by_default="true"/>
     <!-- we do like constants on the right side, it is more readable,
          placing constant on the left does not give benefit -->
-    <inspection_tool class="ConstantOnRHSOfComparison" enabled="false" level="ERROR"
+    <inspection_tool class="ConstantOnWrongSideOfComparison" enabled="false" level="ERROR"
                      enabled_by_default="false"/>
-    <inspection_tool class="ConstantOnRHSOfComparisonJS" enabled="true" level="ERROR"
+    <inspection_tool class="ConstantOnWrongSideOfComparisonJS" enabled="true" level="ERROR"
                      enabled_by_default="true"/>
     <inspection_tool class="ConstantStringIntern" enabled="true" level="ERROR"
                      enabled_by_default="true"/>
@@ -1614,7 +1614,7 @@
     <inspection_tool class="DuplicatedDataProviderNames" enabled="true" level="WARNING"
                      enabled_by_default="true"/>
     <!-- this duplication algorithm generate too much won't fixes -->
-    <inspection_tool class="Duplicates" enabled="false" level="ERROR" enabled_by_default="true">
+    <inspection_tool class="DuplicatedCode" enabled="false" level="ERROR" enabled_by_default="true">
         <scope name="Tests" level="ERROR" enabled="false"/>
     </inspection_tool>
     <inspection_tool class="DynamicRegexReplaceableByCompiledPattern" enabled="true" level="WARNING"
@@ -1631,6 +1631,9 @@
                      enabled_by_default="false"/>
     <inspection_tool class="ELValidationInJSP" enabled="false" level="ERROR"
                      enabled_by_default="false"/>
+    <!-- not all browsers support this yet, no need for us to follow this -->
+    <inspection_tool class="ES6ConvertVarToLetConst" enabled="false" level="WEAK WARNING"
+                     enabled_by_default="false" />
     <inspection_tool class="ES6Validation" enabled="true" level="WARNING"
                      enabled_by_default="true"/>
     <inspection_tool class="EjbClassBasicInspection" enabled="true" level="WARNING"
@@ -1765,7 +1768,7 @@
     bunch of libraries throw Error instead of Exception -->
     <inspection_tool class="ErrorRethrown" enabled="false" level="ERROR"
                      enabled_by_default="false"/>
-    <!--we do not use this tool-->
+    <!-- we do not use this tool -->
     <inspection_tool class="Eslint" enabled="false" level="WARNING" enabled_by_default="false"/>
     <inspection_tool class="ExceptionCaughtLocallyJS" enabled="true" level="ERROR"
                      enabled_by_default="true"/>
@@ -3644,6 +3647,7 @@
             <value>
                 <item value="org.junit.Rule"/>
                 <item value="org.junit.ClassRule"/>
+                <item value="org.junit.jupiter.api.io.TempDir"/>
             </value>
         </option>
     </inspection_tool>
@@ -4001,7 +4005,9 @@
                      enabled_by_default="true"/>
     <inspection_tool class="SimplifiableIfStatement" enabled="true" level="ERROR"
                      enabled_by_default="true"/>
-    <inspection_tool class="SimplifiableJUnitAssertion" enabled="true" level="ERROR"
+    <!-- if asserts methods use messages such simplification damage ease of read
+         see details at https://github.com/checkstyle/checkstyle/pull/6823 -->
+    <inspection_tool class="SimplifiableJUnitAssertion" enabled="false" level="ERROR"
                      enabled_by_default="true"/>
     <inspection_tool class="SimplifyAssertNotNull" enabled="false" level="INFO"
                      enabled_by_default="false"/>
@@ -4379,7 +4385,7 @@
                 <option value="unchecked"/>
                 <option value="rawtypes"/>
                 <!-- There is no other way to deliver filename that was under processing.
-                     See https://github.com/checkstyle/checkstyle/issues/2285-->
+                     See https://github.com/checkstyle/checkstyle/issues/2285 -->
                 <option value="ProhibitedExceptionThrown"/>
                 <option value="MismatchedQueryAndUpdateOfCollection"/>
                 <!-- No way to split apart huge if/else branches in test. -->
@@ -4423,7 +4429,8 @@
                 <option value="WeakerAccess"/>
                 <!-- we need to work with AntClassLoader, there is no way to avoid this -->
                 <option value="ClassLoaderInstantiation"/>
-                <!-- There are asserts in DetailASTTest#checkNode, but idea does not see them -->
+                <!-- There are asserts in DetailAstImplTest#checkNode,
+                       but idea does not see them -->
                 <option value="JUnitTestMethodWithNoAssertions"/>
                 <!-- we use it in Main class -->
                 <option value="CallToSystemExit"/>
@@ -4593,19 +4600,24 @@
                      enabled_by_default="true"/>
     <inspection_tool class="TestMethodWithoutAssertion" enabled="true" level="ERROR"
                      enabled_by_default="true">
+        <!-- after https://github.com/checkstyle/checkstyle/issues/6916
+             all junit4 methods should be removed -->
         <option name="assertionMethods"
                 value="org.junit.Assert,assert.*|fail.*, ,
+    ,org.junit.jupiter.api.Assertions,assert.*|fail.*, ,
     ,junit.framework.Assert,assert.*|fail.*, ,
     ,org.mockito.Mockito,verify.*, ,
     ,org.mockito.InOrder,verify, ,
     ,org.junit.rules.ExpectedException,expect.*, ,
     ,org.hamcrest.MatcherAssert,assertThat, ,
+    ,com.google.common.truth.Truth,assert.*, ,
     ,com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport,verify.*, ,
     ,com.puppycrawl.tools.checkstyle.AbstractTreeTestSupport,verify.*, ,
     ,com.google.checkstyle.test.base.AbstractModuleTestSupport,verify.*, ,
     ,com.puppycrawl.tools.checkstyle.internal.TestUtil,assert.*, ,
     ,com.puppycrawl.tools.checkstyle.grammar.AstRegressionTest.AssertGeneratedJavaLexer,verify.*, ,
     ,nl.jqno.equalsverifier.EqualsVerifier,verify.*, ,
+    ,org.checkstyle.base.AbstractItModuleTestSupport,verify.*, ,
     ,org.powermock.api.mockito.PowerMockito,verify.*"/>
         <option name="assertKeywordIsAssertion" value="false"/>
     </inspection_tool>
@@ -4933,9 +4945,9 @@
          it is checked by RequireThisCheck -->
     <inspection_tool class="UnqualifiedMethodAccess" enabled="false" level="ERROR"
                      enabled_by_default="false"/>
-    <!--inspection does not have option to skip cases of usage
+    <!-- inspection does not have option to skip cases of usage
         static field/method that is declared
-        in the same class, as result there are a lot of want-fix cases.-->
+        in the same class, as result there are a lot of want-fix cases. -->
     <inspection_tool class="UnqualifiedStaticUsage" enabled="false" level="ERROR"
                      enabled_by_default="false"/>
     <inspection_tool class="UnreachableCodeJS" enabled="true" level="ERROR"

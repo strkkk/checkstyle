@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -26,15 +26,93 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 
 /**
  * <p>
- * Checks for overly complicated boolean return statements.
- * Idea shamelessly stolen from the equivalent PMD rule (pmd.sourceforge.net).
- * </p>
- * <p>
- * An example of how to configure the check is:
+ * Checks for over-complicated boolean return statements.
+ * For example the following code
  * </p>
  * <pre>
- * &lt;module name="SimplifyBooleanReturn"/&gt;
+ * if (valid())
+ *   return false;
+ * else
+ *   return true;
  * </pre>
+ * <p>
+ * could be written as
+ * </p>
+ * <pre>
+ * return !valid();
+ * </pre>
+ * <p>
+ * The idea for this Check has been shamelessly stolen from the equivalent
+ * <a href="https://pmd.github.io/">PMD</a> rule.
+ * </p>
+ * <p>
+ * To configure the check:
+ * </p>
+ * <pre>
+ * &lt;module name=&quot;SimplifyBooleanReturn&quot;/&gt;
+ * </pre>
+ * <p>Example:</p>
+ * <pre>
+ * public class Test {
+ *
+ *  private boolean cond;
+ *  private Foo a;
+ *  private Foo b;
+ *
+ *  public boolean check1() {
+ *   if (cond) { // violation, can be simplified
+ *     return true;
+ *   }
+ *   else {
+ *     return false;
+ *   }
+ *  }
+ *
+ *  // Ok, simplified version of check1()
+ *  public boolean check2() {
+ *   return cond;
+ *  }
+ *
+ *  // violations, can be simplified
+ *  public boolean check3() {
+ *   if (cond == true) { // can be simplified to "if (cond)"
+ *     return false;
+ *   }
+ *   else {
+ *     return true; // can be simplified to "return !cond"
+ *   }
+ *  }
+ *
+ *  // Ok, can be simplified but doesn't return a Boolean
+ *  public Foo choose1() {
+ *   if (cond) {
+ *     return a;
+ *   }
+ *   else {
+ *     return b;
+ *   }
+ *  }
+ *
+ *  // Ok, simplified version of choose1()
+ *  public Foo choose2() {
+ *   return cond ? a: b;
+ *  }
+ *
+ * }
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code simplify.boolReturn}
+ * </li>
+ * </ul>
+ *
+ * @since 3.0
  */
 @StatelessCheck
 public class SimplifyBooleanReturnCheck
@@ -144,6 +222,7 @@ public class SimplifyBooleanReturnCheck
 
     /**
      * Checks if a token type is a literal true or false.
+     *
      * @param tokenType the TokenType
      * @return true iff tokenType is LITERAL_TRUE or LITERAL_FALSE
      */

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -25,12 +25,12 @@ import static com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocStyleCheck.M
 import static com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocStyleCheck.MSG_JAVADOC_MISSING;
 import static com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocStyleCheck.MSG_NO_PERIOD;
 import static com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocStyleCheck.MSG_UNCLOSED_HTML;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
@@ -63,7 +63,7 @@ public class JavadocStyleCheckTest
             TokenTypes.VARIABLE_DEF,
         };
 
-        assertArrayEquals("Default acceptable tokens are invalid", expected, actual);
+        assertArrayEquals(expected, actual, "Default acceptable tokens are invalid");
     }
 
     @Test
@@ -77,6 +77,7 @@ public class JavadocStyleCheckTest
             "63:11: " + getCheckMessage(MSG_UNCLOSED_HTML,
                 "<b>This guy is missing end of bold tag"),
             "66:7: " + getCheckMessage(MSG_EXTRA_HTML, "</td>Extra tag shouldn't be here"),
+            "67:49: " + getCheckMessage(MSG_EXTRA_HTML, "</style>"),
             "68:19: " + getCheckMessage(MSG_UNCLOSED_HTML, "<code>dummy."),
             "74: " + getCheckMessage(MSG_NO_PERIOD),
             "75:23: " + getCheckMessage(MSG_UNCLOSED_HTML, "<b>should fail"),
@@ -167,6 +168,7 @@ public class JavadocStyleCheckTest
             "63:11: " + getCheckMessage(MSG_UNCLOSED_HTML,
                 "<b>This guy is missing end of bold tag"),
             "66:7: " + getCheckMessage(MSG_EXTRA_HTML, "</td>Extra tag shouldn't be here"),
+            "67:49: " + getCheckMessage(MSG_EXTRA_HTML, "</style>"),
             "68:19: " + getCheckMessage(MSG_UNCLOSED_HTML, "<code>dummy."),
             "75:23: " + getCheckMessage(MSG_UNCLOSED_HTML, "<b>should fail"),
             "82:31: " + getCheckMessage(MSG_UNCLOSED_HTML, "<b>should fail"),
@@ -317,6 +319,7 @@ public class JavadocStyleCheckTest
             "63:11: " + getCheckMessage(MSG_UNCLOSED_HTML,
                 "<b>This guy is missing end of bold tag"),
             "66:7: " + getCheckMessage(MSG_EXTRA_HTML, "</td>Extra tag shouldn't be here"),
+            "67:49: " + getCheckMessage(MSG_EXTRA_HTML, "</style>"),
             "68:19: " + getCheckMessage(MSG_UNCLOSED_HTML, "<code>dummy."),
             "81: " + getCheckMessage(MSG_NO_PERIOD),
             "82:31: " + getCheckMessage(MSG_UNCLOSED_HTML, "<b>should fail"),
@@ -379,7 +382,7 @@ public class JavadocStyleCheckTest
         final DefaultConfiguration checkConfig =
             createModuleConfig(JavadocStyleCheck.class);
         final String[] expected = {
-            "1: " + getCheckMessage(MSG_JAVADOC_MISSING),
+            "1:1: " + getCheckMessage(MSG_JAVADOC_MISSING),
         };
 
         verify(checkConfig,
@@ -418,9 +421,9 @@ public class JavadocStyleCheckTest
     @Test
     public void testHtmlTagToString() {
         final HtmlTag tag = new HtmlTag("id", 3, 5, true, false, "<a href=\"URL\"/>");
-        assertEquals("Invalid toString result",
-                "HtmlTag[id='id', lineNo=3, position=5, text='<a href=\"URL\"/>', "
-                + "closedTag=true, incompleteTag=false]", tag.toString());
+        assertEquals("HtmlTag[id='id', lineNo=3, position=5, text='<a href=\"URL\"/>', "
+                + "closedTag=true, incompleteTag=false]", tag.toString(),
+                "Invalid toString result");
     }
 
     @Test

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -27,21 +27,20 @@ import com.puppycrawl.tools.checkstyle.utils.AnnotationUtil;
 
 /**
  * <p>
- * This check makes sure that all package annotations are in the
- * package-info.java file.
+ * Checks that all package annotations are in the package-info.java file.
  * </p>
  * <p>
- * According to the Java Language Specification.
+ * For Java SE8 and above, placement of package annotations in the package-info.java
+ * file is enforced by the compiler and this check is not necessary.
  * </p>
  * <p>
- * The JLS does not enforce the placement of package annotations.
- * This placement may vary based on implementation. The JLS
- * does highly recommend that all package annotations are
- * placed in the package-info.java file.
- *
- * See <a
- * href="https://docs.oracle.com/javase/specs/jls/se11/html/jls-7.html#jls-7.4.1">
- * Java Language Specification, &#167;7.4.1</a>.
+ * For Java SE7 and below, the Java Language Specification highly recommends
+ * but doesn't require that annotations are placed in the package-info.java file,
+ * and this check can help to enforce that placement.
+ * </p>
+ * <p>
+ * See <a href="https://docs.oracle.com/javase/specs/jls/se11/html/jls-7.html#jls-7.4.1">
+ * Java Language Specification, &#167;7.4.1</a> for more info.
  * </p>
  * <p>
  * To configure the check:
@@ -49,6 +48,31 @@ import com.puppycrawl.tools.checkstyle.utils.AnnotationUtil;
  * <pre>
  * &lt;module name=&quot;PackageAnnotation&quot;/&gt;
  * </pre>
+ * <p>Example of validating MyClass.java:</p>
+ * <pre>
+ * &#64;Deprecated
+ * package com.example.annotations.packageannotation; //violation
+ * </pre>
+ * <p>Example of fixing violation in MyClass.java:</p>
+ * <pre>
+ * package com.example.annotations.packageannotation; //ok
+ * </pre>
+ * <p>Example of validating package-info.java:</p>
+ * <pre>
+ * &#64;Deprecated
+ * package com.example.annotations.packageannotation; //ok
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code annotation.package.location}
+ * </li>
+ * </ul>
  *
  * @since 5.0
  */
@@ -86,7 +110,7 @@ public class PackageAnnotationCheck extends AbstractCheck {
             getFileContents().inPackageInfo();
 
         if (containsAnnotation && !inPackageInfo) {
-            log(ast.getLine(), MSG_KEY);
+            log(ast, MSG_KEY);
         }
     }
 

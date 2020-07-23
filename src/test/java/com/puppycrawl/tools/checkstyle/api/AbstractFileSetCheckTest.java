@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,10 +19,11 @@
 
 package com.puppycrawl.tools.checkstyle.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -32,14 +33,13 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import com.puppycrawl.tools.checkstyle.AbstractPathTestSupport;
+import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.Checker;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
 
-public class AbstractFileSetCheckTest extends AbstractPathTestSupport {
+public class AbstractFileSetCheckTest extends AbstractModuleTestSupport {
 
     @Override
     protected String getPackageLocation() {
@@ -50,7 +50,7 @@ public class AbstractFileSetCheckTest extends AbstractPathTestSupport {
     public void testTabWidth() {
         final DummyFileSetCheck check = new DummyFileSetCheck();
         check.setTabWidth(12345);
-        assertEquals("expected tab width", 12345, check.getTabWidth());
+        assertEquals(12345, check.getTabWidth(), "expected tab width");
     }
 
     @Test
@@ -59,7 +59,7 @@ public class AbstractFileSetCheckTest extends AbstractPathTestSupport {
                 new FileText(new File("inputAbstractFileSetCheck.tmp"), Collections.emptyList()));
         final DummyFileSetCheck check = new DummyFileSetCheck();
         check.setFileContents(contents);
-        assertSame("expected file contents", contents, check.getFileContents());
+        assertSame(contents, check.getFileContents(), "expected file contents");
     }
 
     @Test
@@ -71,19 +71,19 @@ public class AbstractFileSetCheckTest extends AbstractPathTestSupport {
         final SortedSet<LocalizedMessage> firstFileMessages =
             check.process(firstFile, new FileText(firstFile, Collections.emptyList()));
 
-        assertEquals("Invalid message", "File should not be empty.",
-            firstFileMessages.first().getMessage());
+        assertEquals("File should not be empty.",
+            firstFileMessages.first().getMessage(), "Invalid message");
 
         final SortedSet<LocalizedMessage> internalMessages =
                 check.getMessages();
-        assertTrue("Internal message should be empty, but was not", internalMessages.isEmpty());
+        assertTrue(internalMessages.isEmpty(), "Internal message should be empty, but was not");
 
         final File secondFile = new File("inputAbstractFileSetCheck.txt");
         final List<String> lines = Arrays.asList("key=value", "ext=tmp");
         final SortedSet<LocalizedMessage> secondFileMessages =
             check.process(secondFile, new FileText(secondFile, lines));
 
-        assertTrue("Message should be empty, but was not", secondFileMessages.isEmpty());
+        assertTrue(secondFileMessages.isEmpty(), "Message should be empty, but was not");
     }
 
     @Test
@@ -96,7 +96,7 @@ public class AbstractFileSetCheckTest extends AbstractPathTestSupport {
 
         final SortedSet<LocalizedMessage> internalMessages =
                 check.getMessages();
-        assertTrue("Internal message should be empty", internalMessages.isEmpty());
+        assertTrue(internalMessages.isEmpty(), "Internal message should be empty");
     }
 
     @Test
@@ -106,33 +106,35 @@ public class AbstractFileSetCheckTest extends AbstractPathTestSupport {
         check.setFileExtensions("tmp");
         final File firstFile = new File("inputAbstractFileSetCheck.tmp");
 
+        final FileText fileText = new FileText(firstFile, Collections.emptyList());
         try {
-            check.process(firstFile, new FileText(firstFile, Collections.emptyList()));
+            check.process(firstFile, fileText);
             fail("Exception is expected");
         }
         catch (IllegalArgumentException ex) {
             // exception is expected
-            assertEquals("Invalid exception message", "Test", ex.getMessage());
+            assertEquals("Test", ex.getMessage(), "Invalid exception message");
         }
 
         final SortedSet<LocalizedMessage> internalMessages =
                 check.getMessages();
-        assertEquals("Internal message should only have 1", 1, internalMessages.size());
+        assertEquals(1, internalMessages.size(), "Internal message should only have 1");
 
         // again to prove only 1 violation exists
         final File secondFile = new File("inputAbstractFileSetCheck.tmp");
+        final FileText fileText2 = new FileText(secondFile, Collections.emptyList());
         try {
-            check.process(secondFile, new FileText(secondFile, Collections.emptyList()));
+            check.process(secondFile, fileText2);
             fail("Exception is expected");
         }
         catch (IllegalArgumentException ex) {
             // exception is expected
-            assertEquals("Invalid exception message", "Test", ex.getMessage());
+            assertEquals("Test", ex.getMessage(), "Invalid exception message");
         }
 
         final SortedSet<LocalizedMessage> internalMessages2 =
             check.getMessages();
-        assertEquals("Internal message should only have 1 again", 1, internalMessages2.size());
+        assertEquals(1, internalMessages2.size(), "Internal message should only have 1 again");
     }
 
     @Test
@@ -141,8 +143,7 @@ public class AbstractFileSetCheckTest extends AbstractPathTestSupport {
         check.setFileExtensions("tmp", ".java");
         final String[] expectedExtensions = {".tmp", ".java"};
 
-        Assert.assertArrayEquals("Invalid extensions",
-                expectedExtensions, check.getFileExtensions());
+        assertArrayEquals(expectedExtensions, check.getFileExtensions(), "Invalid extensions");
     }
 
     /**
@@ -156,8 +157,8 @@ public class AbstractFileSetCheckTest extends AbstractPathTestSupport {
             fail("Expected exception.");
         }
         catch (IllegalArgumentException exception) {
-            assertEquals("Invalid exception message",
-                    "Extensions array can not be null", exception.getMessage());
+            assertEquals("Extensions array can not be null", exception.getMessage(),
+                    "Invalid exception message");
         }
     }
 
@@ -170,11 +171,11 @@ public class AbstractFileSetCheckTest extends AbstractPathTestSupport {
                 StandardCharsets.UTF_8.name());
         final SortedSet<LocalizedMessage> internalMessages = check.process(file, theText);
 
-        assertEquals("Internal message should only have 1", 1, internalMessages.size());
+        assertEquals(1, internalMessages.size(), "Internal message should only have 1");
 
         final LocalizedMessage message = internalMessages.iterator().next();
-        assertEquals("expected line", 1, message.getLineNo());
-        assertEquals("expected column", 6, message.getColumnNo());
+        assertEquals(1, message.getLineNo(), "expected line");
+        assertEquals(6, message.getColumnNo(), "expected column");
     }
 
     @Test
@@ -183,7 +184,17 @@ public class AbstractFileSetCheckTest extends AbstractPathTestSupport {
         final Checker checker = new Checker();
         check.setMessageDispatcher(checker);
 
-        assertEquals("Invalid message dispatcher", checker, check.getMessageDispatcher());
+        assertEquals(checker, check.getMessageDispatcher(), "Invalid message dispatcher");
+    }
+
+    @Test
+    public void testCheck() throws Exception {
+        final DefaultConfiguration checkConfig = createModuleConfig(ViolationFileSetCheck.class);
+
+        final String[] expected = {
+            "1:6: Violation.",
+        };
+        verify(checkConfig, getPath("InputAbstractFileSetLineColumn.txt"), expected);
     }
 
     @Test
@@ -195,24 +206,24 @@ public class AbstractFileSetCheckTest extends AbstractPathTestSupport {
 
         check.finishProcessing();
 
-        assertEquals("Invalid fileName reported", "fileName", dispatcher.name);
+        assertEquals("fileName", dispatcher.name, "Invalid fileName reported");
 
-        assertEquals("errors should only have 1", 1, dispatcher.errorList.size());
+        assertEquals(1, dispatcher.errorList.size(), "errors should only have 1");
 
         final LocalizedMessage message = dispatcher.errorList.iterator().next();
-        assertEquals("expected line", 1, message.getLineNo());
-        assertEquals("expected column", 0, message.getColumnNo());
+        assertEquals(1, message.getLineNo(), "expected line");
+        assertEquals(0, message.getColumnNo(), "expected column");
 
         // re-running erases previous errors
 
         check.finishProcessing();
 
-        assertEquals("errors should still have 1 after re-run", 1, dispatcher.errorList.size());
-        assertEquals("finishProcessing was called twice", 2,
-                MultiFileViolationFileSetCheck.finishProcessingCount);
+        assertEquals(1, dispatcher.errorList.size(), "errors should still have 1 after re-run");
+        assertEquals(2, MultiFileViolationFileSetCheck.finishProcessingCount,
+                "finishProcessing was called twice");
     }
 
-    private static class DummyFileSetCheck extends AbstractFileSetCheck {
+    public static class DummyFileSetCheck extends AbstractFileSetCheck {
 
         private static final String MSG_KEY = "File should not be empty.";
 
@@ -225,7 +236,7 @@ public class AbstractFileSetCheckTest extends AbstractPathTestSupport {
 
     }
 
-    private static class ViolationFileSetCheck extends AbstractFileSetCheck {
+    public static class ViolationFileSetCheck extends AbstractFileSetCheck {
 
         private static final String MSG_KEY = "Violation.";
 
@@ -236,7 +247,7 @@ public class AbstractFileSetCheckTest extends AbstractPathTestSupport {
 
     }
 
-    private static class MultiFileViolationFileSetCheck extends AbstractFileSetCheck {
+    public static class MultiFileViolationFileSetCheck extends AbstractFileSetCheck {
 
         private static final String MSG_KEY = "Violation.";
         private static int finishProcessingCount;
@@ -258,7 +269,7 @@ public class AbstractFileSetCheckTest extends AbstractPathTestSupport {
 
     }
 
-    private static class ExceptionFileSetCheck extends AbstractFileSetCheck {
+    public static class ExceptionFileSetCheck extends AbstractFileSetCheck {
 
         private static final String MSG_KEY = "Test.";
         private int count = 1;
@@ -272,7 +283,7 @@ public class AbstractFileSetCheckTest extends AbstractPathTestSupport {
 
     }
 
-    private static class ViolationDispatcher implements MessageDispatcher {
+    public static class ViolationDispatcher implements MessageDispatcher {
         private String name;
         private SortedSet<LocalizedMessage> errorList;
 

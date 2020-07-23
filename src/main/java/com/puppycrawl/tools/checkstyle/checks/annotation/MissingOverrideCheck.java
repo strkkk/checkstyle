@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -33,8 +33,8 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
 
 /**
  * <p>
- * Verifies that the &#64;Override annotation is present
- * when the &#64;inheritDoc javadoc tag is present.
+ * Verifies that the {@code @Override} annotation is present
+ * when the {@code @inheritDoc} javadoc tag is present.
  * </p>
  * <p>
  * Rationale: The &#64;Override annotation helps
@@ -63,6 +63,7 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  * <ul>
  * <li>
  * Property {@code javaFiveCompatibility} - Enable java 5 compatibility mode.
+ * Type is {@code boolean}.
  * Default value is {@code false}.
  * </li>
  * </ul>
@@ -71,6 +72,32 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  * </p>
  * <pre>
  * &lt;module name=&quot;MissingOverride&quot;/&gt;
+ * </pre>
+ * <p>Example:</p>
+ * <pre>
+ * class Test extends SuperClass {
+ *
+ *     &#47;** {&#64;inheritDoc} *&#47;
+ *     &#64;Override
+ *     public void test1() { // OK
+ *
+ *     }
+ *
+ *     &#47;** {&#64;inheritDoc} *&#47;
+ *     public void test2() { // violation, should be annotated with &#64;Override
+ *
+ *     }
+ *
+ *     &#47;** {&#64;inheritDoc} *&#47;
+ *     private void test3() { // violation, using the &#64;inheritDoc tag on private method
+ *
+ *     }
+ *
+ *     &#47;** {&#64;inheritDoc} *&#47;
+ *     public static void test4() { // violation, using the &#64;inheritDoc tag on static method
+ *
+ *     }
+ * }
  * </pre>
  * <p>
  * To configure the check for the {@code javaFiveCompatibility} mode:
@@ -81,6 +108,61 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  *       value="true"/&gt;
  * &lt;/module&gt;
  * </pre>
+ * <p>Example:</p>
+ * <pre>
+ * class Test1 {
+ *
+ *     &#47;** {&#64;inheritDoc} *&#47;
+ *     public void equals() { // violation, should be annotated with &#64;Override
+ *
+ *     }
+ * }
+ *
+ * interface Test2 {
+ *
+ *     &#47;** {&#64;inheritDoc} *&#47;
+ *     void test(); // violation, should be annotated with &#64;Override
+ * }
+ *
+ * class Test3 extends SuperClass {
+ *
+ *     &#47;** {&#64;inheritDoc} *&#47;
+ *     public void test() { // OK, is ignored because class extends other class
+ *
+ *     }
+ * }
+ *
+ * class Test4 implements SuperInterface {
+ *
+ *     &#47;** {&#64;inheritDoc} *&#47;
+ *     public void test() { // OK, is ignored because class implements interface
+ *
+ *     }
+ * }
+ *
+ * class Test5 {
+ *     Runnable r = new Runnable() {
+ *          &#47;** {&#64;inheritDoc} *&#47;
+ *          public void run() { // OK, is ignored because class is anonymous class
+ *
+ *          }
+ *     };
+ * }
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code annotation.missing.override}
+ * </li>
+ * <li>
+ * {@code tag.not.valid.on}
+ * </li>
+ * </ul>
  *
  * @since 5.0
  */
@@ -117,6 +199,7 @@ public final class MissingOverrideCheck extends AbstractCheck {
 
     /**
      * Setter to enable java 5 compatibility mode.
+     *
      * @param compatibility compatibility or not
      */
     public void setJavaFiveCompatibility(final boolean compatibility) {
@@ -147,7 +230,7 @@ public final class MissingOverrideCheck extends AbstractCheck {
 
         final boolean containsTag = containsJavadocTag(javadoc);
         if (containsTag && !JavadocTagInfo.INHERIT_DOC.isValidOn(ast)) {
-            log(ast.getLineNo(), MSG_KEY_TAG_NOT_VALID_ON,
+            log(ast, MSG_KEY_TAG_NOT_VALID_ON,
                 JavadocTagInfo.INHERIT_DOC.getText());
         }
         else {
@@ -167,7 +250,7 @@ public final class MissingOverrideCheck extends AbstractCheck {
                 && containsTag
                 && !AnnotationUtil.containsAnnotation(ast, OVERRIDE)
                 && !AnnotationUtil.containsAnnotation(ast, FQ_OVERRIDE)) {
-                log(ast.getLineNo(), MSG_KEY_ANNOTATION_MISSING_OVERRIDE);
+                log(ast, MSG_KEY_ANNOTATION_MISSING_OVERRIDE);
             }
         }
     }

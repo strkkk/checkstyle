@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -43,23 +43,34 @@ import com.puppycrawl.tools.checkstyle.utils.TokenUtil;
  *
  * <ul>
  * <li>
- * Property {@code violateExecutionOnNonTightHtml} - If turned on, will print violations if the
+ * Property {@code violateExecutionOnNonTightHtml} - Control when to print violations if the
  * Javadoc being examined by this check violates the tight html rules defined at
- * <a href="writingjavadocchecks.html#Tight-HTML_rules">Tight-HTML Rules</a>.
+ * <a href="https://checkstyle.org/writingjavadocchecks.html#Tight-HTML_rules">Tight-HTML Rules</a>.
+ * Type is {@code boolean}.
  * Default value is {@code false}.
  * </li>
  * <li>
- * Property {@code target} - Specify the list of targets to check at-clauses. Default value is
- * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#CLASS_DEF">CLASS_DEF</a>,
- * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#INTERFACE_DEF">INTERFACE_DEF</a>,
- * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#ENUM_DEF">ENUM_DEF</a>,
- * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#METHOD_DEF">METHOD_DEF</a>,
- * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#CTOR_DEF">CTOR_DEF</a>,
- * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#VARIABLE_DEF">VARIABLE_DEF</a>.
+ * Property {@code target} - Specify the list of targets to check at-clauses.
+ * Type is {@code int[]}.
+ * Default value is
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#CLASS_DEF">
+ * CLASS_DEF</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#INTERFACE_DEF">
+ * INTERFACE_DEF</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#ENUM_DEF">
+ * ENUM_DEF</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#METHOD_DEF">
+ * METHOD_DEF</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#CTOR_DEF">
+ * CTOR_DEF</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#VARIABLE_DEF">
+ * VARIABLE_DEF</a>.
  * </li>
  * <li>
- * Property {@code tagOrder} - Specify the order by tags. Default value is
- * {@code @author, @version, @param, @return, @throws, @exception, @see, @since, @serial, @serialField, @serialData, @deprecated}.
+ * Property {@code tagOrder} - Specify the order by tags.
+ * Type is {@code java.lang.String[]}.
+ * Default value is
+ * {@code @author, @deprecated, @exception, @param, @return, @see, @serial, @serialData, @serialField, @since, @throws, @version}.
  * </li>
  * </ul>
  * <p>
@@ -74,6 +85,26 @@ import com.puppycrawl.tools.checkstyle.utils.TokenUtil;
  *   METHOD_DEF, CTOR_DEF, VARIABLE_DEF&quot;/&gt;
  * &lt;/module&gt;
  * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code at.clause.order}
+ * </li>
+ * <li>
+ * {@code javadoc.missed.html.close}
+ * </li>
+ * <li>
+ * {@code javadoc.parse.rule.error}
+ * </li>
+ * <li>
+ * {@code javadoc.wrong.singleton.html.tag}
+ * </li>
+ * </ul>
  *
  * @since 6.0
  */
@@ -117,6 +148,7 @@ public class AtclauseOrderCheck extends AbstractJavadocCheck {
 
     /**
      * Setter to specify the list of targets to check at-clauses.
+     *
      * @param targets user's targets.
      */
     public void setTarget(String... targets) {
@@ -129,6 +161,7 @@ public class AtclauseOrderCheck extends AbstractJavadocCheck {
 
     /**
      * Setter to specify the order by tags.
+     *
      * @param orders user's orders.
      */
     public void setTagOrder(String... orders) {
@@ -162,6 +195,7 @@ public class AtclauseOrderCheck extends AbstractJavadocCheck {
 
     /**
      * Checks order of atclauses in tag section node.
+     *
      * @param javadoc Javadoc root node.
      */
     private void checkOrderInTagSection(DetailNode javadoc) {
@@ -186,6 +220,7 @@ public class AtclauseOrderCheck extends AbstractJavadocCheck {
 
     /**
      * Returns type of parent node.
+     *
      * @param commentBlock child node.
      * @return parent type.
      */

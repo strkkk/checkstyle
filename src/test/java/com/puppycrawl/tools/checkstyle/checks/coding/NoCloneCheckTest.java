@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,9 @@
 package com.puppycrawl.tools.checkstyle.checks.coding;
 
 import static com.puppycrawl.tools.checkstyle.checks.coding.NoCloneCheck.MSG_KEY;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
@@ -41,13 +41,13 @@ public class NoCloneCheckTest
         final DefaultConfiguration checkConfig =
             createModuleConfig(NoCloneCheck.class);
         final String[] expected = {
-            "10: " + getCheckMessage(MSG_KEY),
-            "27: " + getCheckMessage(MSG_KEY),
-            "35: " + getCheckMessage(MSG_KEY),
-            "39: " + getCheckMessage(MSG_KEY),
-            "52: " + getCheckMessage(MSG_KEY),
-            "60: " + getCheckMessage(MSG_KEY),
-            "98: " + getCheckMessage(MSG_KEY),
+            "10:5: " + getCheckMessage(MSG_KEY),
+            "27:5: " + getCheckMessage(MSG_KEY),
+            "35:5: " + getCheckMessage(MSG_KEY),
+            "39:13: " + getCheckMessage(MSG_KEY),
+            "52:5: " + getCheckMessage(MSG_KEY),
+            "60:5: " + getCheckMessage(MSG_KEY),
+            "98:5: " + getCheckMessage(MSG_KEY),
         };
         verify(checkConfig, getPath("InputNoClone.java"), expected);
     }
@@ -55,9 +55,9 @@ public class NoCloneCheckTest
     @Test
     public void testTokensNotNull() {
         final NoCloneCheck check = new NoCloneCheck();
-        Assert.assertNotNull("Acceptable tokens should not be null", check.getAcceptableTokens());
-        Assert.assertNotNull("Default tokens should not be null", check.getDefaultTokens());
-        Assert.assertNotNull("Required tokens should not be null", check.getRequiredTokens());
+        assertNotNull(check.getAcceptableTokens(), "Acceptable tokens should not be null");
+        assertNotNull(check.getDefaultTokens(), "Default tokens should not be null");
+        assertNotNull(check.getRequiredTokens(), "Required tokens should not be null");
     }
 
 }

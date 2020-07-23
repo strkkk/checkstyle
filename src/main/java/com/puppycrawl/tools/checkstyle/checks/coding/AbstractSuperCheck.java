@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -49,6 +49,7 @@ public abstract class AbstractSuperCheck
 
     /**
      * Returns the name of the overriding method.
+     *
      * @return the name of the overriding method.
      */
     protected abstract String getMethodName();
@@ -90,19 +91,19 @@ public abstract class AbstractSuperCheck
     /**
      * Determines whether a 'super' literal is a call to the super method
      * for this check.
+     *
      * @param literalSuperAst the AST node of a 'super' literal.
      * @return true if ast is a call to the super method for this check.
      */
     private boolean isSuperCall(DetailAST literalSuperAst) {
         boolean superCall = false;
 
-        if (literalSuperAst.getType() == TokenTypes.LITERAL_SUPER) {
-            // dot operator?
-            final DetailAST dotAst = literalSuperAst.getParent();
-
-            if (!isSameNameMethod(literalSuperAst)
-                && !hasArguments(dotAst)) {
-                superCall = isSuperCallInOverridingMethod(dotAst);
+        if (literalSuperAst.getType() == TokenTypes.LITERAL_SUPER
+            && !isSameNameMethod(literalSuperAst)) {
+            final DetailAST parent = literalSuperAst.getParent();
+            if (parent.getType() == TokenTypes.METHOD_REF
+                || !hasArguments(parent)) {
+                superCall = isSuperCallInOverridingMethod(parent);
             }
         }
         return superCall;
@@ -131,16 +132,18 @@ public abstract class AbstractSuperCheck
 
     /**
      * Does method have any arguments.
+     *
      * @param methodCallDotAst DOT DetailAST
      * @return true if any parameters found
      */
     private static boolean hasArguments(DetailAST methodCallDotAst) {
         final DetailAST argumentsList = methodCallDotAst.getNextSibling();
-        return argumentsList.getChildCount() > 0;
+        return argumentsList.hasChildren();
     }
 
     /**
      * Is same name of method.
+     *
      * @param ast method AST
      * @return true if method name is the same
      */
@@ -170,7 +173,8 @@ public abstract class AbstractSuperCheck
 
     /**
      * Determines whether an AST is a method definition for this check,
-     * with 0 parameters.
+     * without any parameters.
+     *
      * @param ast the method definition AST.
      * @return true if the method of ast is a method for this check.
      */
@@ -186,7 +190,7 @@ public abstract class AbstractSuperCheck
             if (getMethodName().equals(name)
                     && modifiersAST.findFirstToken(TokenTypes.LITERAL_NATIVE) == null) {
                 final DetailAST params = ast.findFirstToken(TokenTypes.PARAMETERS);
-                overridingMethod = params.getChildCount() == 0;
+                overridingMethod = !params.hasChildren();
             }
         }
         return overridingMethod;
@@ -206,6 +210,7 @@ public abstract class AbstractSuperCheck
 
         /**
          * Constructs a stack node for a method definition.
+         *
          * @param ast AST for the method definition.
          */
         /* package */ MethodNode(DetailAST ast) {
@@ -223,6 +228,7 @@ public abstract class AbstractSuperCheck
         /**
          * Determines whether the overriding method has a call to the super
          * method.
+         *
          * @return true if the overriding method has a call to the super method.
          */
         public boolean isCallingSuper() {
@@ -231,6 +237,7 @@ public abstract class AbstractSuperCheck
 
         /**
          * Returns the overriding method definition AST.
+         *
          * @return the overriding method definition AST.
          */
         public DetailAST getMethod() {

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -23,16 +23,16 @@ import static com.puppycrawl.tools.checkstyle.checks.whitespace.GenericWhitespac
 import static com.puppycrawl.tools.checkstyle.checks.whitespace.GenericWhitespaceCheck.MSG_WS_ILLEGAL_FOLLOW;
 import static com.puppycrawl.tools.checkstyle.checks.whitespace.GenericWhitespaceCheck.MSG_WS_NOT_PRECEDED;
 import static com.puppycrawl.tools.checkstyle.checks.whitespace.GenericWhitespaceCheck.MSG_WS_PRECEDED;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import antlr.CommonHiddenStreamToken;
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
-import com.puppycrawl.tools.checkstyle.api.DetailAST;
+import com.puppycrawl.tools.checkstyle.DetailAstImpl;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
 
@@ -51,8 +51,8 @@ public class GenericWhitespaceCheckTest
             TokenTypes.GENERIC_START,
             TokenTypes.GENERIC_END,
         };
-        assertArrayEquals("Default required tokens are invalid",
-            expected, checkObj.getRequiredTokens());
+        assertArrayEquals(expected, checkObj.getRequiredTokens(),
+                "Default required tokens are invalid");
     }
 
     @Test
@@ -85,6 +85,14 @@ public class GenericWhitespaceCheckTest
             "42:29: " + getCheckMessage(MSG_WS_FOLLOWED, ">"),
             "60:59: " + getCheckMessage(MSG_WS_NOT_PRECEDED, "&"),
             "63:59: " + getCheckMessage(MSG_WS_FOLLOWED, ">"),
+            "81:28: " + getCheckMessage(MSG_WS_NOT_PRECEDED, "<"),
+            "82:34: " + getCheckMessage(MSG_WS_FOLLOWED, ">"),
+            "83:34: " + getCheckMessage(MSG_WS_NOT_PRECEDED, "<"),
+            "83:41: " + getCheckMessage(MSG_WS_FOLLOWED, ">"),
+            "86:29: " + getCheckMessage(MSG_WS_NOT_PRECEDED, "<"),
+            "87:35: " + getCheckMessage(MSG_WS_FOLLOWED, ">"),
+            "88:35: " + getCheckMessage(MSG_WS_NOT_PRECEDED, "<"),
+            "88:42: " + getCheckMessage(MSG_WS_FOLLOWED, ">"),
         };
         verify(checkConfig, getPath("InputGenericWhitespaceDefault.java"), expected);
     }
@@ -153,21 +161,21 @@ public class GenericWhitespaceCheckTest
             TokenTypes.GENERIC_START,
             TokenTypes.GENERIC_END,
         };
-        assertArrayEquals("Default acceptable tokens are invalid", expected, actual);
+        assertArrayEquals(expected, actual, "Default acceptable tokens are invalid");
     }
 
     @Test
     public void testWrongTokenType() {
         final GenericWhitespaceCheck genericWhitespaceCheckObj = new GenericWhitespaceCheck();
-        final DetailAST ast = new DetailAST();
+        final DetailAstImpl ast = new DetailAstImpl();
         ast.initialize(new CommonHiddenStreamToken(TokenTypes.INTERFACE_DEF, "interface"));
         try {
             genericWhitespaceCheckObj.visitToken(ast);
             fail("exception expected");
         }
         catch (IllegalArgumentException ex) {
-            assertEquals("Invalid exception message",
-                "Unknown type interface[0x-1]", ex.getMessage());
+            assertEquals("Unknown type interface[0x-1]", ex.getMessage(),
+                    "Invalid exception message");
         }
     }
 

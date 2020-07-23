@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -42,6 +42,7 @@ import java.lang.annotation.Target;
  * there might be a list of files, which will be checked by the same instance.
  * Note: Checks with such annotation will be executed in mode how all Checks worked
  * before MT mode is introduced.
+ *
  * @noinspection AnnotationClass, ClassIndependentOfModule
  */
 @Retention(RetentionPolicy.RUNTIME)

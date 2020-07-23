@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,7 @@ package com.puppycrawl.tools.checkstyle.checks.naming;
 
 import static com.puppycrawl.tools.checkstyle.checks.naming.AbbreviationAsWordInNameCheck.MSG_KEY;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
@@ -41,14 +41,14 @@ public class AbbreviationAsWordInNameCheckTest extends AbstractModuleTestSupport
         final int expectedCapitalCount = 4;
 
         final String[] expected = {
-            "9: " + getWarningMessage("FactoryWithBADNAme", expectedCapitalCount),
-            "12: " + getWarningMessage("AbstractCLASSName", expectedCapitalCount),
-            "32: " + getWarningMessage("AbstractINNERRClass", expectedCapitalCount),
-            "37: " + getWarningMessage("WellNamedFACTORY", expectedCapitalCount),
-            "38: " + getWarningMessage("marazmaticMETHODName", expectedCapitalCount),
-            "39: " + getWarningMessage("marazmaticVARIABLEName", expectedCapitalCount),
-            "40: " + getWarningMessage("MARAZMATICVariableName", expectedCapitalCount),
-            "58: " + getWarningMessage("serialNUMBER", expectedCapitalCount),
+            "9:16: " + getWarningMessage("FactoryWithBADNAme", expectedCapitalCount),
+            "12:16: " + getWarningMessage("AbstractCLASSName", expectedCapitalCount),
+            "32:11: " + getWarningMessage("AbstractINNERRClass", expectedCapitalCount),
+            "37:11: " + getWarningMessage("WellNamedFACTORY", expectedCapitalCount),
+            "38:21: " + getWarningMessage("marazmaticMETHODName", expectedCapitalCount),
+            "39:21: " + getWarningMessage("marazmaticVARIABLEName", expectedCapitalCount),
+            "40:21: " + getWarningMessage("MARAZMATICVariableName", expectedCapitalCount),
+            "58:20: " + getWarningMessage("serialNUMBER", expectedCapitalCount),
         };
 
         verify(checkConfig, getPath("InputAbbreviationAsWordInNameType.java"), expected);
@@ -65,10 +65,10 @@ public class AbbreviationAsWordInNameCheckTest extends AbstractModuleTestSupport
         final int expectedCapitalCount = 4;
 
         final String[] expected = {
-            "9: " + getWarningMessage("FactoryWithBADNAme", expectedCapitalCount),
-            "12: " + getWarningMessage("AbstractCLASSName", expectedCapitalCount),
-            "32: " + getWarningMessage("AbstractINNERRClass", expectedCapitalCount),
-            "37: " + getWarningMessage("WellNamedFACTORY", expectedCapitalCount),
+            "9:16: " + getWarningMessage("FactoryWithBADNAme", expectedCapitalCount),
+            "12:16: " + getWarningMessage("AbstractCLASSName", expectedCapitalCount),
+            "32:11: " + getWarningMessage("AbstractINNERRClass", expectedCapitalCount),
+            "37:11: " + getWarningMessage("WellNamedFACTORY", expectedCapitalCount),
         };
 
         verify(checkConfig, getPath("InputAbbreviationAsWordInNameType.java"), expected);
@@ -85,7 +85,7 @@ public class AbbreviationAsWordInNameCheckTest extends AbstractModuleTestSupport
         final int expectedCapitalCount = 5;
 
         final String[] expected = {
-            "32: " + getWarningMessage("AbstractINNERRClass", expectedCapitalCount),
+            "32:11: " + getWarningMessage("AbstractINNERRClass", expectedCapitalCount),
         };
 
         verify(checkConfig, getPath("InputAbbreviationAsWordInNameType.java"), expected);
@@ -101,8 +101,8 @@ public class AbbreviationAsWordInNameCheckTest extends AbstractModuleTestSupport
         checkConfig.addAttribute("ignoreOverriddenMethods", "true");
         final int expectedCapitalCount = 6;
         final String[] expected = {
-            "32: " + getWarningMessage("AbstractINNERRClass", expectedCapitalCount),
-            "37: " + getWarningMessage("WellNamedFACTORY", expectedCapitalCount),
+            "32:11: " + getWarningMessage("AbstractINNERRClass", expectedCapitalCount),
+            "37:11: " + getWarningMessage("WellNamedFACTORY", expectedCapitalCount),
         };
 
         verify(checkConfig, getPath("InputAbbreviationAsWordInNameType.java"), expected);
@@ -122,11 +122,11 @@ public class AbbreviationAsWordInNameCheckTest extends AbstractModuleTestSupport
         final int expectedCapitalCount = 6;
 
         final String[] expected = {
-            "32: " + getWarningMessage("AbstractINNERRClass", expectedCapitalCount),
-            "37: " + getWarningMessage("WellNamedFACTORY", expectedCapitalCount),
-            "38: " + getWarningMessage("marazmaticMETHODName", expectedCapitalCount),
-            "39: " + getWarningMessage("marazmaticVARIABLEName", expectedCapitalCount),
-            "40: " + getWarningMessage("MARAZMATICVariableName", expectedCapitalCount),
+            "32:11: " + getWarningMessage("AbstractINNERRClass", expectedCapitalCount),
+            "37:11: " + getWarningMessage("WellNamedFACTORY", expectedCapitalCount),
+            "38:21: " + getWarningMessage("marazmaticMETHODName", expectedCapitalCount),
+            "39:21: " + getWarningMessage("marazmaticVARIABLEName", expectedCapitalCount),
+            "40:21: " + getWarningMessage("MARAZMATICVariableName", expectedCapitalCount),
         };
 
         verify(checkConfig, getPath("InputAbbreviationAsWordInNameType.java"), expected);
@@ -140,6 +140,7 @@ public class AbbreviationAsWordInNameCheckTest extends AbstractModuleTestSupport
         checkConfig.addAttribute("allowedAbbreviations", "NUMBER,MARAZMATIC,VARIABLE");
         checkConfig.addAttribute("ignoreStatic", "false");
         checkConfig.addAttribute("ignoreFinal", "false");
+        checkConfig.addAttribute("ignoreStaticFinal", "false");
         checkConfig.addAttribute("tokens", "CLASS_DEF"
             + ",VARIABLE_DEF"
             + ",METHOD_DEF,ENUM_DEF,ENUM_CONSTANT_DEF"
@@ -148,16 +149,19 @@ public class AbbreviationAsWordInNameCheckTest extends AbstractModuleTestSupport
         final int expectedCapitalCount = 6;
 
         final String[] expected = {
-            "32: " + getWarningMessage("AbstractINNERRClass", expectedCapitalCount),
-            "37: " + getWarningMessage("WellNamedFACTORY", expectedCapitalCount),
-            "38: " + getWarningMessage("marazmaticMETHODName", expectedCapitalCount),
-            "66: " + getWarningMessage("VALUEEEE", expectedCapitalCount),
-            "72: " + getWarningMessage("VALUEEEE", expectedCapitalCount),
-            "78: " + getWarningMessage("VALUEEEE", expectedCapitalCount),
-            "84: " + getWarningMessage("VALUEEEE", expectedCapitalCount),
+            "44:15: " + getWarningMessage("AbstractINNERRClass", expectedCapitalCount),
+            "49:15: " + getWarningMessage("WellNamedFACTORY", expectedCapitalCount),
+            "50:25: " + getWarningMessage("marazmaticMETHODName", expectedCapitalCount),
+            "78:16: " + getWarningMessage("VALUEEEE", expectedCapitalCount),
+            "84:23: " + getWarningMessage("VALUEEEE", expectedCapitalCount),
+            "90:22: " + getWarningMessage("VALUEEEE", expectedCapitalCount),
+            "96:29: " + getWarningMessage("VALUEEEE", expectedCapitalCount),
+            "134:17: " + getWarningMessage("InnerClassOneVIOLATION", expectedCapitalCount),
+            "138:18: " + getWarningMessage("InnerClassTwoVIOLATION", expectedCapitalCount),
+            "142:24: " + getWarningMessage("InnerClassThreeVIOLATION", expectedCapitalCount),
         };
 
-        verify(checkConfig, getPath("InputAbbreviationAsWordInNameType.java"), expected);
+        verify(checkConfig, getPath("InputAbbreviationAsWordInNameNoIgnore.java"), expected);
     }
 
     @Test
@@ -168,6 +172,7 @@ public class AbbreviationAsWordInNameCheckTest extends AbstractModuleTestSupport
         checkConfig.addAttribute("allowedAbbreviations", "NUMBER,MARAZMATIC,VARIABLE");
         checkConfig.addAttribute("ignoreStatic", "true");
         checkConfig.addAttribute("ignoreFinal", "true");
+        checkConfig.addAttribute("ignoreStaticFinal", "true");
         checkConfig.addAttribute("tokens", "CLASS_DEF"
             + ",VARIABLE_DEF"
             + ",METHOD_DEF,ENUM_DEF,ENUM_CONSTANT_DEF"
@@ -176,12 +181,15 @@ public class AbbreviationAsWordInNameCheckTest extends AbstractModuleTestSupport
         final int expectedCapitalCount = 6;
 
         final String[] expected = {
-            "32: " + getWarningMessage("AbstractINNERRClass", expectedCapitalCount),
-            "37: " + getWarningMessage("WellNamedFACTORY", expectedCapitalCount),
-            "38: " + getWarningMessage("marazmaticMETHODName", expectedCapitalCount),
+            "44:15: " + getWarningMessage("AbstractINNERRClass", expectedCapitalCount),
+            "49:15: " + getWarningMessage("WellNamedFACTORY", expectedCapitalCount),
+            "50:25: " + getWarningMessage("marazmaticMETHODName", expectedCapitalCount),
+            "134:17: " + getWarningMessage("InnerClassOneVIOLATION", expectedCapitalCount),
+            "138:18: " + getWarningMessage("InnerClassTwoVIOLATION", expectedCapitalCount),
+            "142:24: " + getWarningMessage("InnerClassThreeVIOLATION", expectedCapitalCount),
         };
 
-        verify(checkConfig, getPath("InputAbbreviationAsWordInNameType.java"), expected);
+        verify(checkConfig, getPath("InputAbbreviationAsWordInNameIgnore.java"), expected);
     }
 
     @Test
@@ -192,6 +200,7 @@ public class AbbreviationAsWordInNameCheckTest extends AbstractModuleTestSupport
         checkConfig.addAttribute("allowedAbbreviations", "MARAZMATIC,VARIABLE");
         checkConfig.addAttribute("ignoreStatic", "false");
         checkConfig.addAttribute("ignoreFinal", "true");
+        checkConfig.addAttribute("ignoreStaticFinal", "true");
         checkConfig.addAttribute("tokens", "CLASS_DEF"
             + ",VARIABLE_DEF"
             + ",METHOD_DEF,ENUM_DEF,ENUM_CONSTANT_DEF"
@@ -200,40 +209,218 @@ public class AbbreviationAsWordInNameCheckTest extends AbstractModuleTestSupport
         final int expectedCapitalCount = 5;
 
         final String[] expected = {
-            "12: " + getWarningMessage("AbstractCLASSName", expectedCapitalCount),
-            "32: " + getWarningMessage("AbstractINNERRClass", expectedCapitalCount),
-            "37: " + getWarningMessage("WellNamedFACTORY", expectedCapitalCount),
-            "38: " + getWarningMessage("marazmaticMETHODName", expectedCapitalCount),
-            "58: " + getWarningMessage("serialNUMBER", expectedCapitalCount), // not in ignore list
-            "60: "
+            "24:20: " + getWarningMessage("AbstractCLASSName", expectedCapitalCount),
+            "44:15: " + getWarningMessage("AbstractINNERRClass", expectedCapitalCount),
+            "49:15: " + getWarningMessage("WellNamedFACTORY", expectedCapitalCount),
+            "50:25: " + getWarningMessage("marazmaticMETHODName", expectedCapitalCount),
+            "70:20: "
+                + getWarningMessage("serialNUMBER", expectedCapitalCount), // not in ignore list
+            "72:28: "
                 + getWarningMessage("s2erialNUMBER", expectedCapitalCount), // no ignore for static
         };
 
-        verify(checkConfig, getPath("InputAbbreviationAsWordInNameType.java"), expected);
+        verify(checkConfig, getPath(
+                "InputAbbreviationAsWordInNameIgnoreFinal.java"), expected);
     }
 
     @Test
     public void testTypeAndVariablesAndMethodNamesWithIgnoresStatic() throws Exception {
         final DefaultConfiguration checkConfig =
             createModuleConfig(AbbreviationAsWordInNameCheck.class);
-        checkConfig.addAttribute("allowedAbbreviationLength", "5");
+        checkConfig.addAttribute("allowedAbbreviationLength", "4");
         checkConfig.addAttribute("allowedAbbreviations", "MARAZMATIC,VARIABLE");
         checkConfig.addAttribute("ignoreStatic", "true");
         checkConfig.addAttribute("ignoreFinal", "false");
+        checkConfig.addAttribute("ignoreStaticFinal", "true");
         checkConfig.addAttribute("tokens", "CLASS_DEF"
             + ",VARIABLE_DEF"
             + ",METHOD_DEF,ENUM_DEF,ENUM_CONSTANT_DEF"
             + ",PARAMETER_DEF,INTERFACE_DEF,ANNOTATION_DEF");
         checkConfig.addAttribute("ignoreOverriddenMethods", "true");
-        final int expectedCapitalCount = 6;
+        final int expectedCapitalCount = 5;
 
         final String[] expected = {
-            "32: " + getWarningMessage("AbstractINNERRClass", expectedCapitalCount),
-            "37: " + getWarningMessage("WellNamedFACTORY", expectedCapitalCount),
-            "38: " + getWarningMessage("marazmaticMETHODName", expectedCapitalCount),
+            "24:20: " + getWarningMessage("AbstractCLASSName", expectedCapitalCount),
+            "44:15: " + getWarningMessage("AbstractINNERRClass", expectedCapitalCount),
+            "49:15: " + getWarningMessage("WellNamedFACTORY", expectedCapitalCount),
+            "50:25: " + getWarningMessage("marazmaticMETHODName", expectedCapitalCount),
+            "70:20: "
+                + getWarningMessage("serialNUMBER", expectedCapitalCount), // not in ignore list
+            "71:26: "
+                + getWarningMessage("s1erialNUMBER", expectedCapitalCount), // no ignore for final
         };
 
-        verify(checkConfig, getPath("InputAbbreviationAsWordInNameType.java"), expected);
+        verify(checkConfig, getPath(
+                "InputAbbreviationAsWordInNameIgnoreStatic.java"), expected);
+    }
+
+    @Test
+    public void testTypeAndVariablesAndMethodNamesWithIgnoresStaticFinal() throws Exception {
+        final DefaultConfiguration checkConfig =
+            createModuleConfig(AbbreviationAsWordInNameCheck.class);
+        checkConfig.addAttribute("allowedAbbreviationLength", "4");
+        checkConfig.addAttribute("allowedAbbreviations", "MARAZMATIC,VARIABLE");
+        checkConfig.addAttribute("ignoreStatic", "false");
+        checkConfig.addAttribute("ignoreFinal", "false");
+        checkConfig.addAttribute("ignoreStaticFinal", "true");
+        checkConfig.addAttribute("tokens", "CLASS_DEF"
+            + ",VARIABLE_DEF"
+            + ",METHOD_DEF,ENUM_DEF,ENUM_CONSTANT_DEF"
+            + ",PARAMETER_DEF,INTERFACE_DEF,ANNOTATION_DEF");
+        checkConfig.addAttribute("ignoreOverriddenMethods", "true");
+        final int expectedCapitalCount = 5;
+
+        final String[] expected = {
+            "24:20: " + getWarningMessage("AbstractCLASSName", expectedCapitalCount),
+            "44:15: " + getWarningMessage("AbstractINNERRClass", expectedCapitalCount),
+            "49:15: " + getWarningMessage("WellNamedFACTORY", expectedCapitalCount),
+            "50:25: " + getWarningMessage("marazmaticMETHODName", expectedCapitalCount),
+            "70:20: "
+                + getWarningMessage("serialNUMBER", expectedCapitalCount), // not in ignore list
+            "71:26: "
+                + getWarningMessage("s1erialNUMBER", expectedCapitalCount), // no ignore for final
+            "72:28: "
+                + getWarningMessage("s2erialNUMBER", expectedCapitalCount), // no ignore for static
+        };
+
+        verify(checkConfig, getPath(
+                "InputAbbreviationAsWordInNameIgnoreStaticFinal.java"), expected);
+    }
+
+    @Test
+    public void testTypeAndVariablesAndMethodNamesWithIgnoresNonStaticFinal() throws Exception {
+        final DefaultConfiguration checkConfig =
+            createModuleConfig(AbbreviationAsWordInNameCheck.class);
+        checkConfig.addAttribute("allowedAbbreviationLength", "4");
+        checkConfig.addAttribute("allowedAbbreviations", "MARAZMATIC,VARIABLE");
+        checkConfig.addAttribute("ignoreStatic", "true");
+        checkConfig.addAttribute("ignoreFinal", "true");
+        checkConfig.addAttribute("ignoreStaticFinal", "false");
+        checkConfig.addAttribute("tokens", "CLASS_DEF"
+            + ",VARIABLE_DEF"
+            + ",METHOD_DEF,ENUM_DEF,ENUM_CONSTANT_DEF"
+            + ",PARAMETER_DEF,INTERFACE_DEF,ANNOTATION_DEF");
+        checkConfig.addAttribute("ignoreOverriddenMethods", "true");
+        final int expectedCapitalCount = 5;
+
+        final String[] expected = {
+            "24:20: " + getWarningMessage("AbstractCLASSName", expectedCapitalCount),
+            "44:15: " + getWarningMessage("AbstractINNERRClass", expectedCapitalCount),
+            "49:15: " + getWarningMessage("WellNamedFACTORY", expectedCapitalCount),
+            "50:25: " + getWarningMessage("marazmaticMETHODName", expectedCapitalCount),
+            "70:20: "
+                + getWarningMessage("serialNUMBER", expectedCapitalCount), // not in ignore list
+            "73:34: " // no ignore for static final
+                + getWarningMessage("s3erialNUMBER", expectedCapitalCount),
+            "78:16: "
+                + getWarningMessage("VALUEEEE", expectedCapitalCount),
+            "84:23: "
+                + getWarningMessage("VALUEEEE", expectedCapitalCount),
+            "90:22: "
+                + getWarningMessage("VALUEEEE", expectedCapitalCount),
+            "96:29: "
+                + getWarningMessage("VALUEEEE", expectedCapitalCount),
+            "119:16: "
+                + getWarningMessage("VALUEEEE", expectedCapitalCount),
+            "123:23: "
+                + getWarningMessage("VALUEEEE", expectedCapitalCount),
+            "127:22: "
+                + getWarningMessage("VALUEEEE", expectedCapitalCount),
+            "131:29: "
+                + getWarningMessage("VALUEEEE", expectedCapitalCount),
+            "134:17: " + getWarningMessage("InnerClassOneVIOLATION", expectedCapitalCount),
+            "138:18: " + getWarningMessage("InnerClassTwoVIOLATION", expectedCapitalCount),
+            "142:24: " + getWarningMessage("InnerClassThreeVIOLATION", expectedCapitalCount),
+        };
+
+        verify(checkConfig, getPath(
+                "InputAbbreviationAsWordInNameIgnoreNonStaticFinal.java"), expected);
+    }
+
+    @Test
+    public void testTypeAndVariablesAndMethodNamesWithIgnoresFinalKeepStaticFinal()
+            throws Exception {
+        final DefaultConfiguration checkConfig =
+            createModuleConfig(AbbreviationAsWordInNameCheck.class);
+        checkConfig.addAttribute("allowedAbbreviationLength", "4");
+        checkConfig.addAttribute("allowedAbbreviations", "MARAZMATIC,VARIABLE");
+        checkConfig.addAttribute("ignoreStatic", "false");
+        checkConfig.addAttribute("ignoreFinal", "true");
+        checkConfig.addAttribute("ignoreStaticFinal", "false");
+        checkConfig.addAttribute("tokens", "CLASS_DEF"
+            + ",VARIABLE_DEF"
+            + ",METHOD_DEF,ENUM_DEF,ENUM_CONSTANT_DEF"
+            + ",PARAMETER_DEF,INTERFACE_DEF,ANNOTATION_DEF");
+        checkConfig.addAttribute("ignoreOverriddenMethods", "true");
+        final int expectedCapitalCount = 5;
+
+        final String[] expected = {
+            "24:20: " + getWarningMessage("AbstractCLASSName", expectedCapitalCount),
+            "44:15: " + getWarningMessage("AbstractINNERRClass", expectedCapitalCount),
+            "49:15: " + getWarningMessage("WellNamedFACTORY", expectedCapitalCount),
+            "50:25: " + getWarningMessage("marazmaticMETHODName", expectedCapitalCount),
+            "70:20: "
+                + getWarningMessage("serialNUMBER", expectedCapitalCount), // not in ignore list
+            "72:28: "
+                + getWarningMessage("s2erialNUMBER", expectedCapitalCount), // no ignore for static
+            "73:34: " // no ignore for static final
+                + getWarningMessage("s3erialNUMBER", expectedCapitalCount),
+            "78:16: "
+                + getWarningMessage("VALUEEEE", expectedCapitalCount),
+            "84:23: "
+                + getWarningMessage("VALUEEEE", expectedCapitalCount),
+            "90:22: "
+                + getWarningMessage("VALUEEEE", expectedCapitalCount),
+            "96:29: "
+                + getWarningMessage("VALUEEEE", expectedCapitalCount),
+        };
+
+        verify(checkConfig,
+                getPath("InputAbbreviationAsWordInNameIgnoreFinalKeepStaticFinal.java"),
+                expected);
+    }
+
+    @Test
+    public void testTypeAndVariablesAndMethodNamesWithIgnoresStaticKeepStaticFinal()
+            throws Exception {
+        final DefaultConfiguration checkConfig =
+            createModuleConfig(AbbreviationAsWordInNameCheck.class);
+        checkConfig.addAttribute("allowedAbbreviationLength", "4");
+        checkConfig.addAttribute("allowedAbbreviations", "MARAZMATIC,VARIABLE");
+        checkConfig.addAttribute("ignoreStatic", "true");
+        checkConfig.addAttribute("ignoreFinal", "false");
+        checkConfig.addAttribute("ignoreStaticFinal", "false");
+        checkConfig.addAttribute("tokens", "CLASS_DEF"
+            + ",VARIABLE_DEF"
+            + ",METHOD_DEF,ENUM_DEF,ENUM_CONSTANT_DEF"
+            + ",PARAMETER_DEF,INTERFACE_DEF,ANNOTATION_DEF");
+        checkConfig.addAttribute("ignoreOverriddenMethods", "true");
+        final int expectedCapitalCount = 5;
+
+        final String[] expected = {
+            "24:20: " + getWarningMessage("AbstractCLASSName", expectedCapitalCount),
+            "44:15: " + getWarningMessage("AbstractINNERRClass", expectedCapitalCount),
+            "49:15: " + getWarningMessage("WellNamedFACTORY", expectedCapitalCount),
+            "50:25: " + getWarningMessage("marazmaticMETHODName", expectedCapitalCount),
+            "70:20: "
+                + getWarningMessage("serialNUMBER", expectedCapitalCount), // not in ignore list
+            "71:26: "
+                + getWarningMessage("s1erialNUMBER", expectedCapitalCount), // no ignore for final
+            "73:34: " // no ignore for static final
+                + getWarningMessage("s3erialNUMBER", expectedCapitalCount),
+            "78:16: "
+                + getWarningMessage("VALUEEEE", expectedCapitalCount),
+            "84:23: "
+                + getWarningMessage("VALUEEEE", expectedCapitalCount),
+            "90:22: "
+                + getWarningMessage("VALUEEEE", expectedCapitalCount),
+            "96:29: "
+                + getWarningMessage("VALUEEEE", expectedCapitalCount),
+        };
+
+        verify(checkConfig,
+                getPath("InputAbbreviationAsWordInNameIgnoreStaticKeepStaticFinal.java"),
+                expected);
     }
 
     @Test
@@ -248,7 +435,7 @@ public class AbbreviationAsWordInNameCheckTest extends AbstractModuleTestSupport
         final int expectedCapitalCount = 4;
 
         final String[] expected = {
-            "22: " + getWarningMessage("oveRRRRRrriddenMethod", expectedCapitalCount),
+            "22:20: " + getWarningMessage("oveRRRRRrriddenMethod", expectedCapitalCount),
         };
 
         verify(checkConfig,
@@ -264,10 +451,10 @@ public class AbbreviationAsWordInNameCheckTest extends AbstractModuleTestSupport
         final int expectedCapitalCount = 4;
 
         final String[] expected = {
-            "6: " + getWarningMessage("serialNUMBER", expectedCapitalCount),
-            "14: " + getWarningMessage("oveRRRRRrriddenMethod", expectedCapitalCount),
-            "22: " + getWarningMessage("oveRRRRRrriddenMethod", expectedCapitalCount),
-            "34: " + getWarningMessage("oveRRRRRrriddenMethod", expectedCapitalCount),
+            "6:20: " + getWarningMessage("serialNUMBER", expectedCapitalCount),
+            "14:24: " + getWarningMessage("oveRRRRRrriddenMethod", expectedCapitalCount),
+            "22:20: " + getWarningMessage("oveRRRRRrriddenMethod", expectedCapitalCount),
+            "34:24: " + getWarningMessage("oveRRRRRrriddenMethod", expectedCapitalCount),
         };
 
         verify(checkConfig,
@@ -283,40 +470,41 @@ public class AbbreviationAsWordInNameCheckTest extends AbstractModuleTestSupport
         checkConfig.addAttribute("allowedAbbreviations", "");
         checkConfig.addAttribute("ignoreStatic", "false");
         checkConfig.addAttribute("ignoreFinal", "false");
+        checkConfig.addAttribute("ignoreStaticFinal", "false");
         checkConfig.addAttribute("ignoreOverriddenMethods", "false");
         checkConfig.addAttribute("tokens", "CLASS_DEF,INTERFACE_DEF,ENUM_DEF,"
             + "ANNOTATION_DEF,ANNOTATION_FIELD_DEF,ENUM_CONSTANT_DEF,"
             + "PARAMETER_DEF,VARIABLE_DEF,METHOD_DEF");
         final int expectedCapitalCount = 1;
         final String[] expected = {
-            "6: " + getWarningMessage("NonAAAAbstractClassName", expectedCapitalCount),
-            "9: " + getWarningMessage("FactoryWithBADNAme", expectedCapitalCount),
-            "12: " + getWarningMessage("AbstractCLASSName", expectedCapitalCount),
-            "32: " + getWarningMessage("AbstractINNERRClass", expectedCapitalCount),
-            "37: " + getWarningMessage("WellNamedFACTORY", expectedCapitalCount),
-            "38: " + getWarningMessage("marazmaticMETHODName", expectedCapitalCount),
-            "39: " + getWarningMessage("marazmaticVARIABLEName", expectedCapitalCount),
-            "40: " + getWarningMessage("MARAZMATICVariableName", expectedCapitalCount),
-            "46: " + getWarningMessage("RIGHT", expectedCapitalCount),
-            "47: " + getWarningMessage("LEFT", expectedCapitalCount),
-            "48: " + getWarningMessage("UP", expectedCapitalCount),
-            "49: " + getWarningMessage("DOWN", expectedCapitalCount),
-            "57: " + getWarningMessage("NonAAAAbstractClassName2", expectedCapitalCount),
-            "58: " + getWarningMessage("serialNUMBER", expectedCapitalCount),
-            "59: " + getWarningMessage("s1erialNUMBER", expectedCapitalCount),
-            "60: " + getWarningMessage("s2erialNUMBER", expectedCapitalCount),
-            "61: " + getWarningMessage("s3erialNUMBER", expectedCapitalCount),
-            "66: " + getWarningMessage("VALUEEEE", expectedCapitalCount),
-            "72: " + getWarningMessage("VALUEEEE", expectedCapitalCount),
-            "78: " + getWarningMessage("VALUEEEE", expectedCapitalCount),
-            "84: " + getWarningMessage("VALUEEEE", expectedCapitalCount),
-            "88: " + getWarningMessage("FIleNameFormatException", expectedCapitalCount),
-            "90: " + getWarningMessage("serialVersionUID", expectedCapitalCount),
-            "98: " + getWarningMessage("userID", expectedCapitalCount),
-            "107: " + getWarningMessage("VALUE", expectedCapitalCount),
-            "111: " + getWarningMessage("VALUE", expectedCapitalCount),
-            "115: " + getWarningMessage("VALUE", expectedCapitalCount),
-            "119: " + getWarningMessage("VALUE", expectedCapitalCount),
+            "6:16: " + getWarningMessage("NonAAAAbstractClassName", expectedCapitalCount),
+            "9:16: " + getWarningMessage("FactoryWithBADNAme", expectedCapitalCount),
+            "12:16: " + getWarningMessage("AbstractCLASSName", expectedCapitalCount),
+            "32:11: " + getWarningMessage("AbstractINNERRClass", expectedCapitalCount),
+            "37:11: " + getWarningMessage("WellNamedFACTORY", expectedCapitalCount),
+            "38:21: " + getWarningMessage("marazmaticMETHODName", expectedCapitalCount),
+            "39:21: " + getWarningMessage("marazmaticVARIABLEName", expectedCapitalCount),
+            "40:21: " + getWarningMessage("MARAZMATICVariableName", expectedCapitalCount),
+            "46:7: " + getWarningMessage("RIGHT", expectedCapitalCount),
+            "47:7: " + getWarningMessage("LEFT", expectedCapitalCount),
+            "48:7: " + getWarningMessage("UP", expectedCapitalCount),
+            "49:7: " + getWarningMessage("DOWN", expectedCapitalCount),
+            "57:16: " + getWarningMessage("NonAAAAbstractClassName2", expectedCapitalCount),
+            "58:20: " + getWarningMessage("serialNUMBER", expectedCapitalCount),
+            "59:26: " + getWarningMessage("s1erialNUMBER", expectedCapitalCount),
+            "60:28: " + getWarningMessage("s2erialNUMBER", expectedCapitalCount),
+            "61:34: " + getWarningMessage("s3erialNUMBER", expectedCapitalCount),
+            "66:16: " + getWarningMessage("VALUEEEE", expectedCapitalCount),
+            "72:23: " + getWarningMessage("VALUEEEE", expectedCapitalCount),
+            "78:22: " + getWarningMessage("VALUEEEE", expectedCapitalCount),
+            "84:29: " + getWarningMessage("VALUEEEE", expectedCapitalCount),
+            "88:7: " + getWarningMessage("FIleNameFormatException", expectedCapitalCount),
+            "90:31: " + getWarningMessage("serialVersionUID", expectedCapitalCount),
+            "98:9: " + getWarningMessage("userID", expectedCapitalCount),
+            "107:12: " + getWarningMessage("VALUE", expectedCapitalCount),
+            "111:19: " + getWarningMessage("VALUE", expectedCapitalCount),
+            "115:18: " + getWarningMessage("VALUE", expectedCapitalCount),
+            "119:25: " + getWarningMessage("VALUE", expectedCapitalCount),
         };
         verify(checkConfig,
                 getPath("InputAbbreviationAsWordInNameType.java"), expected);
@@ -334,6 +522,52 @@ public class AbbreviationAsWordInNameCheckTest extends AbstractModuleTestSupport
 
         verify(checkConfig,
                 getPath("InputAbbreviationAsWordInNameAbstractMultisetSetCount.java"),
+                expected);
+    }
+
+    @Test
+    public void testAbbreviationAsWordInNameCheckEnhancedInstanceof()
+            throws Exception {
+        final DefaultConfiguration checkConfig =
+                createModuleConfig(AbbreviationAsWordInNameCheck.class);
+
+        final int expectedCapitalCount = 4;
+
+        final String[] expected = {
+            "19:36: " + getWarningMessage("STRING", expectedCapitalCount),
+            "20:43: " + getWarningMessage("INTEGER", expectedCapitalCount),
+            "29:41: " + getWarningMessage("ssSTRING", expectedCapitalCount),
+            "32:35: " + getWarningMessage("XMLHTTP", expectedCapitalCount),
+        };
+
+        verify(checkConfig,
+                getNonCompilablePath(
+                        "InputAbbreviationAsWordInNameCheckEnhancedInstanceof.java"),
+                expected);
+    }
+
+    @Test
+    public void testAbbreviationAsWordInNameCheckEnhancedInstanceofAllowXmlLength1()
+            throws Exception {
+        final DefaultConfiguration checkConfig =
+                createModuleConfig(AbbreviationAsWordInNameCheck.class);
+        checkConfig.addAttribute("allowedAbbreviations", "XML");
+        checkConfig.addAttribute("allowedAbbreviationLength", "1");
+
+        final int expectedCapitalCount = 2;
+
+        final String[] expected = {
+            "19:36: " + getWarningMessage("STRING", expectedCapitalCount),
+            "20:43: " + getWarningMessage("INTEGER", expectedCapitalCount),
+            "28:39: " + getWarningMessage("aTXT", expectedCapitalCount),
+            "29:41: " + getWarningMessage("ssSTRING", expectedCapitalCount),
+            "32:35: " + getWarningMessage("XMLHTTP", expectedCapitalCount),
+        };
+
+        verify(checkConfig,
+                getNonCompilablePath(
+                        "InputAbbreviationAsWordInNameCheckEnhanced"
+                                + "InstanceofAllowXmlLength1.java"),
                 expected);
     }
 

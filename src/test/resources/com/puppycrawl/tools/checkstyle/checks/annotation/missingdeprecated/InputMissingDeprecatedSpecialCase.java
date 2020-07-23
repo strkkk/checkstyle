@@ -36,7 +36,7 @@ public class InputMissingDeprecatedSpecialCase
     public void foo3() {
 
     }
-    
+
     /**
      * @deprecated bleh
      * @deprecated
@@ -45,7 +45,7 @@ public class InputMissingDeprecatedSpecialCase
     public void foo4() {
 
     }
-    
+
     /**
      * @deprecated
      * @deprecated bleh
@@ -54,7 +54,7 @@ public class InputMissingDeprecatedSpecialCase
     public void foo5() {
 
     }
-    
+
     void local(@Deprecated String s) {
 
     }
@@ -68,14 +68,14 @@ public class InputMissingDeprecatedSpecialCase
     void local3(/** @deprecated */ @Deprecated String s) {
 
     }
-    
+
     /**
      * @Deprecated
      */
     void dontUse() {
-        
+
     }
-    
+
     /**
      * @Deprecated
      * @deprecated
@@ -83,6 +83,27 @@ public class InputMissingDeprecatedSpecialCase
      */
     @Deprecated
     void dontUse2() {
-        
+
+    }
+
+    /**
+     * @deprecated
+     */
+    int[] dontUse3() {
+        return null;
+    }
+
+    /**
+     * @deprecated
+     */
+    <T> T dontUse4() {
+        return null;
+    }
+
+    /**
+     * @deprecated
+     */
+    java.lang.String dontUse5() {
+        return null;
     }
 }

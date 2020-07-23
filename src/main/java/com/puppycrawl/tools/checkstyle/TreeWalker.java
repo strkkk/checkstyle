@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -71,9 +71,6 @@ public final class TreeWalker extends AbstractFileSetCheck implements ExternalRe
     /** The sorted set of messages. */
     private final SortedSet<LocalizedMessage> messages = new TreeSet<>();
 
-    /** Class loader to resolve classes with. **/
-    private ClassLoader classLoader;
-
     /** Context of child components. */
     private Context childContext;
 
@@ -88,15 +85,8 @@ public final class TreeWalker extends AbstractFileSetCheck implements ExternalRe
     }
 
     /**
-     * Sets classLoader to load class.
-     * @param classLoader class loader to resolve classes with.
-     */
-    public void setClassLoader(ClassLoader classLoader) {
-        this.classLoader = classLoader;
-    }
-
-    /**
      * Sets the module factory for creating child modules (Checks).
+     *
      * @param moduleFactory the factory
      */
     public void setModuleFactory(ModuleFactory moduleFactory) {
@@ -106,15 +96,14 @@ public final class TreeWalker extends AbstractFileSetCheck implements ExternalRe
     @Override
     public void finishLocalSetup() {
         final DefaultContext checkContext = new DefaultContext();
-        checkContext.add("classLoader", classLoader);
         checkContext.add("severity", getSeverity());
         checkContext.add("tabWidth", String.valueOf(getTabWidth()));
-
         childContext = checkContext;
     }
 
     /**
      * {@inheritDoc} Creates child module.
+     *
      * @noinspection ChainOfInstanceofChecks
      */
     @Override
@@ -179,6 +168,7 @@ public final class TreeWalker extends AbstractFileSetCheck implements ExternalRe
 
     /**
      * Returns filtered set of {@link LocalizedMessage}.
+     *
      * @param fileName path to the file
      * @param fileContents the contents of the file
      * @param rootAST root AST element {@link DetailAST} of the file
@@ -202,12 +192,11 @@ public final class TreeWalker extends AbstractFileSetCheck implements ExternalRe
 
     /**
      * Register a check for a given configuration.
+     *
      * @param check the check to register
      * @throws CheckstyleException if an error occurs
      */
-    private void registerCheck(AbstractCheck check)
-            throws CheckstyleException {
-        validateDefaultTokens(check);
+    private void registerCheck(AbstractCheck check) throws CheckstyleException {
         final int[] tokens;
         final Set<String> checkTokens = check.getTokenNames();
         if (checkTokens.isEmpty()) {
@@ -216,7 +205,7 @@ public final class TreeWalker extends AbstractFileSetCheck implements ExternalRe
         else {
             tokens = check.getRequiredTokens();
 
-            //register configured tokens
+            // register configured tokens
             final int[] acceptableTokens = check.getAcceptableTokens();
             Arrays.sort(acceptableTokens);
             for (String token : checkTokens) {
@@ -245,6 +234,7 @@ public final class TreeWalker extends AbstractFileSetCheck implements ExternalRe
 
     /**
      * Register a check for a specified token id.
+     *
      * @param tokenId the id of the token
      * @param check the check to register
      * @throws CheckstyleException if Check is misconfigured
@@ -255,6 +245,7 @@ public final class TreeWalker extends AbstractFileSetCheck implements ExternalRe
 
     /**
      * Register a check for a specified token name.
+     *
      * @param token the name of the token
      * @param check the check to register
      * @throws CheckstyleException if Check is misconfigured
@@ -275,25 +266,8 @@ public final class TreeWalker extends AbstractFileSetCheck implements ExternalRe
     }
 
     /**
-     * Validates that check's required tokens are subset of default tokens.
-     * @param check to validate
-     * @throws CheckstyleException when validation of default tokens fails
-     */
-    private static void validateDefaultTokens(AbstractCheck check) throws CheckstyleException {
-        final int[] defaultTokens = check.getDefaultTokens();
-        Arrays.sort(defaultTokens);
-        for (final int token : check.getRequiredTokens()) {
-            if (Arrays.binarySearch(defaultTokens, token) < 0) {
-                final String message = String.format(Locale.ROOT, "Token \"%s\" from required "
-                        + "tokens was not found in default tokens list in check %s",
-                        token, check.getClass().getName());
-                throw new CheckstyleException(message);
-            }
-        }
-    }
-
-    /**
      * Initiates the walk of an AST.
+     *
      * @param ast the root AST
      * @param contents the contents of the file the AST was generated from.
      * @param astState state of AST.
@@ -307,6 +281,7 @@ public final class TreeWalker extends AbstractFileSetCheck implements ExternalRe
 
     /**
      * Notify checks that we are about to begin walking a tree.
+     *
      * @param rootAST the root of the tree.
      * @param contents the contents of the file the AST was generated from.
      * @param astState state of AST.
@@ -331,6 +306,7 @@ public final class TreeWalker extends AbstractFileSetCheck implements ExternalRe
 
     /**
      * Notify checks that we have finished walking a tree.
+     *
      * @param rootAST the root of the tree.
      * @param astState state of AST.
      */
@@ -352,6 +328,7 @@ public final class TreeWalker extends AbstractFileSetCheck implements ExternalRe
 
     /**
      * Notify checks that visiting a node.
+     *
      * @param ast the node to notify for.
      * @param astState state of AST.
      */
@@ -367,6 +344,7 @@ public final class TreeWalker extends AbstractFileSetCheck implements ExternalRe
 
     /**
      * Notify checks that leaving a node.
+     *
      * @param ast
      *        the node to notify for
      * @param astState state of AST.
@@ -430,6 +408,7 @@ public final class TreeWalker extends AbstractFileSetCheck implements ExternalRe
 
     /**
      * Returns a set of external configuration resource locations which are used by the filters set.
+     *
      * @return a set of external configuration resource locations which are used by the filters set.
      */
     private Set<String> getExternalResourceLocationsOfFilters() {
@@ -445,6 +424,7 @@ public final class TreeWalker extends AbstractFileSetCheck implements ExternalRe
 
     /**
      * Returns a set of external configuration resource locations which are used by the checks set.
+     *
      * @param checks a set of checks.
      * @return a set of external configuration resource locations which are used by the checks set.
      */
@@ -461,6 +441,7 @@ public final class TreeWalker extends AbstractFileSetCheck implements ExternalRe
     /**
      * Processes a node calling interested checks at each node.
      * Uses iterative algorithm.
+     *
      * @param root the root of tree for process
      * @param astState state of AST.
      */

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -26,7 +26,7 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 
 /**
  * <p>
- * Finds nested blocks, i.e. blocks that are used freely in the code.
+ * Finds nested blocks (blocks that are used freely in the code).
  * </p>
  * <p>
  * Rationale: Nested blocks are often leftovers from the
@@ -40,7 +40,7 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
  * {
  *   int whichIsWhich = 0;
  *   {
- *     int whichIsWhich = 2;
+ *     whichIsWhich = 2;
  *   }
  *   System.out.println("value = " + whichIsWhich);
  * }
@@ -90,6 +90,7 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
  * <li>
  * Property {@code allowInSwitchCase} - Allow nested blocks if they are the
  * only child of a switch case.
+ * Type is {@code boolean}.
  * Default value is {@code false}.
  * </li>
  * </ul>
@@ -99,6 +100,17 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
  * <pre>
  * &lt;module name="AvoidNestedBlocks"/&gt;
  * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code block.nested}
+ * </li>
+ * </ul>
  *
  * @since 3.1
  */
@@ -135,14 +147,24 @@ public class AvoidNestedBlocksCheck extends AbstractCheck {
     public void visitToken(DetailAST ast) {
         final DetailAST parent = ast.getParent();
         if (parent.getType() == TokenTypes.SLIST
-                && (!allowInSwitchCase
-                    || parent.getNumberOfChildren() != 1)) {
+                && (!allowInSwitchCase || hasSiblings(ast))) {
             log(ast, MSG_KEY_BLOCK_NESTED);
         }
     }
 
     /**
+     * Checks whether the AST node has any siblings or not.
+     *
+     * @param ast node to examine
+     * @return {@code true} if the node has one or more siblings
+     */
+    private static boolean hasSiblings(DetailAST ast) {
+        return ast.getPreviousSibling() != null || ast.getNextSibling() != null;
+    }
+
+    /**
      * Setter to allow nested blocks if they are the only child of a switch case.
+     *
      * @param allowInSwitchCase whether nested blocks are allowed
      *                 if they are the only child of a switch case.
      */

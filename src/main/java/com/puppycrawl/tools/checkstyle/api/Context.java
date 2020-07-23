@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -25,12 +25,14 @@ import java.util.Collection;
  * A context to be used in subcomponents. The general idea of
  * Context/Contextualizable was taken from <a target="_top"
  * href="http://avalon.apache.org/closed.html">Jakarta's Avalon framework</a>.
+ *
  * @see Contextualizable
  */
 public interface Context {
 
     /**
      * Searches for the value with the specified attribute key in this context.
+     *
      * @param key the attribute key.
      * @return the value in this context with the specified attribute key value.
      */
@@ -38,6 +40,7 @@ public interface Context {
 
     /**
      * Returns the names of all attributes of this context.
+     *
      * @return the names of all attributes of this context.
      */
     Collection<String> getAttributeNames();

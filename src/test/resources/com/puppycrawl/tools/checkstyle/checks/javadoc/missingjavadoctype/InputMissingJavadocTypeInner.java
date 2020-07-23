@@ -5,14 +5,14 @@ package com.puppycrawl.tools.checkstyle.checks.javadoc.missingjavadoctype;
  **/
 class InputMissingJavadocTypeInner
 {
-    // Ignore - two errors
+    // Ignore - two violations
     class InnerInner2 // warn
     {
         // Ignore
         public int fData;
     }
 
-    // Ignore - 2 errors
+    // Ignore - 2 violations
     interface InnerInterface2 // warn
     {
         // Ignore - should be all upper case
@@ -36,18 +36,18 @@ class InputMissingJavadocTypeInner
     protected static Object sWeird = new Object();
     /** demonstrate bug in handling static final **/
     static Object sWeird2 = new Object();
-    
+
     /** demonstrate bug in local final variable */
     public interface Inter
     {
     }
-    
+
      public static void main()
      {
         Inter m = new Inter()
         {
             private static final int CDS = 1;
-            
+
             private int ABC;
         };
      }

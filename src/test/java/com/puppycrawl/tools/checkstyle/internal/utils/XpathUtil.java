@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -32,6 +32,7 @@ import net.sf.saxon.trans.XPathException;
 
 /**
  * XpathUtil.
+ *
  * @noinspection ClassOnlyUsedInOnePackage
  */
 public final class XpathUtil {
@@ -41,6 +42,7 @@ public final class XpathUtil {
 
     /**
      * Returns list of nodes matching xpath expression given node context.
+     *
      * @param xpath Xpath expression
      * @param rootNode {@code NodeInfo} node context
      * @return list of nodes matching xpath expression given node context

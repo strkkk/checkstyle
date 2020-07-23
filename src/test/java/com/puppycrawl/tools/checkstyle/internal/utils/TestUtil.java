@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,7 @@
 
 package com.puppycrawl.tools.checkstyle.internal.utils;
 
+import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -44,6 +45,7 @@ public final class TestUtil {
 
     /**
      * Verifies that utils class has private constructor and invokes it to satisfy code coverage.
+     *
      * @param utilClass class to test for c-tor
      * @param checkConstructorIsPrivate flag to skip check for private visibility, it is useful
      *                                  for Classes that are mocked by PowerMockRunner that make
@@ -158,6 +160,7 @@ public final class TestUtil {
 
     /**
      * Returns the default PackageObjectFactory with the default package names.
+     *
      * @return the default PackageObjectFactory.
      */
     public static PackageObjectFactory getPackageObjectFactory() throws CheckstyleException {
@@ -169,6 +172,7 @@ public final class TestUtil {
     /**
      * Finds node of specified type among root children, siblings, siblings children
      * on any deep level.
+     *
      * @param root      DetailAST
      * @param predicate predicate
      * @return {@link Optional} of {@link DetailAST} node which matches the predicate.
@@ -193,6 +197,44 @@ public final class TestUtil {
             curNode = toVisit;
         }
         return Optional.ofNullable(curNode);
+    }
+
+    /**
+     * <p>
+     * Returns the JDK version as a number that is easy to compare.
+     * </p>
+     * <p>
+     * For JDK "1.8" it will be 8; for JDK "11" it will be 11.
+     * </p>
+     *
+     * @return JDK version as integer
+     */
+    public static int getJdkVersion() {
+        String version = System.getProperty("java.specification.version");
+        if (version.startsWith("1.")) {
+            version = version.substring(2);
+        }
+        return Integer.parseInt(version);
+    }
+
+    /**
+     * <p>
+     * Adjusts the expected number of flushes for tests that call {@link OutputStream#close} method.
+     * </p>
+     * <p>
+     * After <a href="https://bugs.openjdk.java.net/browse/JDK-8220477">JDK-8220477</a>
+     * there is one additional flush from {@code sun.nio.cs.StreamEncoder#implClose}.
+     * </p>
+     *
+     * @param flushCount flush count to adjust
+     * @return adjusted flush count
+     */
+    public static int adjustFlushCountForOutputStreamClose(int flushCount) {
+        int result = flushCount;
+        if (getJdkVersion() >= 13) {
+            ++result;
+        }
+        return result;
     }
 
 }

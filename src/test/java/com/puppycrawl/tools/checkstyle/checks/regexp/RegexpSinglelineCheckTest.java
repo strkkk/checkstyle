@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,12 +21,12 @@ package com.puppycrawl.tools.checkstyle.checks.regexp;
 
 import static com.puppycrawl.tools.checkstyle.checks.regexp.SinglelineDetector.MSG_REGEXP_EXCEEDED;
 import static com.puppycrawl.tools.checkstyle.checks.regexp.SinglelineDetector.MSG_REGEXP_MINIMUM;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
@@ -122,6 +122,7 @@ public class RegexpSinglelineCheckTest extends AbstractModuleTestSupport {
 
     /**
      * Done as a UT cause new instance of Detector is created each time 'verify' executed.
+     *
      * @throws Exception some Exception
      */
     @Test
@@ -140,8 +141,7 @@ public class RegexpSinglelineCheckTest extends AbstractModuleTestSupport {
 
         detector.processLines(new FileText(file, StandardCharsets.UTF_8.name()));
         detector.processLines(new FileText(file, StandardCharsets.UTF_8.name()));
-        Assert.assertEquals("Logged unexpected amount of issues",
-                0, reporter.getLogCount());
+        assertEquals(0, reporter.getLogCount(), "Logged unexpected amount of issues");
     }
 
 }

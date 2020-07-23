@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -30,25 +30,42 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 
 /**
  * <p>
- * Checks for imports that are redundant. An import statement is
+ * Checks for redundant import statements. An import statement is
  * considered redundant if:
  * </p>
- *<ul>
- *  <li>It is a duplicate of another import. This is, when a class is imported
- *  more than once.</li>
- *  <li>The class non-statically imported is from the {@code java.lang}
- *  package. For example importing {@code java.lang.String}.</li>
- *  <li>The class non-statically imported is from the same package as the
- *  current package.</li>
- *</ul>
+ * <ul>
+ *   <li>It is a duplicate of another import. This is, when a class is imported
+ *   more than once.</li>
+ *   <li>The class non-statically imported is from the {@code java.lang}
+ *   package, e.g. importing {@code java.lang.String}.</li>
+ *   <li>The class non-statically imported is from the same package as the
+ *   current package.</li>
+ * </ul>
  * <p>
- * An example of how to configure the check is:
+ * To configure the check:
  * </p>
  * <pre>
  * &lt;module name="RedundantImport"/&gt;
  * </pre>
- * Compatible with Java 1.5 source.
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code import.duplicate}
+ * </li>
+ * <li>
+ * {@code import.lang}
+ * </li>
+ * <li>
+ * {@code import.same}
+ * </li>
+ * </ul>
  *
+ * @since 3.0
  */
 @FileStatefulCheck
 public class RedundantImportCheck
@@ -122,9 +139,7 @@ public class RedundantImportCheck
             }
             // Check for a duplicate import
             imports.stream().filter(full -> imp.getText().equals(full.getText()))
-                .forEach(full -> log(ast,
-                    MSG_DUPLICATE, full.getLineNo(),
-                    imp.getText()));
+                .forEach(full -> log(ast, MSG_DUPLICATE, full.getLineNo(), imp.getText()));
 
             imports.add(imp);
         }
@@ -134,8 +149,7 @@ public class RedundantImportCheck
                 FullIdent.createFullIdent(
                     ast.getLastChild().getPreviousSibling());
             staticImports.stream().filter(full -> imp.getText().equals(full.getText()))
-                .forEach(full -> log(ast,
-                    MSG_DUPLICATE, full.getLineNo(), imp.getText()));
+                .forEach(full -> log(ast, MSG_DUPLICATE, full.getLineNo(), imp.getText()));
 
             staticImports.add(imp);
         }
@@ -143,6 +157,7 @@ public class RedundantImportCheck
 
     /**
      * Determines if an import statement is for types from a specified package.
+     *
      * @param importName the import name
      * @param pkg the package name
      * @return whether from the package
@@ -153,7 +168,7 @@ public class RedundantImportCheck
         // So '.' must be present in member name and we are not checking for it
         final int index = importName.lastIndexOf('.');
         final String front = importName.substring(0, index);
-        return front.equals(pkg);
+        return pkg.equals(front);
     }
 
 }

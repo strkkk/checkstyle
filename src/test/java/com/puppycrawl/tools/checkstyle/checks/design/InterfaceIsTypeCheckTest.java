@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,9 @@
 package com.puppycrawl.tools.checkstyle.checks.design;
 
 import static com.puppycrawl.tools.checkstyle.checks.design.InterfaceIsTypeCheck.MSG_KEY;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
@@ -42,7 +42,7 @@ public class InterfaceIsTypeCheckTest
         final DefaultConfiguration checkConfig =
             createModuleConfig(InterfaceIsTypeCheck.class);
         final String[] expected = {
-            "25: " + getCheckMessage(MSG_KEY),
+            "25:5: " + getCheckMessage(MSG_KEY),
         };
         verify(checkConfig, getPath("InputInterfaceIsType.java"), expected);
     }
@@ -54,8 +54,8 @@ public class InterfaceIsTypeCheckTest
             createModuleConfig(InterfaceIsTypeCheck.class);
         checkConfig.addAttribute("allowMarkerInterfaces", "false");
         final String[] expected = {
-            "20: " + getCheckMessage(MSG_KEY),
-            "25: " + getCheckMessage(MSG_KEY),
+            "20:5: " + getCheckMessage(MSG_KEY),
+            "25:5: " + getCheckMessage(MSG_KEY),
         };
         verify(checkConfig, getPath("InputInterfaceIsType.java"), expected);
     }
@@ -64,16 +64,15 @@ public class InterfaceIsTypeCheckTest
     public void testGetAcceptableTokens() {
         final InterfaceIsTypeCheck obj = new InterfaceIsTypeCheck();
         final int[] expected = {TokenTypes.INTERFACE_DEF};
-        assertArrayEquals("Default acceptable tokens are invalid",
-            expected, obj.getAcceptableTokens());
+        assertArrayEquals(expected, obj.getAcceptableTokens(),
+                "Default acceptable tokens are invalid");
     }
 
     @Test
     public void testGetRequiredTokens() {
         final InterfaceIsTypeCheck obj = new InterfaceIsTypeCheck();
         final int[] expected = {TokenTypes.INTERFACE_DEF};
-        assertArrayEquals("Default required tokens are invalid",
-            expected, obj.getRequiredTokens());
+        assertArrayEquals(expected, obj.getRequiredTokens(), "Default required tokens are invalid");
     }
 
 }

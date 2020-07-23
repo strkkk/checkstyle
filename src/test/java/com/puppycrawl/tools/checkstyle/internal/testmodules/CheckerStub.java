@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,26 +19,10 @@
 
 package com.puppycrawl.tools.checkstyle.internal.testmodules;
 
-import org.powermock.reflect.Whitebox;
-
 import com.puppycrawl.tools.checkstyle.Checker;
 
 public class CheckerStub extends Checker {
 
-    private static ClassLoader classLoader;
-
-    @Override
-    public void destroy() {
-        //hack to get setModuleClassloader tested
-        classLoader = Whitebox.getInternalState(this, "classLoader");
-    }
-
-    public static ClassLoader getClassLoader() {
-        return classLoader;
-    }
-
-    public static void reset() {
-        classLoader = null;
-    }
+    // dummy class
 
 }

@@ -6,7 +6,9 @@
 
 <suppressions>
     <!-- can't split long messages between lines -->
-    <suppress checks="RegexpSingleline" files="google_checks\.xml" lines="42,83"/>
+    <suppress checks="RegexpSingleline" files="google_checks\.xml" lines="56,124"/>
+    <!-- don't validate generated files -->
+    <suppress checks="RegexpSingleline" files="releasenotes\.xml"/>
 
     <suppress checks="FileLength"
               files="TokenTypes.java|IndentationCheckTest.java"
@@ -21,7 +23,7 @@
     <!-- test should be named as their main class -->
     <suppress checks="AbstractClassNameCheck"
               files="AbstractCheckTest.java|AbstractClassNameCheckTest.java|
-                     |AbstractTypeAwareCheckTest.java|AbstractJavadocCheckTest.java|
+                     |AbstractJavadocCheckTest.java|
                      |AbstractViolationReporterTest.java|AbstractFileSetCheckTest.java"/>
 
     <!-- Tone down the checking for test code -->
@@ -29,9 +31,6 @@
                       |NestedIfDepth|MethodLength"
               files="[\\/]XdocsPagesTest\.java"/>
 
-    <suppress checks="JavadocPackage" files=".*[\\/]src[\\/](test|it)[\\/]"/>
-    <!-- we do not need javadocs in all classes except for *Support classes -->
-    <suppress checks="JavadocMethod" files=".*[\\/]src[\\/](test|it)[\\/].*(?&lt;!Support)\.java"/>
     <!-- till https://github.com/checkstyle/checkstyle/issues/6336 -->
     <suppress checks="JavadocMethod" files=".*AbstractIndentationTestSupport\.java"/>
     <suppress checks="JavadocMethod" files=".*AbstractModuleTestSupport\.java"/>
@@ -40,10 +39,10 @@
     <suppress checks="JavadocMethod" files=".*AbstractPathTestSupport\.java"/>
     <suppress checks="JavadocMethod" files=".*AbstractXmlTestSupport\.java"/>
 
-    <!--The Check generates too many violations, fixing them will make code unmanageable.-->
+    <!-- The Check generates too many violations, fixing them will make code unmanageable. -->
     <suppress checks="MagicNumber" files="(ParseTreeTablePresentation|MainFrame)\.java"/>
 
-    <!-- Methods that build fake AST are very long-->
+    <!-- Methods that build fake AST are very long -->
     <suppress checks="MethodLength" files=".*(Generated)?Java(doc)?TokenTypesTest\.java"/>
     <suppress checks="ExecutableStatementCount"
               files=".*(Generated)?Java(doc)?TokenTypesTest\.java"/>
@@ -67,9 +66,9 @@
     <suppress checks="MethodCount" files="[\\/]JavadocMethodCheck.java$"/>
     <!-- Apart from a complex logic there is a lot of small methods for a better readability.  -->
     <suppress checks="MethodCount" files="[\\/]CommentsIndentationCheck.java$"/>
-    <!--VisibilityModifierCheck has 7 options which require 7 additional methods (setters)-->
+    <!-- VisibilityModifierCheck has 7 options which require 7 additional methods (setters) -->
     <suppress checks="MethodCount" files="[\\/]VisibilityModifierCheck.java$"/>
-    <!--RequireThisCheck has a hierarchy of nested classes which contains a lot of methods. -->
+    <!-- RequireThisCheck has a hierarchy of nested classes which contains a lot of methods. -->
     <suppress checks="MethodCount" files="[\\/]RequireThisCheck.java$"/>
 
     <!-- we need that set of converters -->
@@ -78,7 +77,8 @@
     <suppress checks="ClassDataAbstractionCoupling"
               files="(Checker|Main|CheckstyleAntTask|JavadocDetailNodeParser)\.java"/>
     <suppress checks="ClassDataAbstractionCoupling"
-              files="(CheckerTest|AbstractModuleTestSupport|CheckstyleAntTaskTest|
+              files="(CheckerTest|AbstractModuleTestSupport|AbstractItModuleTestSupport|
+                     |CheckstyleAntTaskTest|
                      |TranslationCheckTest|LocalizedMessageTest|AbstractFileSetCheckTest|
                      |AbstractCheckTest|AutomaticBeanTest)\.java"/>
     <suppress checks="ClassDataAbstractionCoupling" files="PropertyCacheFileTest\.java"/>
@@ -99,5 +99,12 @@
     <!-- HandlerFactory crosses allowed limit for executable statements -->
     <suppress checks="ExecutableStatementCount" files="HandlerFactory\.java"/>
 
-    <suppress id="ImportControlTest" files="[\\/]powermock[\\/]" message=".* - org\.(powermock|mockito).*" />
+    <suppress id="ImportControlTest" files="[\\/]powermock[\\/]"
+              message=".* - org\.(powermock|mockito).*" />
+
+    <suppress id="noSourceforgeNetLinks" files="[\\/]releasenotes.xml"/>
+    <suppress id="noSourceforgeIoLinks" files="[\\/]google_style.xml" lines="31"/>
+    <suppress id="noSourceforgeIoLinks" files="[\\/]sun_style.xml" lines="31"/>
+    <suppress id="noSourceforgeIoLinks" files="[\\/]index.xml.vm"/>
+
 </suppressions>

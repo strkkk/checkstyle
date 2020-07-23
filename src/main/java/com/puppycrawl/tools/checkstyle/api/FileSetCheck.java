@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -30,8 +30,9 @@ public interface FileSetCheck
     extends Configurable, Contextualizable {
 
     /**
-     * Sets the MessageDispatcher that is used to dispatch error
-     * messages to AuditListeners during processing.
+     * Sets the MessageDispatcher that is used to dispatch audit events
+     * to AuditListeners during processing.
+     *
      * @param dispatcher the dispatcher
      */
     void setMessageDispatcher(MessageDispatcher dispatcher);
@@ -47,6 +48,7 @@ public interface FileSetCheck
 
     /**
      * Called when about to be called to process a set of files.
+     *
      * @param charset the character set used to read the files.
      */
     void beginProcessing(String charset);
@@ -58,7 +60,7 @@ public interface FileSetCheck
      * <p>
      * The file set to process might contain files that are not
      * interesting to the FileSetCheck. Such files should be ignored,
-     * no error message should be fired for them. For example a FileSetCheck
+     * no audit event should be fired for them. For example a FileSetCheck
      * that checks java files should ignore HTML or properties files.
      * </p>
      * <p>

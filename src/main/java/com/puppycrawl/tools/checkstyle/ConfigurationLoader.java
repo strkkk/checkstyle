@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,7 +20,6 @@
 package com.puppycrawl.tools.checkstyle;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -145,6 +144,7 @@ public final class ConfigurationLoader {
 
     /**
      * Creates a new {@code ConfigurationLoader} instance.
+     *
      * @param overrideProps resolver for overriding properties
      * @param omitIgnoredModules {@code true} if ignored modules should be
      *         omitted
@@ -166,6 +166,7 @@ public final class ConfigurationLoader {
      * Creates mapping between local resources and dtd ids. This method can't be
      * moved to inner class because it must stay static because it is called
      * from constructor and inner class isn't static.
+     *
      * @return map between local resources and dtd ids.
      * @noinspection MethodOnlyUsedFromInnerClass
      */
@@ -199,6 +200,7 @@ public final class ConfigurationLoader {
 
     /**
      * Returns the module configurations in a specified file.
+     *
      * @param config location of config file, can be either a URL or a filename
      * @param overridePropsResolver overriding properties
      * @return the check configurations
@@ -211,6 +213,7 @@ public final class ConfigurationLoader {
 
     /**
      * Returns the module configurations in a specified file.
+     *
      * @param config location of config file, can be either a URL or a filename
      * @param overridePropsResolver overriding properties
      * @param threadModeSettings the thread mode configuration
@@ -222,137 +225,6 @@ public final class ConfigurationLoader {
             throws CheckstyleException {
         return loadConfiguration(config, overridePropsResolver,
                 IgnoredModulesOptions.EXECUTE, threadModeSettings);
-    }
-
-    /**
-     * Returns the module configurations in a specified file.
-     *
-     * @param config location of config file, can be either a URL or a filename
-     * @param overridePropsResolver overriding properties
-     * @param omitIgnoredModules {@code true} if modules with severity
-     *            'ignore' should be omitted, {@code false} otherwise
-     * @return the check configurations
-     * @throws CheckstyleException if an error occurs
-     * @deprecated in order to fulfill demands of BooleanParameter IDEA check.
-     * @noinspection BooleanParameter
-     */
-    @Deprecated
-    public static Configuration loadConfiguration(String config,
-        PropertyResolver overridePropsResolver, boolean omitIgnoredModules)
-            throws CheckstyleException {
-        return loadConfiguration(config, overridePropsResolver, omitIgnoredModules,
-                ThreadModeSettings.SINGLE_THREAD_MODE_INSTANCE);
-    }
-
-    /**
-     * Returns the module configurations in a specified file.
-     *
-     * @param config location of config file, can be either a URL or a filename
-     * @param overridePropsResolver overriding properties
-     * @param omitIgnoredModules {@code true} if modules with severity
-     *            'ignore' should be omitted, {@code false} otherwise
-     * @param threadModeSettings the thread mode configuration
-     * @return the check configurations
-     * @throws CheckstyleException if an error occurs
-     * @deprecated in order to fulfill demands of BooleanParameter IDEA check.
-     * @noinspection BooleanParameter, WeakerAccess
-     */
-    @Deprecated
-    public static Configuration loadConfiguration(String config,
-            PropertyResolver overridePropsResolver,
-            boolean omitIgnoredModules, ThreadModeSettings threadModeSettings)
-            throws CheckstyleException {
-        // figure out if this is a File or a URL
-        final URI uri = CommonUtil.getUriByFilename(config);
-        final InputSource source = new InputSource(uri.toString());
-        return loadConfiguration(source, overridePropsResolver,
-                omitIgnoredModules, threadModeSettings);
-    }
-
-    /**
-     * Returns the module configurations from a specified input stream.
-     * Note that clients are required to close the given stream by themselves
-     *
-     * @param configStream the input stream to the Checkstyle configuration
-     * @param overridePropsResolver overriding properties
-     * @param omitIgnoredModules {@code true} if modules with severity
-     *            'ignore' should be omitted, {@code false} otherwise
-     * @return the check configurations
-     * @throws CheckstyleException if an error occurs
-     *
-     * @deprecated As this method does not provide a valid system ID,
-     *     preventing resolution of external entities, a
-     *     {@link #loadConfiguration(InputSource,PropertyResolver,boolean)
-     *          version using an InputSource}
-     *     should be used instead
-     * @noinspection BooleanParameter
-     */
-    @Deprecated
-    public static Configuration loadConfiguration(InputStream configStream,
-        PropertyResolver overridePropsResolver, boolean omitIgnoredModules)
-            throws CheckstyleException {
-        return loadConfiguration(new InputSource(configStream),
-                                 overridePropsResolver, omitIgnoredModules);
-    }
-
-    /**
-     * Returns the module configurations from a specified input source.
-     * Note that if the source does wrap an open byte or character
-     * stream, clients are required to close that stream by themselves
-     *
-     * @param configSource the input stream to the Checkstyle configuration
-     * @param overridePropsResolver overriding properties
-     * @param omitIgnoredModules {@code true} if modules with severity
-     *            'ignore' should be omitted, {@code false} otherwise
-     * @return the check configurations
-     * @throws CheckstyleException if an error occurs
-     * @deprecated in order to fulfill demands of BooleanParameter IDEA check.
-     * @noinspection BooleanParameter
-     */
-    @Deprecated
-    public static Configuration loadConfiguration(InputSource configSource,
-            PropertyResolver overridePropsResolver, boolean omitIgnoredModules)
-            throws CheckstyleException {
-        return loadConfiguration(configSource, overridePropsResolver,
-                omitIgnoredModules, ThreadModeSettings.SINGLE_THREAD_MODE_INSTANCE);
-    }
-
-    /**
-     * Returns the module configurations from a specified input source.
-     * Note that if the source does wrap an open byte or character
-     * stream, clients are required to close that stream by themselves
-     *
-     * @param configSource the input stream to the Checkstyle configuration
-     * @param overridePropsResolver overriding properties
-     * @param omitIgnoredModules {@code true} if modules with severity
-     *            'ignore' should be omitted, {@code false} otherwise
-     * @param threadModeSettings the thread mode configuration
-     * @return the check configurations
-     * @throws CheckstyleException if an error occurs
-     * @deprecated in order to fulfill demands of BooleanParameter IDEA check.
-     * @noinspection BooleanParameter, WeakerAccess
-     */
-    @Deprecated
-    public static Configuration loadConfiguration(InputSource configSource,
-        PropertyResolver overridePropsResolver,
-        boolean omitIgnoredModules, ThreadModeSettings threadModeSettings)
-            throws CheckstyleException {
-        try {
-            final ConfigurationLoader loader =
-                new ConfigurationLoader(overridePropsResolver,
-                                        omitIgnoredModules, threadModeSettings);
-            loader.parseInputSource(configSource);
-            return loader.configuration;
-        }
-        catch (final SAXParseException ex) {
-            final String message = String.format(Locale.ROOT, SAX_PARSE_EXCEPTION_FORMAT,
-                    UNABLE_TO_PARSE_EXCEPTION_PREFIX,
-                    ex.getMessage(), ex.getLineNumber(), ex.getColumnNumber());
-            throw new CheckstyleException(message, ex);
-        }
-        catch (final ParserConfigurationException | IOException | SAXException ex) {
-            throw new CheckstyleException(UNABLE_TO_PARSE_EXCEPTION_PREFIX, ex);
-        }
     }
 
     /**
@@ -536,21 +408,21 @@ public final class ConfigurationLoader {
                                            List<String> propertyRefs)
             throws CheckstyleException {
         int prev = 0;
-        //search for the next instance of $ from the 'prev' position
+        // search for the next instance of $ from the 'prev' position
         int pos = value.indexOf(DOLLAR_SIGN, prev);
         while (pos >= 0) {
-            //if there was any text before this, add it as a fragment
+            // if there was any text before this, add it as a fragment
             if (pos > 0) {
                 fragments.add(value.substring(prev, pos));
             }
-            //if we are at the end of the string, we tack on a $
-            //then move past it
+            // if we are at the end of the string, we tack on a $
+            // then move past it
             if (pos == value.length() - 1) {
                 fragments.add(String.valueOf(DOLLAR_SIGN));
                 prev = pos + 1;
             }
             else if (value.charAt(pos + 1) == '{') {
-                //property found, extract its name or bail on a typo
+                // property found, extract its name or bail on a typo
                 final int endName = value.indexOf('}', pos);
                 if (endName == -1) {
                     throw new CheckstyleException("Syntax error in property: "
@@ -563,21 +435,21 @@ public final class ConfigurationLoader {
             }
             else {
                 if (value.charAt(pos + 1) == DOLLAR_SIGN) {
-                    //backwards compatibility two $ map to one mode
+                    // backwards compatibility two $ map to one mode
                     fragments.add(String.valueOf(DOLLAR_SIGN));
                 }
                 else {
-                    //new behaviour: $X maps to $X for all values of X!='$'
+                    // new behaviour: $X maps to $X for all values of X!='$'
                     fragments.add(value.substring(pos, pos + 2));
                 }
                 prev = pos + 2;
             }
 
-            //search for the next instance of $ from the 'prev' position
+            // search for the next instance of $ from the 'prev' position
             pos = value.indexOf(DOLLAR_SIGN, prev);
         }
-        //no more $ signs found
-        //if there is any tail to the file, append it
+        // no more $ signs found
+        // if there is any tail to the file, append it
         if (prev < value.length()) {
             fragments.add(value.substring(prev));
         }
@@ -611,6 +483,7 @@ public final class ConfigurationLoader {
 
         /**
          * Creates a new InternalLoader.
+         *
          * @throws SAXException if an error occurs
          * @throws ParserConfigurationException if an error occurs
          */
@@ -626,7 +499,7 @@ public final class ConfigurationLoader {
                                  Attributes attributes)
                 throws SAXException {
             if (qName.equals(MODULE)) {
-                //create configuration
+                // create configuration
                 final String originalName = attributes.getValue(NAME);
                 final String name = threadModeSettings.resolveName(originalName);
                 final DefaultConfiguration conf =
@@ -636,7 +509,7 @@ public final class ConfigurationLoader {
                     configuration = conf;
                 }
 
-                //add configuration to it's parent
+                // add configuration to it's parent
                 if (!configStack.isEmpty()) {
                     final DefaultConfiguration top =
                         configStack.peek();
@@ -646,7 +519,7 @@ public final class ConfigurationLoader {
                 configStack.push(conf);
             }
             else if (qName.equals(PROPERTY)) {
-                //extract value and name
+                // extract value and name
                 final String value;
                 try {
                     value = replaceProperties(attributes.getValue(VALUE),
@@ -658,17 +531,17 @@ public final class ConfigurationLoader {
                 }
                 final String name = attributes.getValue(NAME);
 
-                //add to attributes of configuration
+                // add to attributes of configuration
                 final DefaultConfiguration top =
                     configStack.peek();
                 top.addAttribute(name, value);
             }
             else if (qName.equals(MESSAGE)) {
-                //extract key and value
+                // extract key and value
                 final String key = attributes.getValue(KEY);
                 final String value = attributes.getValue(VALUE);
 
-                //add to messages of configuration
+                // add to messages of configuration
                 final DefaultConfiguration top = configStack.peek();
                 top.addMessage(key, value);
             }
@@ -718,6 +591,7 @@ public final class ConfigurationLoader {
 
         /**
          * Util method to recheck attribute in module.
+         *
          * @param module module to check
          * @param attributeName name of attribute in module to find
          * @return true if attribute is present in module

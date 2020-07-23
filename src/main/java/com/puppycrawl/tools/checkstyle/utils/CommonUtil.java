@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -36,9 +36,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.apache.commons.beanutils.ConversionException;
-
 import antlr.Token;
+import com.puppycrawl.tools.checkstyle.DetailAstImpl;
 import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
@@ -85,7 +84,7 @@ public final class CommonUtil {
      * @param pattern
      *            the pattern to match
      * @return a created regexp object
-     * @throws ConversionException
+     * @throws IllegalArgumentException
      *             if unable to create Pattern object.
      **/
     public static Pattern createPattern(String pattern) {
@@ -115,17 +114,18 @@ public final class CommonUtil {
 
     /**
      * Create block comment from string content.
+     *
      * @param content comment content.
      * @return DetailAST block comment
      */
     public static DetailAST createBlockCommentNode(String content) {
-        final DetailAST blockCommentBegin = new DetailAST();
+        final DetailAstImpl blockCommentBegin = new DetailAstImpl();
         blockCommentBegin.setType(TokenTypes.BLOCK_COMMENT_BEGIN);
         blockCommentBegin.setText(BLOCK_MULTIPLE_COMMENT_BEGIN);
         blockCommentBegin.setLineNo(0);
         blockCommentBegin.setColumnNo(-JAVADOC_START.length());
 
-        final DetailAST commentContent = new DetailAST();
+        final DetailAstImpl commentContent = new DetailAstImpl();
         commentContent.setType(TokenTypes.COMMENT_CONTENT);
         commentContent.setText("*" + content);
         commentContent.setLineNo(0);
@@ -133,7 +133,7 @@ public final class CommonUtil {
         // that contains javadoc identifier has -1 column
         commentContent.setColumnNo(-1);
 
-        final DetailAST blockCommentEnd = new DetailAST();
+        final DetailAstImpl blockCommentEnd = new DetailAstImpl();
         blockCommentEnd.setType(TokenTypes.BLOCK_COMMENT_END);
         blockCommentEnd.setText(BLOCK_MULTIPLE_COMMENT_END);
 
@@ -144,19 +144,20 @@ public final class CommonUtil {
 
     /**
      * Create block comment from token.
+     *
      * @param token
      *        Token object.
      * @return DetailAST with BLOCK_COMMENT type.
      */
     public static DetailAST createBlockCommentNode(Token token) {
-        final DetailAST blockComment = new DetailAST();
+        final DetailAstImpl blockComment = new DetailAstImpl();
         blockComment.initialize(TokenTypes.BLOCK_COMMENT_BEGIN, BLOCK_MULTIPLE_COMMENT_BEGIN);
 
         // column counting begins from 0
         blockComment.setColumnNo(token.getColumn() - 1);
         blockComment.setLineNo(token.getLine());
 
-        final DetailAST blockCommentContent = new DetailAST();
+        final DetailAstImpl blockCommentContent = new DetailAstImpl();
         blockCommentContent.setType(TokenTypes.COMMENT_CONTENT);
 
         // column counting begins from 0
@@ -165,7 +166,7 @@ public final class CommonUtil {
         blockCommentContent.setLineNo(token.getLine());
         blockCommentContent.setText(token.getText());
 
-        final DetailAST blockCommentClose = new DetailAST();
+        final DetailAstImpl blockCommentClose = new DetailAstImpl();
         blockCommentClose.initialize(TokenTypes.BLOCK_COMMENT_END, BLOCK_MULTIPLE_COMMENT_END);
 
         final Map.Entry<Integer, Integer> linesColumns = countLinesColumns(
@@ -180,6 +181,7 @@ public final class CommonUtil {
 
     /**
      * Count lines and columns (in last line) in text.
+     *
      * @param text
      *        String.
      * @param initialLinesCnt
@@ -316,7 +318,7 @@ public final class CommonUtil {
             int tabWidth) {
         int len = 0;
         for (int idx = 0; idx < toIdx; idx++) {
-            if (inputString.charAt(idx) == '\t') {
+            if (inputString.codePointAt(idx) == '\t') {
                 len = (len / tabWidth + 1) * tabWidth;
             }
             else {
@@ -346,6 +348,7 @@ public final class CommonUtil {
 
     /**
      * Returns base class name from qualified name.
+     *
      * @param type
      *            the fully qualified name. Cannot be null
      * @return the base class name from a fully qualified name
@@ -427,12 +430,14 @@ public final class CommonUtil {
 
     /**
      * Gets constructor of targetClass.
+     *
      * @param targetClass
      *            from which constructor is returned
      * @param parameterTypes
      *            of constructor
      * @param <T> type of the target class object.
-     * @return constructor of targetClass or {@link IllegalStateException} if any exception occurs
+     * @return constructor of targetClass
+     * @throws IllegalStateException if any exception occurs
      * @see Class#getConstructor(Class[])
      */
     public static <T> Constructor<T> getConstructor(Class<T> targetClass,
@@ -447,13 +452,15 @@ public final class CommonUtil {
 
     /**
      * Returns new instance of a class.
+     *
      * @param constructor
      *            to invoke
      * @param parameters
      *            to pass to constructor
      * @param <T>
      *            type of constructor
-     * @return new instance of class or {@link IllegalStateException} if any exception occurs
+     * @return new instance of class
+     * @throws IllegalStateException if any exception occurs
      * @see Constructor#newInstance(Object...)
      */
     public static <T> T invokeConstructor(Constructor<T> constructor, Object... parameters) {
@@ -470,6 +477,7 @@ public final class CommonUtil {
      *
      * @param closeable
      *            Closeable object
+     * @throws IllegalStateException when any IOException occurs
      */
     public static void close(Closeable closeable) {
         if (closeable != null) {
@@ -484,6 +492,7 @@ public final class CommonUtil {
 
     /**
      * Resolve the specified filename to a URI.
+     *
      * @param filename name os the file
      * @return resolved header file URI
      * @throws CheckstyleException on failure
@@ -507,8 +516,13 @@ public final class CommonUtil {
             else {
                 // check to see if the file is in the classpath
                 try {
-                    final URL configUrl = CommonUtil.class
-                            .getResource(filename);
+                    final URL configUrl;
+                    if (filename.charAt(0) == '/') {
+                        configUrl = CommonUtil.class.getResource(filename);
+                    }
+                    else {
+                        configUrl = ClassLoader.getSystemResource(filename);
+                    }
                     if (configUrl == null) {
                         throw new CheckstyleException(UNABLE_TO_FIND_EXCEPTION_PREFIX + filename);
                     }
@@ -526,6 +540,7 @@ public final class CommonUtil {
     /**
      * Puts part of line, which matches regexp into given template
      * on positions $n where 'n' is number of matched part in line.
+     *
      * @param template the string to expand.
      * @param lineToPlaceInTemplate contains expression which should be placed into string.
      * @param regexp expression to find in comment.
@@ -548,6 +563,7 @@ public final class CommonUtil {
      * Returns file name without extension.
      * We do not use the method from Guava library to reduce Checkstyle's dependencies
      * on external libraries.
+     *
      * @param fullFilename file name with extension.
      * @return file name without extension.
      */
@@ -569,6 +585,7 @@ public final class CommonUtil {
      * or empty string if file does not have an extension.
      * We do not use the method from Guava library to reduce Checkstyle's dependencies
      * on external libraries.
+     *
      * @param fileNameWithExtension file name with extension.
      * @return file extension for the given file name
      *         or empty string if file does not have an extension.
@@ -588,6 +605,7 @@ public final class CommonUtil {
 
     /**
      * Checks whether the given string is a valid identifier.
+     *
      * @param str A string to check.
      * @return true when the given string contains valid identifier.
      */
@@ -608,6 +626,7 @@ public final class CommonUtil {
 
     /**
      * Checks whether the given string is a valid name.
+     *
      * @param str A string to check.
      * @return true when the given string contains valid name.
      */
@@ -625,6 +644,7 @@ public final class CommonUtil {
     /**
      * Checks if the value arg is blank by either being null,
      * empty, or contains only whitespace characters.
+     *
      * @param value A string to check.
      * @return true if the arg is blank.
      */
@@ -643,6 +663,7 @@ public final class CommonUtil {
 
     /**
      * Checks whether the string contains an integer value.
+     *
      * @param str a string to check
      * @return true if the given string is an integer, false otherwise.
      */

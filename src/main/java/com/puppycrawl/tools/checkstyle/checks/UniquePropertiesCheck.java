@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -36,9 +36,45 @@ import com.puppycrawl.tools.checkstyle.api.AbstractFileSetCheck;
 import com.puppycrawl.tools.checkstyle.api.FileText;
 
 /**
- * Checks the uniqueness of property keys (left from equal sign) in the
- * properties file.
+ * <p>
+ * Detects duplicated keys in properties files.
+ * </p>
+ * <p>
+ * Rationale: Multiple property keys usually appear after merge or rebase of
+ * several branches. While there are no problems in runtime, there can be a confusion
+ * due to having different values for the duplicated properties.
+ * </p>
+ * <ul>
+ * <li>
+ * Property {@code fileExtensions} - Specify file type extension of the files to check.
+ * Type is {@code java.lang.String[]}.
+ * Default value is {@code .properties}.
+ * </li>
+ * </ul>
+ * <p>
+ * To configure the check:
+ * </p>
+ * <pre>
+ * &lt;module name=&quot;UniqueProperties&quot;&gt;
+ *   &lt;property name=&quot;fileExtensions&quot; value=&quot;properties&quot; /&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.Checker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code properties.duplicate.property}
+ * </li>
+ * <li>
+ * {@code unable.open.cause}
+ * </li>
+ * </ul>
  *
+ * @since 5.7
  */
 @StatelessCheck
 public class UniquePropertiesCheck extends AbstractFileSetCheck {
@@ -144,6 +180,7 @@ public class UniquePropertiesCheck extends AbstractFileSetCheck {
 
         /**
          * Puts the value into properties by the key specified.
+         *
          * @noinspection UseOfPropertiesAsHashtable
          */
         @Override

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -23,16 +23,16 @@ import static com.puppycrawl.tools.checkstyle.checks.coding.DeclarationOrderChec
 import static com.puppycrawl.tools.checkstyle.checks.coding.DeclarationOrderCheck.MSG_CONSTRUCTOR;
 import static com.puppycrawl.tools.checkstyle.checks.coding.DeclarationOrderCheck.MSG_INSTANCE;
 import static com.puppycrawl.tools.checkstyle.checks.coding.DeclarationOrderCheck.MSG_STATIC;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.SortedSet;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
-import com.puppycrawl.tools.checkstyle.api.DetailAST;
+import com.puppycrawl.tools.checkstyle.DetailAstImpl;
 import com.puppycrawl.tools.checkstyle.api.LocalizedMessage;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 
@@ -128,19 +128,19 @@ public class DeclarationOrderCheckTest
     @Test
     public void testTokensNotNull() {
         final DeclarationOrderCheck check = new DeclarationOrderCheck();
-        Assert.assertNotNull("Acceptable tokens should not be null", check.getAcceptableTokens());
-        Assert.assertNotNull("Default tokens should not be null", check.getDefaultTokens());
-        Assert.assertNotNull("Required tokens should not be null", check.getRequiredTokens());
+        assertNotNull(check.getAcceptableTokens(), "Acceptable tokens should not be null");
+        assertNotNull(check.getDefaultTokens(), "Default tokens should not be null");
+        assertNotNull(check.getRequiredTokens(), "Required tokens should not be null");
     }
 
     @Test
     public void testParents() {
-        final DetailAST parent = new DetailAST();
+        final DetailAstImpl parent = new DetailAstImpl();
         parent.setType(TokenTypes.STATIC_INIT);
-        final DetailAST method = new DetailAST();
+        final DetailAstImpl method = new DetailAstImpl();
         method.setType(TokenTypes.METHOD_DEF);
         parent.setFirstChild(method);
-        final DetailAST ctor = new DetailAST();
+        final DetailAstImpl ctor = new DetailAstImpl();
         ctor.setType(TokenTypes.CTOR_DEF);
         method.setNextSibling(ctor);
 
@@ -149,19 +149,19 @@ public class DeclarationOrderCheckTest
         check.visitToken(method);
         final SortedSet<LocalizedMessage> messages1 = check.getMessages();
 
-        assertEquals("No exception messages expected", 0, messages1.size());
+        assertEquals(0, messages1.size(), "No exception messages expected");
 
         check.visitToken(ctor);
         final SortedSet<LocalizedMessage> messages2 = check.getMessages();
 
-        assertEquals("No exception messages expected", 0, messages2.size());
+        assertEquals(0, messages2.size(), "No exception messages expected");
     }
 
     @Test
     public void testImproperToken() {
-        final DetailAST parent = new DetailAST();
+        final DetailAstImpl parent = new DetailAstImpl();
         parent.setType(TokenTypes.STATIC_INIT);
-        final DetailAST array = new DetailAST();
+        final DetailAstImpl array = new DetailAstImpl();
         array.setType(TokenTypes.ARRAY_INIT);
         parent.setFirstChild(array);
 
@@ -170,7 +170,7 @@ public class DeclarationOrderCheckTest
         check.visitToken(array);
         final SortedSet<LocalizedMessage> messages = check.getMessages();
 
-        assertEquals("No exception messages expected", 0, messages.size());
+        assertEquals(0, messages.size(), "No exception messages expected");
     }
 
     @Test

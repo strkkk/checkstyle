@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -52,6 +52,7 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  * <ul>
  * <li>
  * Property {@code tokens} - tokens to check
+ * Type is {@code int[]}.
  * Default value is:
  * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#EXPR">
  * EXPR</a>,
@@ -107,6 +108,54 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  * <pre>
  * &lt;module name=&quot;UnnecessaryParentheses&quot;/&gt;
  * </pre>
+ * <p>
+ * Which results in the following violations:
+ * </p>
+ * <pre>
+ * public int square(int a, int b){
+ *   int square = (a * b); //violation
+ *   return (square); //violation
+ * }
+ * int sumOfSquares = 0;
+ * for(int i=(0); i&lt;10; i++){ //violation
+ *   int x = (i + 1); //violation
+ *   sumOfSquares += (square(x * x)); //violation
+ * }
+ * double num = (10.0); //violation
+ * List&lt;String&gt; list = Arrays.asList(&quot;a1&quot;, &quot;b1&quot;, &quot;c1&quot;);
+ * myList.stream()
+ *   .filter((s) -&gt; s.startsWith(&quot;c&quot;)) //violation
+ *   .forEach(System.out::println);
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code unnecessary.paren.assign}
+ * </li>
+ * <li>
+ * {@code unnecessary.paren.expr}
+ * </li>
+ * <li>
+ * {@code unnecessary.paren.ident}
+ * </li>
+ * <li>
+ * {@code unnecessary.paren.lambda}
+ * </li>
+ * <li>
+ * {@code unnecessary.paren.literal}
+ * </li>
+ * <li>
+ * {@code unnecessary.paren.return}
+ * </li>
+ * <li>
+ * {@code unnecessary.paren.string}
+ * </li>
+ * </ul>
  *
  * @since 3.4
  */
@@ -336,6 +385,7 @@ public class UnnecessaryParenthesesCheck extends AbstractCheck {
      * In short, does {@code ast} have a previous sibling whose type is
      * {@code TokenTypes.LPAREN} and a next sibling whose type is {@code
      * TokenTypes.RPAREN}.
+     *
      * @param ast the {@code DetailAST} to check if it is surrounded by
      *        parentheses.
      * @return {@code true} if {@code ast} is surrounded by
@@ -350,6 +400,7 @@ public class UnnecessaryParenthesesCheck extends AbstractCheck {
 
     /**
      * Tests if the given expression node is surrounded by parentheses.
+     *
      * @param ast a {@code DetailAST} whose type is
      *        {@code TokenTypes.EXPR}.
      * @return {@code true} if the expression is surrounded by
@@ -362,6 +413,7 @@ public class UnnecessaryParenthesesCheck extends AbstractCheck {
     /**
      * Tests if the given lambda node has a single parameter, no defined type, and is surrounded
      * by parentheses.
+     *
      * @param ast a {@code DetailAST} whose type is
      *        {@code TokenTypes.LAMBDA}.
      * @return {@code true} if the lambda has a single parameter, no defined type, and is
@@ -369,14 +421,20 @@ public class UnnecessaryParenthesesCheck extends AbstractCheck {
      */
     private static boolean isLambdaSingleParameterSurrounded(DetailAST ast) {
         final DetailAST firstChild = ast.getFirstChild();
-        return firstChild.getType() == TokenTypes.LPAREN
-                && firstChild.getNextSibling().getChildCount(TokenTypes.PARAMETER_DEF) == 1
-                && firstChild.getNextSibling().getFirstChild().findFirstToken(TokenTypes.TYPE)
-                        .getChildCount() == 0;
+        boolean result = false;
+        if (firstChild.getType() == TokenTypes.LPAREN) {
+            final DetailAST parameters = firstChild.getNextSibling();
+            if (parameters.getChildCount(TokenTypes.PARAMETER_DEF) == 1
+                    && !parameters.getFirstChild().findFirstToken(TokenTypes.TYPE).hasChildren()) {
+                result = true;
+            }
+        }
+        return result;
     }
 
     /**
      * Check if the given token type can be found in an array of token types.
+     *
      * @param type the token type.
      * @param tokens an array of token types to search.
      * @return {@code true} if {@code type} was found in {@code
@@ -398,6 +456,7 @@ public class UnnecessaryParenthesesCheck extends AbstractCheck {
      * Returns the specified string chopped to {@code MAX_QUOTED_LENGTH}
      * plus an ellipsis (...) if the length of the string exceeds {@code
      * MAX_QUOTED_LENGTH}.
+     *
      * @param value the string to potentially chop.
      * @return the chopped string if {@code string} is longer than
      *         {@code MAX_QUOTED_LENGTH}; otherwise {@code string}.

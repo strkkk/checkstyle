@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -42,7 +42,7 @@ public enum LineSeparatorOption {
      * Matches CR, LF and CRLF line separators.
      * Only the length is used - the actual value is ignored.
      */
-    LF_CR_CRLF("##"),
+    LF_CR_CRLF("#"),
 
     /** System default line separators. **/
     SYSTEM(System.getProperty("line.separator"));
@@ -52,6 +52,7 @@ public enum LineSeparatorOption {
 
     /**
      * Creates a new {@code LineSeparatorOption} instance.
+     *
      * @param sep the line separator, e.g. "\r\n"
      */
     LineSeparatorOption(String sep) {
@@ -60,6 +61,7 @@ public enum LineSeparatorOption {
 
     /**
      * Checks that bytes is equal to the byte representation of this line separator.
+     *
      * @param bytes a bytes array to check
      * @return if bytes is equal to the byte representation
      *     of this line separator
@@ -69,8 +71,7 @@ public enum LineSeparatorOption {
         if (this == LF_CR_CRLF) {
             // this silently assumes LF and CR are of length 1
             // CRLF always matches LF, so CRLF isn't tested
-            result = LF.matches(Arrays.copyOfRange(bytes, 1, 2))
-                || CR.matches(Arrays.copyOfRange(bytes, 1, 2));
+            result = LF.matches(bytes) || CR.matches(bytes);
         }
         else {
             result = Arrays.equals(bytes, lineSeparator);
@@ -80,6 +81,7 @@ public enum LineSeparatorOption {
 
     /**
      * Returns length of file separator in bytes.
+     *
      * @return the length of the file separator in bytes,
      *     e.g. 1 for CR, 2 for CRLF, ...
      */

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -25,14 +25,70 @@ import com.puppycrawl.tools.checkstyle.api.JavadocTokenTypes;
 import com.puppycrawl.tools.checkstyle.utils.JavadocUtil;
 
 /**
- * Checks that the at-clause tag is followed by description .
+ * <p>
+ * Checks that the at-clause tag is followed by description.
+ * </p>
+ * <ul>
+ * <li>
+ * Property {@code violateExecutionOnNonTightHtml} - Control when to print violations
+ * if the Javadoc being examined by this check violates the tight html rules defined at
+ * <a href="https://checkstyle.org/writingjavadocchecks.html#Tight-HTML_rules">Tight-HTML Rules</a>.
+ * Type is {@code boolean}.
+ * Default value is {@code false}.
+ * </li>
+ * <li>
+ * Property {@code javadocTokens} - javadoc tokens to check
+ * Type is {@code int[]}.
+ * Default value is
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/JavadocTokenTypes.html#PARAM_LITERAL">
+ * PARAM_LITERAL</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/JavadocTokenTypes.html#RETURN_LITERAL">
+ * RETURN_LITERAL</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/JavadocTokenTypes.html#THROWS_LITERAL">
+ * THROWS_LITERAL</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/JavadocTokenTypes.html#EXCEPTION_LITERAL">
+ * EXCEPTION_LITERAL</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/JavadocTokenTypes.html#DEPRECATED_LITERAL">
+ * DEPRECATED_LITERAL</a>.
+ * </li>
+ * </ul>
+ * <p>
  * Default configuration that will check {@code @param}, {@code @return},
- * {@code @throws}, {@code @deprecated} to:
+ * {@code @throws}, {@code @deprecated}:
+ * </p>
  * <pre>
- * &lt;module name=&quot;NonEmptyAtclauseDescription&quot;/&gt;
+ * &lt;module name="NonEmptyAtclauseDescription"/&gt;
  * </pre>
+ * <p>
+ * To configure the check to validate only {@code @param} and {@code @return} tags:
+ * </p>
+ * <pre>
+ * &lt;module name="NonEmptyAtclauseDescription"&gt;
+ *   &lt;property name="javadocTokens" value="PARAM_LITERAL,RETURN_LITERAL"/&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code javadoc.missed.html.close}
+ * </li>
+ * <li>
+ * {@code javadoc.parse.rule.error}
+ * </li>
+ * <li>
+ * {@code javadoc.wrong.singleton.html.tag}
+ * </li>
+ * <li>
+ * {@code non.empty.atclause}
+ * </li>
+ * </ul>
  *
- *
+ * @since 6.0
  */
 @StatelessCheck
 public class NonEmptyAtclauseDescriptionCheck extends AbstractJavadocCheck {
@@ -63,6 +119,7 @@ public class NonEmptyAtclauseDescriptionCheck extends AbstractJavadocCheck {
 
     /**
      * Tests if at-clause tag is empty.
+     *
      * @param tagNode at-clause tag.
      * @return true, if at-clause tag is empty.
      */

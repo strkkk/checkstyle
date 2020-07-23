@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -23,7 +23,7 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
 import com.puppycrawl.tools.checkstyle.checks.coding.HiddenFieldCheck;
@@ -40,7 +40,7 @@ public class XpathRegressionHiddenFieldTest extends AbstractXpathTestSupport {
     @Test
     public void testOne() throws Exception {
         final File fileToProcess =
-                new File(getPath("SuppressionXpathRegressionExplicitOne.java"));
+                new File(getPath("SuppressionXpathRegressionHiddenFieldOne.java"));
 
         final DefaultConfiguration moduleConfig =
                 createModuleConfig(HiddenFieldCheck.class);
@@ -51,7 +51,7 @@ public class XpathRegressionHiddenFieldTest extends AbstractXpathTestSupport {
         };
 
         final List<String> expectedXpathQueries = Collections.singletonList(
-            "/CLASS_DEF[./IDENT[@text='SuppressionXpathRegressionExplicitOne']]/OBJBLOCK"
+            "/CLASS_DEF[./IDENT[@text='SuppressionXpathRegressionHiddenFieldOne']]/OBJBLOCK"
                 + "/INSTANCE_INIT/SLIST/EXPR/METHOD_CALL/ELIST/LAMBDA/PARAMETERS"
                 + "/PARAMETER_DEF/IDENT[@text='value']"
         );
@@ -63,7 +63,7 @@ public class XpathRegressionHiddenFieldTest extends AbstractXpathTestSupport {
     @Test
     public void testTwo() throws Exception {
         final File fileToProcess =
-                new File(getPath("SuppressionXpathRegressionExplicitTwo.java"));
+                new File(getPath("SuppressionXpathRegressionHiddenFieldTwo.java"));
 
         final DefaultConfiguration moduleConfig =
                 createModuleConfig(HiddenFieldCheck.class);
@@ -74,7 +74,7 @@ public class XpathRegressionHiddenFieldTest extends AbstractXpathTestSupport {
         };
 
         final List<String> expectedXpathQueries = Collections.singletonList(
-            "/CLASS_DEF[./IDENT[@text='SuppressionXpathRegressionExplicitTwo']]/OBJBLOCK"
+            "/CLASS_DEF[./IDENT[@text='SuppressionXpathRegressionHiddenFieldTwo']]/OBJBLOCK"
                 + "/METHOD_DEF[./IDENT[@text='method']]/PARAMETERS/PARAMETER_DEF"
                 + "/IDENT[@text='other']"
         );

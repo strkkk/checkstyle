@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -122,6 +122,7 @@ public final class SuppressionsLoader
 
     /**
      * Creates a new {@code SuppressionsLoader} instance.
+     *
      * @throws ParserConfigurationException if an error occurs
      * @throws SAXException if an error occurs
      */
@@ -137,7 +138,7 @@ public final class SuppressionsLoader
                              Attributes attributes)
             throws SAXException {
         if ("suppress".equals(qName)) {
-            //add SuppressFilterElement filter to the filter chain
+            // add SuppressFilterElement filter to the filter chain
             final SuppressFilterElement suppress = getSuppressElement(attributes);
             filterChain.addFilter(suppress);
         }
@@ -149,6 +150,7 @@ public final class SuppressionsLoader
 
     /**
      * Returns the suppress element, initialized from given attributes.
+     *
      * @param attributes the attributes of xml-tag "<suppress></suppress>", specified inside
      *                   suppression file.
      * @return the suppress element
@@ -179,6 +181,7 @@ public final class SuppressionsLoader
 
     /**
      * Returns the xpath filter, initialized from given attributes.
+     *
      * @param attributes the attributes of xml-tag "<suppress-xpath></suppress-xpath>",
      *                   specified inside suppression file.
      * @return the xpath filter
@@ -208,6 +211,7 @@ public final class SuppressionsLoader
 
     /**
      * Returns the suppression filters in a specified file.
+     *
      * @param filename name of the suppressions file.
      * @return the filter chain of suppression elements specified in the file.
      * @throws CheckstyleException if an error occurs.
@@ -222,6 +226,7 @@ public final class SuppressionsLoader
 
     /**
      * Returns the suppression filters in a specified source.
+     *
      * @param source the source for the suppressions.
      * @param sourceName the name of the source.
      * @return the filter chain of suppression elements in source.
@@ -235,6 +240,7 @@ public final class SuppressionsLoader
 
     /**
      * Returns the suppression {@code TreeWalker} filters in a specified file.
+     *
      * @param filename name of the suppressions file.
      * @return the set of xpath suppression elements specified in the file.
      * @throws CheckstyleException if an error occurs.
@@ -249,6 +255,7 @@ public final class SuppressionsLoader
 
     /**
      * Returns the suppression {@code TreeWalker} filters in a specified source.
+     *
      * @param source the source for the suppressions.
      * @param sourceName the name of the source.
      * @return the set of xpath suppression elements specified in source.
@@ -262,6 +269,7 @@ public final class SuppressionsLoader
 
     /**
      * Parses specified source and returns the suppression loader.
+     *
      * @param source the source for the suppressions.
      * @param sourceName the name of the source.
      * @return the suppression loader
@@ -295,6 +303,7 @@ public final class SuppressionsLoader
 
     /**
      * Creates mapping between local resources and dtd ids.
+     *
      * @return map between local resources and dtd ids.
      */
     private static Map<String, String> createIdToResourceNameMap() {

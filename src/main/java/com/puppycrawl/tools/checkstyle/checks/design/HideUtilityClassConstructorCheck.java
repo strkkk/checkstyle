@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -25,13 +25,85 @@ import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 
 /**
- * Make sure that utility classes (classes that contain only static methods)
+ * <p>
+ * Makes sure that utility classes (classes that contain only static methods or fields in their API)
  * do not have a public constructor.
+ * </p>
  * <p>
  * Rationale: Instantiating utility classes does not make sense.
+ * Hence the constructors should either be private or (if you want to allow subclassing) protected.
  * A common mistake is forgetting to hide the default constructor.
  * </p>
+ * <p>
+ * If you make the constructor protected you may want to consider the following constructor
+ * implementation technique to disallow instantiating subclasses:
+ * </p>
+ * <pre>
+ * public class StringUtils // not final to allow subclassing
+ * {
+ *   protected StringUtils() {
+ *     // prevents calls from subclass
+ *     throw new UnsupportedOperationException();
+ *   }
  *
+ *   public static int count(char c, String s) {
+ *     // ...
+ *   }
+ * }
+ * </pre>
+ * <p>
+ * To configure the check:
+ * </p>
+ * <pre>
+ * &lt;module name=&quot;HideUtilityClassConstructor&quot;/&gt;
+ * </pre>
+ * <p>
+ * Example:
+ * </p>
+ * <pre>
+ * class Test { // violation, class only has a static method and a constructor
+ *
+ *   public Test() {
+ *   }
+ *
+ *   public static void fun() {
+ *   }
+ * }
+ *
+ * class Foo { // OK
+ *
+ *   private Foo() {
+ *   }
+ *
+ *   static int n;
+ * }
+ *
+ * class Bar { // OK
+ *
+ *   protected Bar() {
+ *     // prevents calls from subclass
+ *     throw new UnsupportedOperationException();
+ *   }
+ * }
+ *
+ * class UtilityClass { // violation, class only has a static field
+ *
+ *   static float f;
+ * }
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code hide.utility.class}
+ * </li>
+ * </ul>
+ *
+ * @since 3.1
  */
 @StatelessCheck
 public class HideUtilityClassConstructorCheck extends AbstractCheck {
@@ -90,6 +162,7 @@ public class HideUtilityClassConstructorCheck extends AbstractCheck {
 
     /**
      * Returns true if given class is abstract or false.
+     *
      * @param ast class definition for check.
      * @return true if a given class declared as abstract.
      */
@@ -100,6 +173,7 @@ public class HideUtilityClassConstructorCheck extends AbstractCheck {
 
     /**
      * Returns true if given class is static or false.
+     *
      * @param ast class definition for check.
      * @return true if a given class declared as static.
      */
@@ -126,6 +200,7 @@ public class HideUtilityClassConstructorCheck extends AbstractCheck {
 
         /**
          * C-tor.
+         *
          * @param ast class ast
          * */
         /* package */ Details(DetailAST ast) {
@@ -134,6 +209,7 @@ public class HideUtilityClassConstructorCheck extends AbstractCheck {
 
         /**
          * Getter.
+         *
          * @return boolean
          */
         public boolean isHasNonStaticMethodOrField() {
@@ -142,6 +218,7 @@ public class HideUtilityClassConstructorCheck extends AbstractCheck {
 
         /**
          * Getter.
+         *
          * @return boolean
          */
         public boolean isHasNonPrivateStaticMethodOrField() {
@@ -150,6 +227,7 @@ public class HideUtilityClassConstructorCheck extends AbstractCheck {
 
         /**
          * Getter.
+         *
          * @return boolean
          */
         public boolean isHasDefaultCtor() {
@@ -158,6 +236,7 @@ public class HideUtilityClassConstructorCheck extends AbstractCheck {
 
         /**
          * Getter.
+         *
          * @return boolean
          */
         public boolean isHasPublicCtor() {

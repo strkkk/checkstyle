@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -36,6 +36,7 @@ class FileImportControl extends AbstractImportControl {
 
     /**
      * Construct a file node.
+     *
      * @param parent the parent node.
      * @param name the name of the file.
      * @param regex flags interpretation of name as regex pattern.
@@ -56,6 +57,7 @@ class FileImportControl extends AbstractImportControl {
 
     /**
      * Enclose {@code expression} in a (non-capturing) group.
+     *
      * @param expression the input regular expression
      * @return a grouped pattern.
      */
@@ -65,6 +67,7 @@ class FileImportControl extends AbstractImportControl {
 
     /**
      * Creates a Pattern from {@code expression}.
+     *
      * @param expression a self-contained regular expression matching the full
      *     file name exactly.
      * @return a Pattern.

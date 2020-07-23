@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.FullIdent;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
-import com.puppycrawl.tools.checkstyle.checks.naming.AccessModifier;
+import com.puppycrawl.tools.checkstyle.checks.naming.AccessModifierOption;
 
 /**
  * Contains utility methods for the checks.
@@ -73,6 +73,7 @@ public final class CheckUtil {
 
     /**
      * Creates {@code FullIdent} for given type node.
+     *
      * @param typeAST a type node.
      * @return {@code FullIdent} for given type.
      */
@@ -89,6 +90,7 @@ public final class CheckUtil {
 
     /**
      * Tests whether a method definition AST defines an equals covariant.
+     *
      * @param ast the method definition AST to test.
      *     Precondition: ast is a TokenTypes.METHOD_DEF node.
      * @return true if ast defines an equals covariant.
@@ -118,6 +120,7 @@ public final class CheckUtil {
 
     /**
      * Returns whether a token represents an ELSE as part of an ELSE / IF set.
+     *
      * @param ast the token to check
      * @return whether it is
      */
@@ -130,6 +133,7 @@ public final class CheckUtil {
 
     /**
      * Returns whether a token represents an ELSE.
+     *
      * @param ast the token to check
      * @return whether the token represents an ELSE
      */
@@ -140,6 +144,7 @@ public final class CheckUtil {
     /**
      * Returns whether a token represents an SLIST as part of an ELSE
      * statement.
+     *
      * @param ast the token to check
      * @return whether the toke does represent an SLIST as part of an ELSE
      */
@@ -152,6 +157,7 @@ public final class CheckUtil {
     /**
      * Returns the value represented by the specified string of the specified
      * type. Returns 0 for types other than float, double, int, and long.
+     *
      * @param text the string to be parsed.
      * @param type the token type of the text. Should be a constant of
      *     {@link TokenTypes}.
@@ -193,6 +199,7 @@ public final class CheckUtil {
      * Parses the string argument as an integer or a long in the radix specified by
      * the second argument. The characters in the string must all be digits of
      * the specified radix.
+     *
      * @param text the String containing the integer representation to be
      *     parsed. Precondition: text contains a parsable int.
      * @param radix the radix to be used while parsing text.
@@ -233,6 +240,7 @@ public final class CheckUtil {
 
     /**
      * Finds sub-node for given node minimal (line, column) pair.
+     *
      * @param node the root of tree for search.
      * @return sub-node with minimal (line, column) pair.
      */
@@ -241,9 +249,7 @@ public final class CheckUtil {
         DetailAST child = node.getFirstChild();
         while (child != null) {
             final DetailAST newNode = getFirstNode(child);
-            if (newNode.getLineNo() < currentNode.getLineNo()
-                || newNode.getLineNo() == currentNode.getLineNo()
-                    && newNode.getColumnNo() < currentNode.getColumnNo()) {
+            if (isBeforeInSource(newNode, currentNode)) {
                 currentNode = newNode;
             }
             child = child.getNextSibling();
@@ -253,7 +259,21 @@ public final class CheckUtil {
     }
 
     /**
+     * Retrieves whether ast1 is located before ast2.
+     *
+     * @param ast1 the first node.
+     * @param ast2 the second node.
+     * @return true, if ast1 is located before ast2.
+     */
+    public static boolean isBeforeInSource(DetailAST ast1, DetailAST ast2) {
+        return ast1.getLineNo() < ast2.getLineNo()
+            || TokenUtil.areOnSameLine(ast1, ast2)
+                && ast1.getColumnNo() < ast2.getColumnNo();
+    }
+
+    /**
      * Retrieves the names of the type parameters to the node.
+     *
      * @param node the parameterized AST node
      * @return a list of type parameter names
      */
@@ -283,6 +303,7 @@ public final class CheckUtil {
 
     /**
      * Retrieves the type parameters to the node.
+     *
      * @param node the parameterized AST node
      * @return a list of type parameter names
      */
@@ -310,6 +331,7 @@ public final class CheckUtil {
 
     /**
      * Returns whether an AST represents a setter method.
+     *
      * @param ast the AST to check with
      * @return whether the AST represents a setter method
      */
@@ -347,6 +369,7 @@ public final class CheckUtil {
 
     /**
      * Returns whether an AST represents a getter method.
+     *
      * @param ast the AST to check with
      * @return whether the AST represents a getter method
      */
@@ -410,29 +433,32 @@ public final class CheckUtil {
     }
 
     /**
-     * Returns {@link AccessModifier} based on the information about access modifier
+     * Returns {@link AccessModifierOption} based on the information about access modifier
      * taken from the given token of type {@link TokenTypes#MODIFIERS}.
+     *
      * @param modifiersToken token of type {@link TokenTypes#MODIFIERS}.
-     * @return {@link AccessModifier}.
+     * @return {@link AccessModifierOption}.
+     * @throws IllegalArgumentException when expected non-null modifiersToken with type 'MODIFIERS'
      */
-    public static AccessModifier getAccessModifierFromModifiersToken(DetailAST modifiersToken) {
+    public static AccessModifierOption
+        getAccessModifierFromModifiersToken(DetailAST modifiersToken) {
         if (modifiersToken == null || modifiersToken.getType() != TokenTypes.MODIFIERS) {
             throw new IllegalArgumentException("expected non-null AST-token with type 'MODIFIERS'");
         }
 
         // default access modifier
-        AccessModifier accessModifier = AccessModifier.PACKAGE;
+        AccessModifierOption accessModifier = AccessModifierOption.PACKAGE;
         for (DetailAST token = modifiersToken.getFirstChild(); token != null;
              token = token.getNextSibling()) {
             final int tokenType = token.getType();
             if (tokenType == TokenTypes.LITERAL_PUBLIC) {
-                accessModifier = AccessModifier.PUBLIC;
+                accessModifier = AccessModifierOption.PUBLIC;
             }
             else if (tokenType == TokenTypes.LITERAL_PROTECTED) {
-                accessModifier = AccessModifier.PROTECTED;
+                accessModifier = AccessModifierOption.PROTECTED;
             }
             else if (tokenType == TokenTypes.LITERAL_PRIVATE) {
-                accessModifier = AccessModifier.PRIVATE;
+                accessModifier = AccessModifierOption.PRIVATE;
             }
         }
         return accessModifier;

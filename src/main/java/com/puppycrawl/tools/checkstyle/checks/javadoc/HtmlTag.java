@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -48,6 +48,7 @@ class HtmlTag {
 
     /**
      * Construct the HtmlTag.
+     *
      * @param id the HTML tag name.
      * @param lineNo the source line number of this tag.
      * @param position the position within the text of this tag.
@@ -67,6 +68,7 @@ class HtmlTag {
 
     /**
      * Returns the id (name) of this tag.
+     *
      * @return a String id.
      */
     public String getId() {
@@ -75,6 +77,7 @@ class HtmlTag {
 
     /**
      * Indicates if this tag is a close (end) tag.
+     *
      * @return {@code true} is this is a close tag.
      */
     public boolean isCloseTag() {
@@ -83,6 +86,7 @@ class HtmlTag {
 
     /**
      * Indicates if this tag is a self-closed XHTML style.
+     *
      * @return {@code true} is this is a self-closed tag.
      */
     public boolean isClosedTag() {
@@ -91,6 +95,7 @@ class HtmlTag {
 
     /**
      * Indicates if this tag is incomplete (has no close &gt;).
+     *
      * @return {@code true} if the tag is incomplete.
      */
     public boolean isIncompleteTag() {
@@ -99,7 +104,8 @@ class HtmlTag {
 
     /**
      * Returns the source line number where this tag was found.
-     * Used for displaying a Checkstyle error.
+     * Used for displaying a Checkstyle violation.
+     *
      * @return an int line number.
      */
     public int getLineNo() {
@@ -108,7 +114,8 @@ class HtmlTag {
 
     /**
      * Returns the position with in the comment line where this tag
-     * was found.  Used for displaying a Checkstyle error.
+     * was found.  Used for displaying a Checkstyle violation.
+     *
      * @return an int relative to zero.
      */
     public int getPosition() {
@@ -127,6 +134,7 @@ class HtmlTag {
 
     /**
      * Returns the comment line of text where this tag appears.
+     *
      * @return text of the tag
      */
     public String getText() {

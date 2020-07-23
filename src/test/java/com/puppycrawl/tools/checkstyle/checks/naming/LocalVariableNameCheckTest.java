@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,9 @@
 package com.puppycrawl.tools.checkstyle.checks.naming;
 
 import static com.puppycrawl.tools.checkstyle.checks.naming.AbstractNameCheck.MSG_INVALID_PATTERN;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
@@ -42,8 +42,8 @@ public class LocalVariableNameCheckTest
         final LocalVariableNameCheck localVariableNameCheck = new LocalVariableNameCheck();
         final int[] expected = {TokenTypes.VARIABLE_DEF};
 
-        assertArrayEquals("Default acceptable tokens are invalid",
-                expected, localVariableNameCheck.getAcceptableTokens());
+        assertArrayEquals(expected, localVariableNameCheck.getAcceptableTokens(),
+                "Default acceptable tokens are invalid");
     }
 
     @Test
@@ -83,8 +83,12 @@ public class LocalVariableNameCheckTest
         final String pattern = "^[a-z]{2,}[a-zA-Z0-9]*$";
 
         final String[] expected = {
-            "19:21: " + getCheckMessage(MSG_INVALID_PATTERN, "i", pattern),
-            "25:17: " + getCheckMessage(MSG_INVALID_PATTERN, "Index", pattern),
+            "16:29: " + getCheckMessage(MSG_INVALID_PATTERN, "j", pattern),
+            "19:17: " + getCheckMessage(MSG_INVALID_PATTERN, "A", pattern),
+            "21:21: " + getCheckMessage(MSG_INVALID_PATTERN, "i", pattern),
+            "27:17: " + getCheckMessage(MSG_INVALID_PATTERN, "Index", pattern),
+            "44:32: " + getCheckMessage(MSG_INVALID_PATTERN, "a", pattern),
+            "47:32: " + getCheckMessage(MSG_INVALID_PATTERN, "B", pattern),
         };
         verify(checkConfig, getPath("InputLocalVariableNameOneCharInitVarName.java"), expected);
     }

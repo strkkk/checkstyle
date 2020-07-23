@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -33,9 +33,78 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 import com.puppycrawl.tools.checkstyle.utils.TokenUtil;
 
 /**
- * Checks for multiple occurrences of the same string literal within a
- * single file.
+ * <p>
+ * Checks for multiple occurrences of the same string literal within a single file.
+ * </p>
+ * <p>
+ * Rationale: Code duplication makes maintenance more difficult, so it can be better
+ * to replace the multiple occurrences with a constant.
+ * </p>
+ * <ul>
+ * <li>
+ * Property {@code allowedDuplicates} - Specify the maximum number of occurrences
+ * to allow without generating a warning.
+ * Type is {@code int}.
+ * Default value is {@code 1}.
+ * </li>
+ * <li>
+ * Property {@code ignoreStringsRegexp} - Specify RegExp for ignored strings (with quotation marks).
+ * Type is {@code java.util.regex.Pattern}.
+ * Default value is {@code "^""$"}.
+ * </li>
+ * <li>
+ * Property {@code ignoreOccurrenceContext} - Specify token type names where duplicate
+ * strings are ignored even if they don't match ignoredStringsRegexp. This allows you to
+ * exclude syntactical contexts like annotations or static initializers from the check.
+ * Type is {@code int[]}.
+ * Default value is {@code ANNOTATION}.
+ * </li>
+ * </ul>
+ * <p>
+ * To configure the check:
+ * </p>
+ * <pre>
+ * &lt;module name=&quot;MultipleStringLiterals&quot;/&gt;
+ * </pre>
+ * <p>
+ * To configure the check so that it allows two occurrences of each string:
+ * </p>
+ * <pre>
+ * &lt;module name=&quot;MultipleStringLiterals&quot;&gt;
+ *   &lt;property name=&quot;allowedDuplicates&quot; value=&quot;2&quot;/&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>
+ * To configure the check so that it ignores ", " and empty strings:
+ * </p>
+ * <pre>
+ * &lt;module name=&quot;MultipleStringLiterals&quot;&gt;
+ *   &lt;property name=&quot;ignoreStringsRegexp&quot;
+ *     value='^((&quot;&quot;)|(&quot;, &quot;))$'/&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>
+ * To configure the check so that it flags duplicate strings in all syntactical contexts,
+ * even in annotations like {@code @SuppressWarnings("unchecked")}:
+ * </p>
+ * <pre>
+ * &lt;module name=&quot;MultipleStringLiterals&quot;&gt;
+ *   &lt;property name=&quot;ignoreOccurrenceContext&quot; value=&quot;&quot;/&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code multiple.string.literal}
+ * </li>
+ * </ul>
  *
+ * @since 3.5
  */
 @FileStatefulCheck
 public class MultipleStringLiteralsCheck extends AbstractCheck {
@@ -52,18 +121,19 @@ public class MultipleStringLiteralsCheck extends AbstractCheck {
     private final Map<String, List<DetailAST>> stringMap = new HashMap<>();
 
     /**
-     * Marks the TokenTypes where duplicate strings should be ignored.
+     * Specify token type names where duplicate strings are ignored even if they
+     * don't match ignoredStringsRegexp. This allows you to exclude syntactical
+     * contexts like annotations or static initializers from the check.
      */
     private final BitSet ignoreOccurrenceContext = new BitSet();
 
     /**
-     * The allowed number of string duplicates in a file before an error is
-     * generated.
+     * Specify the maximum number of occurrences to allow without generating a warning.
      */
     private int allowedDuplicates = 1;
 
     /**
-     * Pattern for matching ignored strings.
+     * Specify RegExp for ignored strings (with quotation marks).
      */
     private Pattern ignoreStringsRegexp;
 
@@ -76,7 +146,8 @@ public class MultipleStringLiteralsCheck extends AbstractCheck {
     }
 
     /**
-     * Sets the maximum allowed duplicates of a string.
+     * Setter to specify the maximum number of occurrences to allow without generating a warning.
+     *
      * @param allowedDuplicates The maximum number of duplicates.
      */
     public void setAllowedDuplicates(int allowedDuplicates) {
@@ -84,7 +155,8 @@ public class MultipleStringLiteralsCheck extends AbstractCheck {
     }
 
     /**
-     * Sets regular expression pattern for ignored strings.
+     * Setter to specify RegExp for ignored strings (with quotation marks).
+     *
      * @param ignoreStringsRegexp
      *        regular expression pattern for ignored strings
      * @noinspection WeakerAccess
@@ -99,7 +171,10 @@ public class MultipleStringLiteralsCheck extends AbstractCheck {
     }
 
     /**
-     * Adds a set of tokens the check is interested in.
+     * Setter to specify token type names where duplicate strings are ignored even
+     * if they don't match ignoredStringsRegexp. This allows you to exclude
+     * syntactical contexts like annotations or static initializers from the check.
+     *
      * @param strRep the string representation of the tokens interested in
      */
     public final void setIgnoreOccurrenceContext(String... strRep) {
@@ -130,12 +205,7 @@ public class MultipleStringLiteralsCheck extends AbstractCheck {
         if (!isInIgnoreOccurrenceContext(ast)) {
             final String currentString = ast.getText();
             if (ignoreStringsRegexp == null || !ignoreStringsRegexp.matcher(currentString).find()) {
-                List<DetailAST> hitList = stringMap.get(currentString);
-                if (hitList == null) {
-                    hitList = new ArrayList<>();
-                    stringMap.put(currentString, hitList);
-                }
-                hitList.add(ast);
+                stringMap.computeIfAbsent(currentString, key -> new ArrayList<>()).add(ast);
             }
         }
     }

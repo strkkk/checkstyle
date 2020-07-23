@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,10 +21,13 @@ package com.puppycrawl.tools.checkstyle.checks.coding;
 
 import static com.puppycrawl.tools.checkstyle.checks.coding.IllegalTokenCheck.MSG_KEY;
 
-import org.junit.Test;
+import java.nio.charset.StandardCharsets;
+
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
+import com.puppycrawl.tools.checkstyle.internal.utils.CheckUtil;
 import com.puppycrawl.tools.checkstyle.utils.JavadocUtil;
 
 public class IllegalTokenCheckTest
@@ -79,20 +82,23 @@ public class IllegalTokenCheckTest
                 createModuleConfig(IllegalTokenCheck.class);
         checkConfig.addAttribute("tokens", "COMMENT_CONTENT");
 
+        final String path = getPath("InputIllegalTokens.java");
+        final String lineSeparator =
+                CheckUtil.getLineSeparatorForFile(path, StandardCharsets.UTF_8);
         final String[] expected = {
             "3:3: " + getCheckMessage(MSG_KEY,
                         JavadocUtil.escapeAllControlChars(
-                            "*" + System.lineSeparator()
+                            "*" + lineSeparator
                             + " * Test for illegal tokens"
-                            + System.lineSeparator() + " ")),
+                            + lineSeparator + " ")),
             "31:29: " + getCheckMessage(MSG_KEY,
                         JavadocUtil.escapeAllControlChars(
-                            " some comment href" + System.lineSeparator())),
+                            " some comment href" + lineSeparator)),
             "35:28: " + getCheckMessage(MSG_KEY,
                         JavadocUtil.escapeAllControlChars(
-                            " some a href" + System.lineSeparator())),
+                            " some a href" + lineSeparator)),
         };
-        verify(checkConfig, getPath("InputIllegalTokens.java"), expected);
+        verify(checkConfig, path, expected);
     }
 
     @Test

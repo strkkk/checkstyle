@@ -187,4 +187,48 @@ public class InputRightCurlyAloneOrSingleline {
         while (true) {
             getClass();} // violation
     }
+
+    public void emptyBlocks() {
+        try {
+            // comment
+        } catch (RuntimeException e) { // violation
+            new Object();
+        } catch (Exception e) { // violation
+            // comment
+        } catch (Throwable e) { // violation
+        } finally { // violation
+            // comment
+        }
+
+        do {
+        } while (true); // violation
+    }
+
+    public void codeAfterLastRightCurly() {
+        while (new Object().equals(new Object())) {
+        }; // violation
+        for (int i = 0; i < 1; i++) { new Object(); }; // violation
+    }
+
+    public @interface TestAnnotation {}
+
+    public @interface TestAnnotation1{ String value(); }
+
+    public @interface TestAnnotation2 {
+        String value();} //violation
+
+    public @interface TestAnnotation3 {
+        String value();
+    }
+
+    public @interface TestAnnottation4 { String value();
+    }
+
+    interface Interface1
+    {
+        int i = 1;
+        public void meth1(); } // violation
+
+    interface Interface2
+    { int i = 1; public void meth1(); }
 }

@@ -24,12 +24,12 @@ class InputOverloadMethodsDeclarationOrder
 
     }
 
-    //error because overloads never split
+    //violation: because overloads never split
     public void overloadMethod(String s, Boolean b, int i) //warn
     {
         //some foo code
     }
-    
+
     InputOverloadMethodsDeclarationOrder anonymous = new InputOverloadMethodsDeclarationOrder()
     {
         public void overloadMethod(int i)
@@ -52,7 +52,7 @@ class InputOverloadMethodsDeclarationOrder
 
         }
 
-        //error because overloads never split
+        //violation: because overloads never split
         public void overloadMethod(String s, Boolean b, int i) //warn
         {
             //some foo code
@@ -72,21 +72,21 @@ enum FooType {
     Strategy(""),
     Shooter(""),
     RPG("");
- 
+
     private String description;
- 
+
     private FooType(String description) {
         this.description = description;
     }
- 
+
     public String getDescription() {
         return description;
     }
- 
+
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
     public void overloadMethod(int i)
     {
         //some foo code
@@ -107,7 +107,7 @@ enum FooType {
 
     }
 
-    //error because overloads never split
+    //violation: because overloads never split
     public void overloadMethod(String s, Boolean b, int i) //warn
     {
         //some foo code

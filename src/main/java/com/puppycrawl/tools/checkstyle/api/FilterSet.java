@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -36,6 +36,7 @@ public class FilterSet
 
     /**
      * Adds a Filter to the set.
+     *
      * @param filter the Filter to add.
      */
     public void addFilter(Filter filter) {
@@ -44,6 +45,7 @@ public class FilterSet
 
     /**
      * Removes filter.
+     *
      * @param filter filter to remove.
      */
     public void removeFilter(Filter filter) {
@@ -52,6 +54,7 @@ public class FilterSet
 
     /**
      * Returns the Filters of the filter set.
+     *
      * @return the Filters of the filter set.
      */
     public Set<Filter> getFilters() {

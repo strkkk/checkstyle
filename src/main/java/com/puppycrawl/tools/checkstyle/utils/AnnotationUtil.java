@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -39,6 +39,7 @@ public final class AnnotationUtil {
 
     /**
      * Private utility constructor.
+     *
      * @throws UnsupportedOperationException if called
      */
     private AnnotationUtil() {
@@ -75,6 +76,7 @@ public final class AnnotationUtil {
      *
      * @param ast the current node
      * @return {@code true} if the AST contains at least one annotation
+     * @throws IllegalArgumentException when ast is null
      */
     public static boolean containsAnnotation(final DetailAST ast) {
         if (ast == null) {
@@ -97,6 +99,7 @@ public final class AnnotationUtil {
      * @return {@code true} if the given AST element is annotated with
      *                      at least one of the specified annotations;
      *                      {@code false} otherwise.
+     * @throws IllegalArgumentException when ast or annotations are null
      */
     public static boolean containsAnnotation(DetailAST ast, List<String> annotations) {
         if (ast == null) {
@@ -132,6 +135,7 @@ public final class AnnotationUtil {
      *
      * @param ast the current node
      * @return the Annotation Holder
+     * @throws IllegalArgumentException when ast is null
      */
     public static DetailAST getAnnotationHolder(DetailAST ast) {
         if (ast == null) {
@@ -171,6 +175,7 @@ public final class AnnotationUtil {
      * @param ast the current node
      * @param annotation the annotation name to check for
      * @return the AST representing that annotation
+     * @throws IllegalArgumentException when ast or annotations are null; when annotation is blank
      */
     public static DetailAST getAnnotation(final DetailAST ast,
         String annotation) {

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,14 +20,14 @@
 package com.puppycrawl.tools.checkstyle.checks.coding;
 
 import static com.puppycrawl.tools.checkstyle.checks.coding.HiddenFieldCheck.MSG_KEY;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
@@ -165,8 +165,8 @@ public class HiddenFieldCheckTest
         final DefaultConfiguration checkConfig =
             createModuleConfig(HiddenFieldCheck.class);
         checkConfig.addAttribute("ignoreFormat", "^i.*$");
-        Assert.assertNotNull("Ignore format should not be null",
-                checkConfig.getAttribute("ignoreFormat"));
+        assertNotNull(checkConfig.getAttribute("ignoreFormat"),
+                "Ignore format should not be null");
         final String[] expected = {
             "18:13: " + getCheckMessage(MSG_KEY, "hidden"),
             "21:33: " + getCheckMessage(MSG_KEY, "hidden"),
@@ -412,6 +412,20 @@ public class HiddenFieldCheckTest
         verify(checkConfig, getPath("InputHiddenFieldReceiver.java"), expected);
     }
 
+    @Test
+    public void testHiddenFieldEnhancedInstanceof() throws Exception {
+        final DefaultConfiguration checkConfig =
+                createModuleConfig(HiddenFieldCheck.class);
+        checkConfig.addAttribute("tokens", "PATTERN_VARIABLE_DEF");
+
+        final String[] expected = {
+            "22:39: " + getCheckMessage(MSG_KEY, "price"),
+            "33:35: " + getCheckMessage(MSG_KEY, "hiddenStaticField"),
+        };
+        verify(checkConfig,
+                getNonCompilablePath("InputHiddenFieldEnhancedInstanceof.java"), expected);
+    }
+
     /**
      * We cannot reproduce situation when visitToken is called and leaveToken is not.
      * So, we have to use reflection to be sure that even in such situation
@@ -427,10 +441,10 @@ public class HiddenFieldCheckTest
         final Optional<DetailAST> classDef = TestUtil.findTokenInAstByPredicate(root,
             ast -> ast.getType() == TokenTypes.CLASS_DEF);
 
-        assertTrue("Ast should contain CLASS_DEF", classDef.isPresent());
-        assertTrue("State is not cleared on beginTree",
+        assertTrue(classDef.isPresent(), "Ast should contain CLASS_DEF");
+        assertTrue(
                 TestUtil.isStatefulFieldClearedDuringBeginTree(check, classDef.get(), "frame",
-                        new CheckIfStatefulFieldCleared()));
+                        new CheckIfStatefulFieldCleared()), "State is not cleared on beginTree");
     }
 
     private static class CheckIfStatefulFieldCleared implements Predicate<Object> {

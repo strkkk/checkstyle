@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,8 +19,6 @@
 
 package com.puppycrawl.tools.checkstyle.api;
 
-import org.antlr.v4.runtime.Recognizer;
-
 import com.puppycrawl.tools.checkstyle.grammar.javadoc.JavadocParser;
 
 /**
@@ -32,12 +30,12 @@ import com.puppycrawl.tools.checkstyle.grammar.javadoc.JavadocParser;
  */
 public final class JavadocTokenTypes {
 
-    //--------------------------------------------------------------------------------------------//
-    //------------------        JAVADOC TAGS          --------------------------------------------//
-    //--------------------------------------------------------------------------------------------//
+    // ------------------------------------------------------------------------------------------ //
+    // -----------------        JAVADOC TAGS          ------------------------------------------- //
+    // ------------------------------------------------------------------------------------------ //
 
     /**
-     * '@return' literal in @return Javadoc tag.
+     * '@return' literal in {@code @return} Javadoc tag.
      *
      * <p>Such Javadoc tag can have one argument - {@link #DESCRIPTION}</p>
      *
@@ -83,7 +81,7 @@ public final class JavadocTokenTypes {
     public static final int DEPRECATED_LITERAL = JavadocParser.DEPRECATED_LITERAL;
 
     /**
-     * '@since' literal in @since Javadoc tag.
+     * '@since' literal in {@code @since} Javadoc tag.
      *
      * <p>Such Javadoc tag can have one argument - {@link #DESCRIPTION}</p>
      *
@@ -106,7 +104,7 @@ public final class JavadocTokenTypes {
     public static final int SINCE_LITERAL = JavadocParser.SINCE_LITERAL;
 
     /**
-     * '@serialData' literal in @serialData Javadoc tag.
+     * '@serialData' literal in {@code @serialData} Javadoc tag.
      *
      * <p>Such Javadoc tag can have one argument - {@link #DESCRIPTION}</p>
      *
@@ -130,7 +128,7 @@ public final class JavadocTokenTypes {
     public static final int SERIAL_DATA_LITERAL = JavadocParser.SERIAL_DATA_LITERAL;
 
     /**
-     * '@serialField' literal in @serialField Javadoc tag.
+     * '@serialField' literal in {@code @serialField} Javadoc tag.
      *
      * <p>Such Javadoc tag can have three arguments:</p>
      * <ol>
@@ -162,7 +160,7 @@ public final class JavadocTokenTypes {
     public static final int SERIAL_FIELD_LITERAL = JavadocParser.SERIAL_FIELD_LITERAL;
 
     /**
-     * '@param' literal in @param Javadoc tag.
+     * '@param' literal in {@code @param} Javadoc tag.
      *
      * <p>Such Javadoc tag can have two arguments:</p>
      * <ol>
@@ -191,7 +189,7 @@ public final class JavadocTokenTypes {
     public static final int PARAM_LITERAL = JavadocParser.PARAM_LITERAL;
 
     /**
-     * '@see' literal in @see Javadoc tag.
+     * '@see' literal in {@code @see} Javadoc tag.
      *
      * <p>Such Javadoc tag can have one argument - {@link #REFERENCE}</p>
      *
@@ -224,7 +222,7 @@ public final class JavadocTokenTypes {
     public static final int SEE_LITERAL = JavadocParser.SEE_LITERAL;
 
     /**
-     * '@serial' literal in @serial Javadoc tag.
+     * '@serial' literal in {@code @serial} Javadoc tag.
      *
      * <p>Such Javadoc tag can have one argument - {@link #REFERENCE} or {@link #LITERAL_EXCLUDE}
      * or {@link #LITERAL_INCLUDE}</p>
@@ -258,7 +256,7 @@ public final class JavadocTokenTypes {
     public static final int SERIAL_LITERAL = JavadocParser.SERIAL_LITERAL;
 
     /**
-     * '@version' literal in @version Javadoc tag.
+     * '@version' literal in {@code @version} Javadoc tag.
      *
      * <p>Such Javadoc tag can have one argument - {@link #DESCRIPTION}</p>
      *
@@ -281,7 +279,7 @@ public final class JavadocTokenTypes {
     public static final int VERSION_LITERAL = JavadocParser.VERSION_LITERAL;
 
     /**
-     * '@exception' literal in @exception Javadoc tag.
+     * '@exception' literal in {@code @exception} Javadoc tag.
      *
      * <p>Such Javadoc tag can have two argument - {@link #CLASS_NAME} and {@link #DESCRIPTION}</p>
      *
@@ -306,7 +304,7 @@ public final class JavadocTokenTypes {
     public static final int EXCEPTION_LITERAL = JavadocParser.EXCEPTION_LITERAL;
 
     /**
-     * '@throws' literal in @throws Javadoc tag.
+     * '@throws' literal in {@code @throws} Javadoc tag.
      *
      * <p>Such Javadoc tag can have two argument - {@link #CLASS_NAME} and {@link #DESCRIPTION}</p>
      *
@@ -331,7 +329,7 @@ public final class JavadocTokenTypes {
     public static final int THROWS_LITERAL = JavadocParser.THROWS_LITERAL;
 
     /**
-     * '@author' literal in @author Javadoc tag.
+     * '@author' literal in {@code @author} Javadoc tag.
      *
      * <p>Such Javadoc tag can have one argument - {@link #DESCRIPTION}</p>
      *
@@ -386,6 +384,7 @@ public final class JavadocTokenTypes {
      *         |--JAVADOC_INLINE_TAG_END[3x21] : [}]
      * </code>
      * </pre>
+     *
      * @noinspection HtmlTagCanBeJavadocTag
      */
     public static final int JAVADOC_INLINE_TAG_START = JavadocParser.JAVADOC_INLINE_TAG_START;
@@ -405,6 +404,7 @@ public final class JavadocTokenTypes {
      *         |--JAVADOC_INLINE_TAG_END[3x21] : [}]
      * </code>
      * </pre>
+     *
      * @noinspection HtmlTagCanBeJavadocTag
      */
     public static final int JAVADOC_INLINE_TAG_END = JavadocParser.JAVADOC_INLINE_TAG_END;
@@ -462,7 +462,7 @@ public final class JavadocTokenTypes {
      *
      * <p><b>Example:</b></p>
      * <pre><code>{&#64;docRoot
-     *}</code></pre>
+     * }</code></pre>
      * <b>Tree:</b>
      * <pre>
      * <code>  |--JAVADOC_INLINE_TAG[1x0] : [{&#64;docRoot \n}]
@@ -852,7 +852,7 @@ public final class JavadocTokenTypes {
 
     /**
      * Quoted text.
-     * One of possible @see tag arguments.
+     * One of possible {@code @see} tag arguments.
      *
      * <p><b>Example:</b></p>
      * <pre>{@code @see "Spring Framework"}</pre>
@@ -1012,9 +1012,9 @@ public final class JavadocTokenTypes {
      */
     public static final int FIELD_TYPE = JavadocParser.FIELD_TYPE;
 
-    //--------------------------------------------------------------------------------------------//
-    //------------------        HTML TAGS          -----------------------------------------------//
-    //--------------------------------------------------------------------------------------------//
+    // ------------------------------------------------------------------------------------------ //
+    // -----------------        HTML TAGS          ---------------------------------------------- //
+    // ------------------------------------------------------------------------------------------ //
 
     /**
      * Identifier inside HTML tag: tag name or attribute name.
@@ -1176,14 +1176,9 @@ public final class JavadocTokenTypes {
      */
     public static final int HTML_COMMENT_END = JavadocParser.HTML_COMMENT_END;
 
-    /**
-     * &lt;&#33;[CDATA[&#46;&#46;&#46;]]&gt; block.
-     */
-    public static final int CDATA = JavadocParser.CDATA;
-
-    //--------------------------------------------------------------------------------------------//
-    //------------------        OTHER          ---------------------------------------------------//
-    //--------------------------------------------------------------------------------------------//
+    // ------------------------------------------------------------------------------------------ //
+    // -----------------        OTHER          -------------------------------------------------- //
+    // ------------------------------------------------------------------------------------------ //
 
     /** Leading asterisk. */
     public static final int LEADING_ASTERISK = JavadocParser.LEADING_ASTERISK;
@@ -1204,15 +1199,18 @@ public final class JavadocTokenTypes {
     public static final int WS = JavadocParser.WS;
 
     /**
-     * End Of File symbol.
+     * End Of File symbol. Copied from
+     * {@link org.antlr.v4.runtime.Recognizer#EOF} to avoid ANTLR dependency in
+     * API.
      */
-    public static final int EOF = Recognizer.EOF;
+    public static final int EOF = -1;
 
-    //--------------------------------------------------------------------------------------------//
-    //------- JAVADOC TAGS DEPENDING ON RULE TYPES OFFSET ----------------------------------------//
-    //--------------------------------------------------------------------------------------------//
+    // ------------------------------------------------------------------------------------------ //
+    // ------ JAVADOC TAGS DEPENDING ON RULE TYPES OFFSET --------------------------------------- //
+    // ------------------------------------------------------------------------------------------ //
 
-    /** Rule types offset.
+    /**
+     * Rule types offset.
      * RULE_TYPES_OFFSET constant is used to split lexer tokens types and parser rules types.
      * We need unique numbers for all tokens,
      * ANTLR do not need this and that is why this types are mixed by used values.
@@ -1317,6 +1315,7 @@ public final class JavadocTokenTypes {
      *        |--JAVADOC_INLINE_TAG_END[4x16] : [}]
      * </code>
      * </pre>
+     *
      * @noinspection HtmlTagCanBeJavadocTag
      */
     public static final int JAVADOC_INLINE_TAG = JavadocParser.RULE_javadocInlineTag
@@ -1402,9 +1401,9 @@ public final class JavadocTokenTypes {
      */
     public static final int DESCRIPTION = JavadocParser.RULE_description + RULE_TYPES_OFFSET;
 
-    //--------------------------------------------------------------------------------------------//
-    //--------- HTML TAGS DEPENDING ON RULE TYPES OFFSET -----------------------------------------//
-    //--------------------------------------------------------------------------------------------//
+    // ------------------------------------------------------------------------------------------ //
+    // -------- HTML TAGS DEPENDING ON RULE TYPES OFFSET ---------------------------------------- //
+    // ------------------------------------------------------------------------------------------ //
 
     /**
      * Parent node for all html tags.
@@ -1644,6 +1643,7 @@ public final class JavadocTokenTypes {
 
     /**
      * HTML void element {@code <embed>}.
+     *
      * @see #SINGLETON_ELEMENT
      * @see <a href="https://www.w3.org/TR/html51/semantics-embedded-content.html#elementdef-embed">
      *     W3 docs</a>
@@ -1652,6 +1652,7 @@ public final class JavadocTokenTypes {
 
     /**
      * HTML void element {@code <keygen>}.
+     *
      * @see #SINGLETON_ELEMENT
      * @see <a href="https://www.w3.org/TR/html51/sec-forms.html#elementdef-keygen">
      *     W3 docs</a>
@@ -1660,6 +1661,7 @@ public final class JavadocTokenTypes {
 
     /**
      * HTML void element {@code <source>}.
+     *
      * @see #SINGLETON_ELEMENT
      * @see <a href=
      *     "https://www.w3.org/TR/html51/semantics-embedded-content.html#elementdef-media-source">
@@ -1669,6 +1671,7 @@ public final class JavadocTokenTypes {
 
     /**
      * HTML void element {@code <track>}.
+     *
      * @see #SINGLETON_ELEMENT
      * @see <a
      *     href="https://www.w3.org/TR/html51/semantics-embedded-content.html#elementdef-track">
@@ -1678,6 +1681,7 @@ public final class JavadocTokenTypes {
 
     /**
      * HTML void element {@code <wbr>}.
+     *
      * @see #SINGLETON_ELEMENT
      * @see <a href="https://www.w3.org/TR/html51/textlevel-semantics.html#elementdef-wbr">
      *     W3 docs</a>
@@ -1686,7 +1690,9 @@ public final class JavadocTokenTypes {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    /** Html comment: <code>&lt;&#33;-- --&gt;</code>.
+    /**
+     * Html comment: <code>&lt;&#33;-- --&gt;</code>.
+     *
      * @noinspection HtmlTagCanBeJavadocTag
      */
     public static final int HTML_COMMENT = JavadocParser.RULE_htmlComment

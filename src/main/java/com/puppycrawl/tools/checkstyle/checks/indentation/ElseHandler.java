@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,7 @@ package com.puppycrawl.tools.checkstyle.checks.indentation;
 
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+import com.puppycrawl.tools.checkstyle.utils.TokenUtil;
 
 /**
  * Handler for else blocks.
@@ -55,7 +56,7 @@ public class ElseHandler extends BlockParentHandler {
         else {
             final DetailAST lcurly = slist.getLastChild();
             // indentation checked as part of LITERAL IF check
-            if (lcurly.getLineNo() != getMainAst().getLineNo()) {
+            if (!TokenUtil.areOnSameLine(lcurly, getMainAst())) {
                 super.checkTopLevelToken();
             }
         }

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -86,6 +86,7 @@ public final class JavadocUtil {
 
     /**
      * Gets validTags from a given piece of Javadoc.
+     *
      * @param textBlock
      *        the Javadoc comment to process.
      * @param tagType
@@ -134,6 +135,7 @@ public final class JavadocUtil {
 
     /**
      * Checks that commentContent starts with '*' javadoc comment identifier.
+     *
      * @param commentContent
      *        content of block comment
      * @return true if commentContent starts with '*' javadoc comment
@@ -152,6 +154,7 @@ public final class JavadocUtil {
 
     /**
      * Checks block comment content starts with '*' javadoc comment identifier.
+     *
      * @param blockCommentBegin
      *        block comment AST
      * @return true if block comment content starts with '*' javadoc comment
@@ -164,17 +167,19 @@ public final class JavadocUtil {
 
     /**
      * Gets content of block comment.
+     *
      * @param blockCommentBegin
      *        block comment AST.
      * @return content of block comment.
      */
-    private static String getBlockCommentContent(DetailAST blockCommentBegin) {
+    public static String getBlockCommentContent(DetailAST blockCommentBegin) {
         final DetailAST commentContent = blockCommentBegin.getFirstChild();
         return commentContent.getText();
     }
 
     /**
      * Get content of Javadoc comment.
+     *
      * @param javadocCommentBegin
      *        Javadoc comment AST
      * @return content of Javadoc comment.
@@ -186,6 +191,7 @@ public final class JavadocUtil {
 
     /**
      * Returns the first child token that has a specified type.
+     *
      * @param detailNode
      *        Javadoc AST node
      * @param type
@@ -285,6 +291,7 @@ public final class JavadocUtil {
 
     /**
      * Gets previous sibling of specified node.
+     *
      * @param node DetailNode
      * @return previous sibling
      */
@@ -301,6 +308,7 @@ public final class JavadocUtil {
 
     /**
      * Returns the name of a token for a given ID.
+     *
      * @param id
      *        the ID of the token name to get
      * @return a token name
@@ -324,6 +332,7 @@ public final class JavadocUtil {
 
     /**
      * Returns the ID of a token for a given name.
+     *
      * @param name
      *        the name of the token ID to get
      * @return a token ID
@@ -356,6 +365,7 @@ public final class JavadocUtil {
 
     /**
      * Replace all control chars with escaped symbols.
+     *
      * @param text the String to process.
      * @return the processed String with all control chars escaped.
      */
@@ -380,7 +390,7 @@ public final class JavadocUtil {
      * @see <a href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/javadoc.html">
      *     Javadoc util documentation</a>
      */
-    private static boolean isCorrectJavadocPosition(DetailAST blockComment) {
+    public static boolean isCorrectJavadocPosition(DetailAST blockComment) {
         // We must be sure that after this one there are no other documentation comments.
         DetailAST sibling = blockComment.getNextSibling();
         while (sibling != null) {

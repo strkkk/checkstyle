@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,13 +19,13 @@
 
 package com.google.checkstyle.test.chapter3filestructure.rule3421overloadsplit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import com.google.checkstyle.test.base.AbstractModuleTestSupport;
+import com.google.checkstyle.test.base.AbstractGoogleModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.api.Configuration;
 import com.puppycrawl.tools.checkstyle.checks.coding.OverloadMethodsDeclarationOrderCheck;
 
-public class OverloadMethodsDeclarationOrderTest extends AbstractModuleTestSupport {
+public class OverloadMethodsDeclarationOrderTest extends AbstractGoogleModuleTestSupport {
 
     @Override
     protected String getPackageLocation() {
@@ -39,10 +39,10 @@ public class OverloadMethodsDeclarationOrderTest extends AbstractModuleTestSuppo
         final String messageKey = "overload.methods.declaration";
 
         final String[] expected = {
-            "26: " + getCheckMessage(clazz, messageKey, 15),
-            "54: " + getCheckMessage(clazz, messageKey, 43),
-            "66: " + getCheckMessage(clazz, messageKey, 64),
-            "109: " + getCheckMessage(clazz, messageKey, 98),
+            "26:5: " + getCheckMessage(clazz, messageKey, 15),
+            "54:9: " + getCheckMessage(clazz, messageKey, 43),
+            "66:5: " + getCheckMessage(clazz, messageKey, 64),
+            "109:5: " + getCheckMessage(clazz, messageKey, 98),
         };
 
         final Configuration checkConfig = getModuleConfig("OverloadMethodsDeclarationOrder");

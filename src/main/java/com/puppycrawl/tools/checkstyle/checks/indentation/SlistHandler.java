@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,7 @@ import java.util.Arrays;
 
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+import com.puppycrawl.tools.checkstyle.utils.TokenUtil;
 
 /**
  * Handler for a list of statements.
@@ -132,12 +133,13 @@ public class SlistHandler extends BlockParentHandler {
 
     /**
      * Checks if SLIST node is placed at the same line as CASE_GROUP node.
+     *
      * @return true, if SLIST node is places at the same line as CASE_GROUP node.
      */
     private boolean isSameLineCaseGroup() {
         final DetailAST parentNode = getMainAst().getParent();
         return parentNode.getType() == TokenTypes.CASE_GROUP
-            && getMainAst().getLineNo() == parentNode.getLineNo();
+            && TokenUtil.areOnSameLine(getMainAst(), parentNode);
     }
 
 }

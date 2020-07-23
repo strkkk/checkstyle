@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,7 @@ package com.puppycrawl.tools.checkstyle.checks.coding;
 
 import static com.puppycrawl.tools.checkstyle.checks.coding.AbstractSuperCheck.MSG_KEY;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
@@ -39,10 +39,21 @@ public class SuperFinalizeCheckTest
         final DefaultConfiguration checkConfig =
             createModuleConfig(SuperFinalizeCheck.class);
         final String[] expected = {
-            "27:17: " + getCheckMessage(MSG_KEY, "finalize", "super.finalize"),
-            "34:17: " + getCheckMessage(MSG_KEY, "finalize", "super.finalize"),
+            "29:17: " + getCheckMessage(MSG_KEY, "finalize", "super.finalize"),
+            "36:17: " + getCheckMessage(MSG_KEY, "finalize", "super.finalize"),
+            "78:20: " + getCheckMessage(MSG_KEY, "finalize", "super.finalize"),
         };
         verify(checkConfig, getPath("InputSuperFinalizeVariations.java"), expected);
+    }
+
+    @Test
+    public void testMethodReference() throws Exception {
+        final DefaultConfiguration checkConfig =
+            createModuleConfig(SuperFinalizeCheck.class);
+        final String[] expected = {
+            "18:20: " + getCheckMessage(MSG_KEY, "finalize", "super.finalize"),
+        };
+        verify(checkConfig, getPath("InputSuperFinalizeMethodReference.java"), expected);
     }
 
 }

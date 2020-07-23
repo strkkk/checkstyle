@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -29,16 +29,56 @@ import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 
 /**
- * <p> Ensures that exceptions (classes with names conforming to some regular
+ * <p>
+ * Ensures that exception classes (classes with names conforming to some regular
  * expression and explicitly extending classes with names conforming to other
- * regular expression) are immutable. That is, they have only final fields.</p>
- * <p> Rationale: Exception instances should represent an error
+ * regular expression) are immutable, that is, that they have only final fields.
+ * </p>
+ * <p>
+ * The current algorithm is very simple: it checks that all members of exception are final.
+ * The user can still mutate an exception's instance (e.g. Throwable has a method called
+ * {@code setStackTrace} which changes the exception's stack trace). But, at least, all
+ * information provided by this exception type is unchangeable.
+ * </p>
+ * <p>
+ * Rationale: Exception instances should represent an error
  * condition. Having non final fields not only allows the state to be
  * modified by accident and therefore mask the original condition but
- * also allows developers to accidentally forget to initialise state
- * thereby leading to code catching the exception to draw incorrect
- * conclusions based on the state.</p>
+ * also allows developers to accidentally forget to set the initial state.
+ * In both cases, code catching the exception could draw incorrect
+ * conclusions based on the state.
+ * </p>
+ * <ul>
+ * <li>
+ * Property {@code format} - Specify pattern for exception class names.
+ * Type is {@code java.util.regex.Pattern}.
+ * Default value is {@code "^.*Exception$|^.*Error$|^.*Throwable$"}.
+ * </li>
+ * <li>
+ * Property {@code extendedClassNameFormat} - Specify pattern for extended class names.
+ * Type is {@code java.util.regex.Pattern}.
+ * Default value is {@code "^.*Exception$|^.*Error$|^.*Throwable$"}.
+ * </li>
+ * </ul>
+ * <p>
+ * To configure the check:
+ * </p>
+ * <pre>
+ * &lt;module name=&quot;MutableException&quot;/&gt;
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code mutable.exception}
+ * </li>
+ * </ul>
  *
+ * @since 3.2
  */
 @FileStatefulCheck
 public final class MutableExceptionCheck extends AbstractCheck {
@@ -53,15 +93,16 @@ public final class MutableExceptionCheck extends AbstractCheck {
     private static final String DEFAULT_FORMAT = "^.*Exception$|^.*Error$|^.*Throwable$";
     /** Stack of checking information for classes. */
     private final Deque<Boolean> checkingStack = new ArrayDeque<>();
-    /** Pattern for class name that is being extended. */
+    /** Specify pattern for extended class names. */
     private Pattern extendedClassNameFormat = Pattern.compile(DEFAULT_FORMAT);
     /** Should we check current class or not. */
     private boolean checking;
-    /** The regexp to match against. */
+    /** Specify pattern for exception class names. */
     private Pattern format = Pattern.compile(DEFAULT_FORMAT);
 
     /**
-     * Sets the format of extended class name to the specified regular expression.
+     * Setter to specify pattern for extended class names.
+     *
      * @param extendedClassNameFormat a {@code String} value
      */
     public void setExtendedClassNameFormat(Pattern extendedClassNameFormat) {
@@ -69,7 +110,8 @@ public final class MutableExceptionCheck extends AbstractCheck {
     }
 
     /**
-     * Set the format for the specified regular expression.
+     * Setter to specify pattern for exception class names.
+     *
      * @param pattern the new pattern
      */
     public void setFormat(Pattern pattern) {
@@ -114,6 +156,7 @@ public final class MutableExceptionCheck extends AbstractCheck {
 
     /**
      * Called when we start processing class definition.
+     *
      * @param ast class definition node
      */
     private void visitClassDef(DetailAST ast) {
@@ -128,6 +171,7 @@ public final class MutableExceptionCheck extends AbstractCheck {
 
     /**
      * Checks variable definition.
+     *
      * @param ast variable def node for check
      */
     private void visitVariableDef(DetailAST ast) {
@@ -143,6 +187,7 @@ public final class MutableExceptionCheck extends AbstractCheck {
 
     /**
      * Checks that a class name conforms to specified format.
+     *
      * @param ast class definition node
      * @return true if a class name conforms to specified format
      */
@@ -153,6 +198,7 @@ public final class MutableExceptionCheck extends AbstractCheck {
 
     /**
      * Checks that if extended class name conforms to specified format.
+     *
      * @param ast class definition node
      * @return true if extended class name conforms to specified format
      */

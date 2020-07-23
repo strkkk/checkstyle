@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -36,7 +36,7 @@ public abstract class AbstractNameCheck
     extends AbstractCheck {
 
     /**
-     * Message key for invalid pattern error.
+     * Message key for invalid pattern violation.
      */
     public static final String MSG_INVALID_PATTERN = "name.invalidPattern";
 
@@ -45,6 +45,7 @@ public abstract class AbstractNameCheck
 
     /**
      * Creates a new {@code AbstractNameCheck} instance.
+     *
      * @param format format to check with
      */
     protected AbstractNameCheck(String format) {
@@ -54,6 +55,7 @@ public abstract class AbstractNameCheck
     /**
      * Decides whether the name of an AST should be checked against
      * the format regexp.
+     *
      * @param ast the AST to check.
      * @return true if the IDENT subnode of ast should be checked against
      *     the format regexp.
@@ -62,6 +64,7 @@ public abstract class AbstractNameCheck
 
     /**
      * Set the format for the specified regular expression.
+     *
      * @param pattern the new pattern
      */
     public final void setFormat(Pattern pattern) {

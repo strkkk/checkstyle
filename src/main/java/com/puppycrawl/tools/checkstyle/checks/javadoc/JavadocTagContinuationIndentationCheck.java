@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -30,17 +30,107 @@ import com.puppycrawl.tools.checkstyle.utils.JavadocUtil;
 
 /**
  * <p>
- * Checks the indentation of the continuation lines in at-clauses.
+ * Checks the indentation of the continuation lines in at-clauses. That is whether the continued
+ * description of at clauses should be indented or not. If the text is not properly indented it
+ * throws a violation. A continuation line is when the description starts/spans past the line with
+ * the tag. Default indentation required is at least 4, but this can be changed with the help of
+ * properties below.
  * </p>
+ * <ul>
+ * <li>
+ * Property {@code violateExecutionOnNonTightHtml} - Control when to print violations
+ * if the Javadoc being examined by this check violates the tight html rules defined at
+ * <a href="https://checkstyle.org/writingjavadocchecks.html#Tight-HTML_rules">Tight-HTML Rules</a>.
+ * Type is {@code boolean}.
+ * Default value is {@code false}.
+ * </li>
+ * <li>
+ * Property {@code offset} - Specify how many spaces to use for new indentation level.
+ * Type is {@code int}.
+ * Default value is {@code 4}.
+ * </li>
+ * </ul>
  * <p>
- * Default configuration:
+ * To configure the default check:
  * </p>
  * <pre>
- * &lt;module name=&quot;JavadocTagContinuationIndentation&quot;&gt;
- *     &lt;property name=&quot;offset&quot; value=&quot;4&quot;/&gt;
+ * &lt;module name="JavadocTagContinuationIndentation"/&gt;
+ * </pre>
+ * <p>
+ * Example:
+ * </p>
+ * <pre>
+ * &#47;**
+ *  * @tag comment
+ *  *  Indentation spacing is 1. Line with violation
+ *  *   Indentation spacing is 2. Line with violation
+ *  *     Indentation spacing is 4. OK
+ *  *&#47;
+ * public class Test {
+ * }
+ * </pre>
+ * <p>
+ * To configure the check with two spaces indentation:
+ * </p>
+ * <pre>
+ * &lt;module name="JavadocTagContinuationIndentation"&gt;
+ *   &lt;property name="offset" value="2"/&gt;
  * &lt;/module&gt;
  * </pre>
+ * <p>
+ * Example:
+ * </p>
+ * <pre>
+ * &#47;**
+ *  * @tag comment
+ *  * Indentation spacing is 0. Line with violation
+ *  *   Indentation spacing is 2. OK
+ *  *  Indentation spacing is 1. Line with violation
+ *  *&#47;
+ * public class Test {
+ * }
+ * </pre>
+ * <p>
+ * To configure the check to show violations for Tight-HTML Rules:
+ * </p>
+ * <pre>
+ * &lt;module name="JavadocTagContinuationIndentation"&gt;
+ *   &lt;property name="violateExecutionOnNonTightHtml" value="true"/&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>
+ * Example:
+ * </p>
+ * <pre>
+ * &#47;**
+ *  * &lt;p&gt; 'p' tag is unclosed. Line with violation, this html tag needs closing tag.
+ *  * &lt;p&gt; 'p' tag is closed&lt;/p&gt;. OK
+ *  *&#47;
+ * public class Test {
+ * }
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code javadoc.missed.html.close}
+ * </li>
+ * <li>
+ * {@code javadoc.parse.rule.error}
+ * </li>
+ * <li>
+ * {@code javadoc.wrong.singleton.html.tag}
+ * </li>
+ * <li>
+ * {@code tag.continuation.indent}
+ * </li>
+ * </ul>
  *
+ * @since 6.0
  *
  */
 @StatelessCheck
@@ -56,12 +146,13 @@ public class JavadocTagContinuationIndentationCheck extends AbstractJavadocCheck
     private static final int DEFAULT_INDENTATION = 4;
 
     /**
-     * How many spaces to use for new indentation level.
+     * Specify how many spaces to use for new indentation level.
      */
     private int offset = DEFAULT_INDENTATION;
 
     /**
-     * Sets custom indentation level.
+     * Setter to specify how many spaces to use for new indentation level.
+     *
      * @param offset custom value.
      */
     public void setOffset(int offset) {
@@ -83,9 +174,8 @@ public class JavadocTagContinuationIndentationCheck extends AbstractJavadocCheck
         if (!isInlineDescription(ast)) {
             final List<DetailNode> textNodes = getAllNewlineNodes(ast);
             for (DetailNode newlineNode : textNodes) {
-                final DetailNode textNode = JavadocUtil.getNextSibling(JavadocUtil
-                        .getNextSibling(newlineNode));
-                if (textNode != null && textNode.getType() == JavadocTokenTypes.TEXT) {
+                final DetailNode textNode = JavadocUtil.getNextSibling(newlineNode);
+                if (textNode.getType() == JavadocTokenTypes.TEXT) {
                     final String text = textNode.getText();
                     if (!CommonUtil.isBlank(text.trim())
                             && (text.length() <= offset
@@ -99,6 +189,7 @@ public class JavadocTagContinuationIndentationCheck extends AbstractJavadocCheck
 
     /**
      * Finds and collects all NEWLINE nodes inside DESCRIPTION node.
+     *
      * @param descriptionNode DESCRIPTION node.
      * @return List with NEWLINE nodes.
      */
@@ -106,7 +197,7 @@ public class JavadocTagContinuationIndentationCheck extends AbstractJavadocCheck
         final List<DetailNode> textNodes = new ArrayList<>();
         DetailNode node = JavadocUtil.getFirstChild(descriptionNode);
         while (JavadocUtil.getNextSibling(node) != null) {
-            if (node.getType() == JavadocTokenTypes.NEWLINE) {
+            if (node.getType() == JavadocTokenTypes.LEADING_ASTERISK) {
                 textNodes.add(node);
             }
             node = JavadocUtil.getNextSibling(node);
@@ -116,6 +207,7 @@ public class JavadocTagContinuationIndentationCheck extends AbstractJavadocCheck
 
     /**
      * Checks, if description node is a description of in-line tag.
+     *
      * @param description DESCRIPTION node.
      * @return true, if description node is a description of in-line tag.
      */

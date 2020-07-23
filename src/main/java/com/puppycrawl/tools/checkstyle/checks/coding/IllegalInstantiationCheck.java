@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -57,10 +57,12 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  * <ul>
  * <li>
  * Property {@code classes} - Specify fully qualified class names that should not be instantiated.
+ * Type is {@code java.lang.String[]}.
  * Default value is {@code {}}.
  * </li>
  * <li>
  * Property {@code tokens} - tokens to check
+ * Type is {@code int[]}.
  * Default value is:
  * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#CLASS_DEF">
  * CLASS_DEF</a>.
@@ -74,6 +76,17 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  *   &lt;property name=&quot;classes&quot; value=&quot;java.lang.Boolean&quot;/&gt;
  * &lt;/module&gt;
  * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code instantiation.avoid}
+ * </li>
+ * </ul>
  *
  * @since 3.0
  */
@@ -176,6 +189,7 @@ public class IllegalInstantiationCheck
 
     /**
      * Perform processing for an import token.
+     *
      * @param ast the import token
      */
     private void processImport(DetailAST ast) {
@@ -187,6 +201,7 @@ public class IllegalInstantiationCheck
 
     /**
      * Perform processing for an package token.
+     *
      * @param ast the package token
      */
     private void processPackageDef(DetailAST ast) {
@@ -199,6 +214,7 @@ public class IllegalInstantiationCheck
 
     /**
      * Collects a "new" token.
+     *
      * @param ast the "new" token
      */
     private void processLiteralNew(DetailAST ast) {
@@ -210,6 +226,7 @@ public class IllegalInstantiationCheck
     /**
      * Processes one of the collected "new" tokens when walking tree
      * has finished.
+     *
      * @param newTokenAst the "new" token.
      */
     private void postProcessLiteralNew(DetailAST newTokenAst) {
@@ -228,6 +245,7 @@ public class IllegalInstantiationCheck
 
     /**
      * Checks illegal instantiations.
+     *
      * @param className instantiated class, may or may not be qualified
      * @return the fully qualified class name of className
      *     or null if instantiation of className is OK
@@ -267,6 +285,7 @@ public class IllegalInstantiationCheck
 
     /**
      * Check import statements.
+     *
      * @param className name of the class
      * @return value of illegal instantiated type
      */
@@ -290,6 +309,7 @@ public class IllegalInstantiationCheck
 
     /**
      * Check that type is of the same package.
+     *
      * @param className class name
      * @param pkgNameLen package name
      * @param illegal illegal value
@@ -312,6 +332,7 @@ public class IllegalInstantiationCheck
 
     /**
      * Is Standard Class.
+     *
      * @param className class name
      * @param illegal illegal value
      * @return true if type is standard
@@ -339,6 +360,7 @@ public class IllegalInstantiationCheck
 
     /**
      * Setter to specify fully qualified class names that should not be instantiated.
+     *
      * @param names a comma separate list of class names
      */
     public void setClasses(String... names) {

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -85,7 +85,7 @@ public class MethodDefHandler extends BlockParentHandler {
         // check if there is a type before the indent
         final DetailAST typeNode = mainAst.findFirstToken(TokenTypes.TYPE);
         if (typeNode != null) {
-            lineStart = getFirstLine(lineStart, typeNode);
+            lineStart = getFirstLine(typeNode);
         }
 
         // check if there is a modifier before the type
@@ -119,6 +119,7 @@ public class MethodDefHandler extends BlockParentHandler {
 
     /**
      * Returns right parenthesis of method definition parameter list.
+     *
      * @param methodDefAst
      *          method definition ast node(TokenTypes.LITERAL_IF)
      * @return right parenthesis of method definition parameter list.

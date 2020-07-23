@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,10 +19,10 @@
 
 package com.puppycrawl.tools.checkstyle.grammar;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.InputStream;
@@ -32,7 +32,7 @@ import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import antlr.NoViableAltForCharException;
 import antlr.ParserSharedInputState;
@@ -66,6 +66,24 @@ public class AstRegressionTest extends AbstractTreeTestSupport {
     public void testJava8ClassAstTree1() throws Exception {
         verifyAst(getPath("InputRegressionJava8Class1Ast.txt"),
                 getPath("InputRegressionJava8Class1.java"));
+    }
+
+    @Test
+    public void testJava8ClassAstTree2() throws Exception {
+        verifyAst(getPath("InputRegressionJava8Class2Ast.txt"),
+                getPath("InputRegressionJava8Class2.java"));
+    }
+
+    @Test
+    public void testJava9TryWithResourcesAstTree() throws Exception {
+        verifyAst(getPath("InputJava9TryWithResources.txt"),
+                getNonCompilablePath("/java9/InputJava9TryWithResources.java"));
+    }
+
+    @Test
+    public void testAdvanceJava9TryWithResourcesAstTree() throws Exception {
+        verifyAst(getPath("InputAdvanceJava9TryWithResources.txt"),
+                getNonCompilablePath("/java9/InputAdvanceJava9TryWithResources.java"));
     }
 
     @Test
@@ -117,12 +135,24 @@ public class AstRegressionTest extends AbstractTreeTestSupport {
     }
 
     @Test
+    public void testJava14InstanceofWithPatternMatching() throws Exception {
+        verifyAst(getPath("java14/InputJava14InstanceofWithPatternMatchingAST.txt"),
+                getNonCompilablePath("java14/InputJava14InstanceofWithPatternMatching.java"));
+    }
+
+    @Test
+    public void testCharLiteralSurrogatePair() throws Exception {
+        verifyAst(getPath("InputCharLiteralSurrogatePair.txt"),
+                getPath("InputCharLiteralSurrogatePair.java"));
+    }
+
+    @Test
     public void testUnusedConstructors1() throws Exception {
         final Class<?> clss = GeneratedJavaLexer.class;
         final Constructor<?> constructor = clss.getDeclaredConstructor(InputStream.class);
 
-        assertNotNull("InputStream should not be null",
-                constructor.newInstance(new Object[] {null}));
+        assertNotNull(constructor.newInstance(new Object[] {null}),
+                "InputStream should not be null");
     }
 
     @Test
@@ -131,8 +161,8 @@ public class AstRegressionTest extends AbstractTreeTestSupport {
         final Constructor<?> constructor = clss
                 .getDeclaredConstructor(ParserSharedInputState.class);
 
-        assertNotNull("ParserSharedInputState should not be null",
-                constructor.newInstance(new Object[] {null}));
+        assertNotNull(constructor.newInstance(new Object[] {null}),
+                "ParserSharedInputState should not be null");
     }
 
     @Test
@@ -140,8 +170,8 @@ public class AstRegressionTest extends AbstractTreeTestSupport {
         final Class<?> clss = GeneratedJavaRecognizer.class;
         final Constructor<?> constructor = clss.getDeclaredConstructor(TokenBuffer.class);
 
-        assertNotNull("TokenBuffer should not be null",
-                constructor.newInstance(new Object[] {null}));
+        assertNotNull(constructor.newInstance(new Object[] {null}),
+                "TokenBuffer should not be null");
     }
 
     @Test
@@ -171,6 +201,12 @@ public class AstRegressionTest extends AbstractTreeTestSupport {
         verifyAst(getPath("InputNewlineCrAtEndOfFileAst.txt"),
                 getPath("InputAstRegressionNewlineCrAtEndOfFile.java"),
                 JavaParser.Options.WITH_COMMENTS);
+    }
+
+    @Test
+    public void testJava14Records() throws Exception {
+        verifyAst(getPath("java14/InputJava14Records.txt"),
+                getNonCompilablePath("java14/InputJava14Records.java"));
     }
 
     @Test
@@ -239,8 +275,8 @@ public class AstRegressionTest extends AbstractTreeTestSupport {
         final String actualContents = AstTreeStringPrinter.printAst(actualFileContents,
                 withComments);
 
-        assertEquals("Generated AST from Java code should match pre-defined AST", expectedContents,
-                actualContents);
+        assertEquals(expectedContents, actualContents,
+                "Generated AST from Java code should match pre-defined AST");
     }
 
     private static final class AssertGeneratedJavaLexer extends GeneratedJavaLexer {
@@ -294,12 +330,12 @@ public class AstRegressionTest extends AbstractTreeTestSupport {
             }
 
             if (expectPass) {
-                assertFalse("Call to GeneratedJavaLexer." + methodName
-                        + " resulted in an exception", exception);
+                assertFalse(exception, "Call to GeneratedJavaLexer." + methodName
+                        + " resulted in an exception");
             }
             else {
-                assertTrue("Call to GeneratedJavaLexer." + methodName
-                        + " did not result in an exception", exception);
+                assertTrue(exception, "Call to GeneratedJavaLexer." + methodName
+                        + " did not result in an exception");
             }
         }
 

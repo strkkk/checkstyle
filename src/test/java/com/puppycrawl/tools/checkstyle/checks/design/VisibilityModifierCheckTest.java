@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,20 +20,21 @@
 package com.puppycrawl.tools.checkstyle.checks.design;
 
 import static com.puppycrawl.tools.checkstyle.checks.design.VisibilityModifierCheck.MSG_KEY;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.lang.reflect.Method;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.powermock.reflect.Whitebox;
 
 import antlr.CommonHiddenStreamToken;
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
+import com.puppycrawl.tools.checkstyle.DetailAstImpl;
 import com.puppycrawl.tools.checkstyle.JavaParser;
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
@@ -54,8 +55,8 @@ public class VisibilityModifierCheckTest
             TokenTypes.VARIABLE_DEF,
             TokenTypes.IMPORT,
         };
-        assertArrayEquals("Default required tokens are invalid",
-            expected, checkObj.getRequiredTokens());
+        assertArrayEquals(
+                expected, checkObj.getRequiredTokens(), "Default required tokens are invalid");
     }
 
     @Test
@@ -361,8 +362,8 @@ public class VisibilityModifierCheckTest
             TokenTypes.VARIABLE_DEF,
             TokenTypes.IMPORT,
         };
-        assertArrayEquals("Default acceptable tokens are invalid",
-            expected, obj.getAcceptableTokens());
+        assertArrayEquals(expected, obj.getAcceptableTokens(),
+                "Default acceptable tokens are invalid");
     }
 
     @Test
@@ -418,15 +419,15 @@ public class VisibilityModifierCheckTest
     @Test
     public void testWrongTokenType() {
         final VisibilityModifierCheck obj = new VisibilityModifierCheck();
-        final DetailAST ast = new DetailAST();
+        final DetailAstImpl ast = new DetailAstImpl();
         ast.initialize(new CommonHiddenStreamToken(TokenTypes.CLASS_DEF, "class"));
         try {
             obj.visitToken(ast);
             fail("exception expected");
         }
         catch (IllegalArgumentException ex) {
-            assertEquals("Invalid exception message",
-                "Unexpected token type: class", ex.getMessage());
+            assertEquals("Unexpected token type: class", ex.getMessage(),
+                    "Invalid exception message");
         }
     }
 
@@ -493,8 +494,8 @@ public class VisibilityModifierCheckTest
         final Method method = Whitebox.getMethod(VisibilityModifierCheck.class,
             "isStarImport", DetailAST.class);
 
-        assertTrue("Should return true when star import is passed",
-            (boolean) method.invoke(check, importAst));
+        assertTrue((boolean) method.invoke(check, importAst),
+                "Should return true when star import is passed");
     }
 
     @Test

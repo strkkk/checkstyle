@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -124,6 +124,61 @@ public class SuppressFilterElement
         }
     }
 
+    /**
+     * Creates a {@code SuppressFilterElement} instance.
+     *
+     * @param files regular expression for filtered file names
+     * @param checks regular expression for filtered check classes
+     * @param message regular expression for messages.
+     * @param moduleId the module id
+     * @param lines CSV for lines
+     * @param columns CSV for columns
+     */
+    public SuppressFilterElement(Pattern files, Pattern checks, Pattern message, String moduleId,
+            String lines, String columns) {
+        if (files == null) {
+            filePattern = null;
+            fileRegexp = null;
+        }
+        else {
+            filePattern = files.pattern();
+            fileRegexp = files;
+        }
+        if (checks == null) {
+            checkPattern = null;
+            checkRegexp = null;
+        }
+        else {
+            checkPattern = checks.pattern();
+            checkRegexp = checks;
+        }
+        if (message == null) {
+            messagePattern = null;
+            messageRegexp = null;
+        }
+        else {
+            messagePattern = message.pattern();
+            messageRegexp = message;
+        }
+        this.moduleId = moduleId;
+        if (lines == null) {
+            linesCsv = null;
+            lineFilter = null;
+        }
+        else {
+            linesCsv = lines;
+            lineFilter = new CsvFilterElement(lines);
+        }
+        if (columns == null) {
+            columnsCsv = null;
+            columnFilter = null;
+        }
+        else {
+            columnsCsv = columns;
+            columnFilter = new CsvFilterElement(columns);
+        }
+    }
+
     @Override
     public boolean accept(AuditEvent event) {
         return !isFileNameAndModuleNameMatching(event)
@@ -133,6 +188,7 @@ public class SuppressFilterElement
 
     /**
      * Is matching by file name, module id, and Check name.
+     *
      * @param event event
      * @return true if it is matching
      */
@@ -146,6 +202,7 @@ public class SuppressFilterElement
 
     /**
      * Is matching by message.
+     *
      * @param event event
      * @return true if it is matching or not set.
      */
@@ -155,6 +212,7 @@ public class SuppressFilterElement
 
     /**
      * Whether line and column match.
+     *
      * @param event event to process.
      * @return true if line and column are matching or not set.
      */

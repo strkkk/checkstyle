@@ -21,8 +21,12 @@ function checkout_from {
 function build_checkstyle {
   if [[ "$SHIPPABLE" == "true" ]]; then
     echo "Build checkstyle ..."
-    mvn clean install -Pno-validations
+    mvn -e clean install -Pno-validations
   fi
+}
+
+function removeFolderWithProtectedFiles() {
+  find $1 -delete
 }
 
 case $1 in
@@ -39,6 +43,8 @@ no-exception-openjdk7-openjdk8)
   sed -i'' 's/#openjdk8/openjdk8/' projects-for-circle.properties
   groovy launch.groovy --listOfProjects projects-for-circle.properties \
     --config checks-nonjavadoc-error.xml --checkstyleVersion ${CS_POM_VERSION}
+  cd ../..
+  removeFolderWithProtectedFiles .ci-temp/contribution
   ;;
 
 no-exception-openjdk9-lucene-and-others)
@@ -50,13 +56,15 @@ no-exception-openjdk9-lucene-and-others)
   cd .ci-temp/contribution/checkstyle-tester
   sed -i'' 's/^guava/#guava/' projects-for-circle.properties
   # till hg is installed
-  #sed -i'' 's/#openjdk9/openjdk9/' projects-for-circle.properties
+  # sed -i'' 's/#openjdk9/openjdk9/' projects-for-circle.properties
   sed -i'' 's/#infinispan/infinispan/' projects-for-circle.properties
   sed -i'' 's/#protonpack/protonpack/' projects-for-circle.properties
   sed -i'' 's/#jOOL/jOOL/' projects-for-circle.properties
   sed -i'' 's/#lucene-solr/lucene-solr/' projects-for-circle.properties
   groovy launch.groovy --listOfProjects projects-for-circle.properties \
     --config checks-nonjavadoc-error.xml --checkstyleVersion ${CS_POM_VERSION}
+  cd ../..
+  removeFolderWithProtectedFiles contribution
   ;;
 
 no-exception-cassandra-storm-tapestry)
@@ -72,6 +80,8 @@ no-exception-cassandra-storm-tapestry)
   sed -i'' 's/#cassandra/cassandra/' projects-for-circle.properties
   groovy launch.groovy --listOfProjects projects-for-circle.properties \
     --config checks-nonjavadoc-error.xml --checkstyleVersion ${CS_POM_VERSION}
+  cd ../..
+  removeFolderWithProtectedFiles contribution
   ;;
 
 no-exception-hadoop-apache-groovy-scouter)
@@ -88,6 +98,46 @@ no-exception-hadoop-apache-groovy-scouter)
   sed -i'' 's/#scouter/scouter/' projects-for-circle.properties
   groovy launch.groovy --listOfProjects projects-for-circle.properties \
     --config checks-nonjavadoc-error.xml --checkstyleVersion ${CS_POM_VERSION}
+  cd ../..
+  removeFolderWithProtectedFiles contribution
+  ;;
+
+no-exception-only-javadoc)
+  CS_POM_VERSION=$(mvn -e -q -Dexec.executable='echo' -Dexec.args='${project.version}' \
+                      --non-recursive org.codehaus.mojo:exec-maven-plugin:1.3.1:exec)
+  echo 'CS_POM_VERSION='${CS_POM_VERSION}
+  build_checkstyle
+  checkout_from https://github.com/checkstyle/contribution.git
+  cd .ci-temp/contribution/checkstyle-tester
+  sed -i.'' 's/^guava/#guava/' projects-to-test-on.properties
+  sed -i.'' 's/#spring-framework/spring-framework/' projects-to-test-on.properties
+  sed -i.'' 's/#nbia-dcm4che-tools/nbia-dcm4che-tools/' projects-to-test-on.properties
+  sed -i.'' 's/#spotbugs/spotbugs/' projects-to-test-on.properties
+  sed -i.'' 's/#pmd/pmd/' projects-to-test-on.properties
+  sed -i.'' 's/#apache-ant/apache-ant/' projects-to-test-on.properties
+  groovy launch.groovy --listOfProjects projects-to-test-on.properties \
+    --config checks-only-javadoc-error.xml --checkstyleVersion ${CS_POM_VERSION}
+  cd ../..
+  removeFolderWithProtectedFiles contribution
+  ;;
+
+validate-ci-temp-empty)
+  fail=0
+  if [ "$(ls -A .ci-temp)" ]; then
+    ls -A .ci-temp
+    echo ".ci-temp/ is not empty. Verification failed."
+    fail=1
+  fi
+  exit $fail
+  ;;
+
+git-status)
+  if [ "$(git status | grep 'Changes not staged\|Untracked files')" ]; then
+    printf "Please clean up or update .gitattributes file.\nGit status output:\n"
+    git status
+    sleep 5s
+    false
+  fi
   ;;
 
 *)

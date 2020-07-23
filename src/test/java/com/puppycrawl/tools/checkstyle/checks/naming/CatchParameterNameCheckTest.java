@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,9 @@
 package com.puppycrawl.tools.checkstyle.checks.naming;
 
 import static com.puppycrawl.tools.checkstyle.checks.naming.AbstractNameCheck.MSG_INVALID_PATTERN;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
@@ -42,10 +42,10 @@ public class CatchParameterNameCheckTest extends AbstractModuleTestSupport {
         final CatchParameterNameCheck catchParameterNameCheck = new CatchParameterNameCheck();
         final int[] expected = {TokenTypes.PARAMETER_DEF};
 
-        assertArrayEquals("Default required tokens are invalid",
-            expected, catchParameterNameCheck.getRequiredTokens());
-        assertArrayEquals("Default acceptable tokens are invalid",
-            expected, catchParameterNameCheck.getAcceptableTokens());
+        assertArrayEquals(expected, catchParameterNameCheck.getRequiredTokens(),
+                "Default required tokens are invalid");
+        assertArrayEquals(expected, catchParameterNameCheck.getAcceptableTokens(),
+                "Default acceptable tokens are invalid");
     }
 
     @Test

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -27,6 +27,7 @@ import com.puppycrawl.tools.checkstyle.FileStatefulCheck;
 import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+import com.puppycrawl.tools.checkstyle.utils.CheckUtil;
 
 /**
  * <p>
@@ -58,6 +59,7 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
  * <li>
  * Property {@code ignoreEqualsIgnoreCase} - Control whether to ignore
  * {@code String.equalsIgnoreCase(String)} invocations.
+ * Type is {@code boolean}.
  * Default value is {@code false}.
  * </li>
  * </ul>
@@ -67,6 +69,20 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
  * <pre>
  * &lt;module name=&quot;EqualsAvoidNull&quot;/&gt;
  * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code equals.avoid.null}
+ * </li>
+ * <li>
+ * {@code equalsIgnoreCase.avoid.null}
+ * </li>
+ * </ul>
  *
  * @since 5.0
  */
@@ -129,11 +145,13 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
             TokenTypes.ENUM_CONSTANT_DEF,
             TokenTypes.LITERAL_NEW,
             TokenTypes.LAMBDA,
+            TokenTypes.PATTERN_VARIABLE_DEF,
         };
     }
 
     /**
      * Setter to control whether to ignore {@code String.equalsIgnoreCase(String)} invocations.
+     *
      * @param newValue whether to ignore checking
      *    {@code String.equalsIgnoreCase(String)}.
      */
@@ -151,6 +169,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
         switch (ast.getType()) {
             case TokenTypes.VARIABLE_DEF:
             case TokenTypes.PARAMETER_DEF:
+            case TokenTypes.PATTERN_VARIABLE_DEF:
                 currentFrame.addField(ast);
                 break;
             case TokenTypes.METHOD_CALL:
@@ -190,7 +209,8 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
         }
         else if (astType != TokenTypes.VARIABLE_DEF
                 && astType != TokenTypes.PARAMETER_DEF
-                && astType != TokenTypes.METHOD_CALL) {
+                && astType != TokenTypes.METHOD_CALL
+                && astType != TokenTypes.PATTERN_VARIABLE_DEF) {
             currentFrame = currentFrame.getParent();
         }
     }
@@ -203,6 +223,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
     /**
      * Determine whether SLIST begins a block, determined by braces, and add it as
      * a frame in this case.
+     *
      * @param ast SLIST ast.
      */
     private void processSlist(DetailAST ast) {
@@ -215,6 +236,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
 
     /**
      * Determine whether SLIST begins a block, determined by braces.
+     *
      * @param ast SLIST ast.
      */
     private void leaveSlist(DetailAST ast) {
@@ -226,14 +248,14 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
     /**
      * Process CLASS_DEF, METHOD_DEF, LITERAL_IF, LITERAL_FOR, LITERAL_WHILE, LITERAL_DO,
      * LITERAL_CATCH, LITERAL_TRY, CTOR_DEF, ENUM_DEF, ENUM_CONSTANT_DEF.
+     *
      * @param ast processed ast.
      */
     private void processFrame(DetailAST ast) {
         final FieldFrame frame = new FieldFrame(currentFrame);
         final int astType = ast.getType();
         if (astType == TokenTypes.CLASS_DEF
-                || astType == TokenTypes.ENUM_DEF
-                || astType == TokenTypes.ENUM_CONSTANT_DEF) {
+                || astType == TokenTypes.ENUM_DEF) {
             frame.setClassOrEnumOrEnumConstDef(true);
             frame.setFrameName(ast.findFirstToken(TokenTypes.IDENT).getText());
         }
@@ -243,6 +265,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
 
     /**
      * Add the method call to the current frame if it should be processed.
+     *
      * @param methodCall METHOD_CALL ast.
      */
     private void processMethodCall(DetailAST methodCall) {
@@ -259,6 +282,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
     /**
      * Determine whether LITERAL_NEW is an anonymous class definition and add it as
      * a frame in this case.
+     *
      * @param ast LITERAL_NEW ast.
      */
     private void processLiteralNew(DetailAST ast) {
@@ -283,13 +307,13 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
 
     /**
      * Traverse the tree of the field frames to check all equals method calls.
+     *
      * @param frame to check method calls in.
      */
     private void traverseFieldFrameTree(FieldFrame frame) {
         for (FieldFrame child: frame.getChildren()) {
-            if (!child.getChildren().isEmpty()) {
-                traverseFieldFrameTree(child);
-            }
+            traverseFieldFrameTree(child);
+
             currentFrame = child;
             child.getMethodCalls().forEach(this::checkMethodCall);
         }
@@ -297,6 +321,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
 
     /**
      * Check whether the method call should be violated.
+     *
      * @param methodCall method call to check.
      */
     private void checkMethodCall(DetailAST methodCall) {
@@ -332,6 +357,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
     /**
      * Looks for all "safe" Token combinations in the argument
      * expression branch.
+     *
      * @param expr the argument expression
      * @return - true if any child matches the set of tokens, false if not
      */
@@ -349,28 +375,33 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
                 child = child.getNextSibling();
             }
         }
+        else {
+            argIsNotNull = arg.getType() == TokenTypes.STRING_LITERAL;
+        }
 
-        return argIsNotNull
-                || !arg.branchContains(TokenTypes.IDENT)
-                    && !arg.branchContains(TokenTypes.LITERAL_NULL);
+        return argIsNotNull;
     }
 
     /**
      * Skips over an inner assign portion of an argument expression.
+     *
      * @param currentAST current token in the argument expression
      * @return the next relevant token
      */
     private static DetailAST skipVariableAssign(final DetailAST currentAST) {
         DetailAST result = currentAST;
-        if (currentAST.getType() == TokenTypes.ASSIGN
-                && currentAST.getFirstChild().getType() == TokenTypes.IDENT) {
-            result = currentAST.getFirstChild().getNextSibling();
+        while (result.getType() == TokenTypes.LPAREN) {
+            result = result.getNextSibling();
+        }
+        if (result.getType() == TokenTypes.ASSIGN) {
+            result = result.getFirstChild().getNextSibling();
         }
         return result;
     }
 
     /**
      * Determine, whether equals method is called on a field of String type.
+     *
      * @param objCalledOn object ast.
      * @return true if the object is of String type.
      */
@@ -394,6 +425,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
 
     /**
      * Whether the field or the variable is of String type.
+     *
      * @param objCalledOn the field or the variable to check.
      * @return true if the field or the variable is of String type.
      */
@@ -416,21 +448,19 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
 
     /**
      * Whether the field or the variable from THIS instance is of String type.
+     *
      * @param objCalledOn the field or the variable from THIS instance to check.
      * @return true if the field or the variable from THIS instance is of String type.
      */
     private boolean isStringFieldOrVariableFromThisInstance(DetailAST objCalledOn) {
-        boolean result = false;
         final String name = objCalledOn.getText();
         final DetailAST field = getObjectFrame(currentFrame).findField(name);
-        if (field != null) {
-            result = STRING.equals(getFieldType(field));
-        }
-        return result;
+        return STRING.equals(getFieldType(field));
     }
 
     /**
      * Whether the field or the variable from the specified class is of String type.
+     *
      * @param objCalledOn the field or the variable from the specified class to check.
      * @param className the name of the class to check in.
      * @return true if the field or the variable from the specified class is of String type.
@@ -443,9 +473,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
         while (frame != null) {
             if (className.equals(frame.getFrameName())) {
                 final DetailAST field = frame.findField(name);
-                if (field != null) {
-                    result = STRING.equals(getFieldType(field));
-                }
+                result = STRING.equals(getFieldType(field));
                 break;
             }
             frame = getObjectFrame(frame.getParent());
@@ -455,6 +483,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
 
     /**
      * Get the nearest parent frame which is CLASS_DEF, ENUM_DEF or ENUM_CONST_DEF.
+     *
      * @param frame to start the search from.
      * @return the nearest parent frame which is CLASS_DEF, ENUM_DEF or ENUM_CONST_DEF.
      */
@@ -469,24 +498,14 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
     /**
      * Check whether the field is declared before the method call in case of
      * methods and initialization blocks.
+     *
      * @param field field to check.
      * @param objCalledOn object equals method called on.
      * @return true if the field is declared before the method call.
      */
     private static boolean checkLineNo(DetailAST field, DetailAST objCalledOn) {
         boolean result = false;
-        // Required for pitest coverage. We should specify columnNo passing condition
-        // in such a way, so that the minimal possible distance between field and
-        // objCalledOn will be the maximal condition to pass this check.
-        // The minimal distance between objCalledOn and field (of type String) initialization
-        // is calculated as follows:
-        // String(6) + space(1) + variableName(1) + assign(1) +
-        // anotherStringVariableName(1) + semicolon(1) = 11
-        // Example: length of "String s=d;" is 11 symbols.
-        final int minimumSymbolsBetween = 11;
-        if (field.getLineNo() < objCalledOn.getLineNo()
-                || field.getLineNo() == objCalledOn.getLineNo()
-                    && field.getColumnNo() + minimumSymbolsBetween <= objCalledOn.getColumnNo()) {
+        if (CheckUtil.isBeforeInSource(field, objCalledOn)) {
             result = true;
         }
         return result;
@@ -494,6 +513,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
 
     /**
      * Get field type.
+     *
      * @param field to get the type from.
      * @return type of the field.
      */
@@ -532,6 +552,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
 
         /**
          * Creates new frame.
+         *
          * @param parent parent frame.
          */
         /* package */ FieldFrame(FieldFrame parent) {
@@ -540,6 +561,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
 
         /**
          * Set the frame name.
+         *
          * @param frameName value to set.
          */
         public void setFrameName(String frameName) {
@@ -548,6 +570,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
 
         /**
          * Getter for the frame name.
+         *
          * @return frame name.
          */
         public String getFrameName() {
@@ -556,6 +579,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
 
         /**
          * Getter for the parent frame.
+         *
          * @return parent frame.
          */
         public FieldFrame getParent() {
@@ -564,6 +588,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
 
         /**
          * Getter for frame's children.
+         *
          * @return children of this frame.
          */
         public Set<FieldFrame> getChildren() {
@@ -572,6 +597,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
 
         /**
          * Add child frame to this frame.
+         *
          * @param child frame to add.
          */
         public void addChild(FieldFrame child) {
@@ -580,6 +606,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
 
         /**
          * Add field to this FieldFrame.
+         *
          * @param field the ast of the field.
          */
         public void addField(DetailAST field) {
@@ -590,6 +617,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
 
         /**
          * Sets isClassOrEnum.
+         *
          * @param value value to set.
          */
         public void setClassOrEnumOrEnumConstDef(boolean value) {
@@ -598,6 +626,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
 
         /**
          * Getter for classOrEnumOrEnumConstDef.
+         *
          * @return classOrEnumOrEnumConstDef.
          */
         public boolean isClassOrEnumOrEnumConstDef() {
@@ -606,6 +635,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
 
         /**
          * Add method call to this frame.
+         *
          * @param methodCall METHOD_CALL ast.
          */
         public void addMethodCall(DetailAST methodCall) {
@@ -614,6 +644,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
 
         /**
          * Determines whether this FieldFrame contains the field.
+         *
          * @param name name of the field to check.
          * @return true if this FieldFrame contains instance field field.
          */
@@ -630,6 +661,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
 
         /**
          * Getter for frame's method calls.
+         *
          * @return method calls of this frame.
          */
         public Set<DetailAST> getMethodCalls() {
@@ -638,6 +670,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
 
         /**
          * Get the name of the field.
+         *
          * @param field to get the name from.
          * @return name of the field.
          */

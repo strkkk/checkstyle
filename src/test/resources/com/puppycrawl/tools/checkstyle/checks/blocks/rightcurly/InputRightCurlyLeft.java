@@ -83,7 +83,7 @@ class InputRightCurlyLeft
     {
         HELLO,
         GOODBYE
-    };
+    }; //violation
 
     void method2()
     {
@@ -104,10 +104,10 @@ class InputRightCurlyLeft
  */
 class FooCtor
 {
-	int i;
-	public FooCtor()
+        int i;
+        public FooCtor()
     {
-		i = 1;
+                i = 1;
     }}
 
 /**
@@ -116,9 +116,9 @@ class FooCtor
 */
 class FooMethod
 {
-	public void fooMethod()
+        public void fooMethod()
     {
-		int i = 1;
+                int i = 1;
     }}
 
 /**
@@ -127,12 +127,12 @@ class FooMethod
 */
 class FooInner
 {
-	class InnerFoo
+        class InnerFoo
     {
-		public void fooInnerMethod ()
+                public void fooInnerMethod ()
         {
 
-		}
+                }
     }}
 
 /**
@@ -167,4 +167,46 @@ class ClassWithStaticInitializers
         }
     }
 
+    public void emptyBlocks() {
+        try {
+            // comment
+        } catch (RuntimeException e) { // violation except for SAME
+            new Object();
+        } catch (Exception e) { // violation except for SAME
+            // comment
+        } catch (Throwable e) { // violation except for SAME
+        } finally { // violation except for SAME
+            // comment
+        }
+
+        do {
+        } while (true); // violation except for SAME
+    }
+
+    public void codeAfterLastRightCurly() {
+        while (new Object().equals(new Object())) {
+        }; // violation
+        for (int i = 0; i < 1; i++) { new Object(); }; // violation
+    }
+
+    static final java.util.concurrent.ThreadFactory threadFactory
+            = new java.util.concurrent.ThreadFactory() {
+        @Override
+        public Thread newThread(final Runnable r) {
+            return new Thread(r);
+        }}; // violation
+
+    interface Interface1
+    {
+        int i = 1;
+        public void meth1(); } // violation
+
+    interface Interface2
+    { int i = 1; public void meth1(); } // violation
+
+    interface Interface3 {
+        void display();
+        interface Interface4 {
+            void myMethod();
+        }} // violation - for both right curly brace
 }

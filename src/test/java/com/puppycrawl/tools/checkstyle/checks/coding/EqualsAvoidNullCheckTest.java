@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,13 +21,12 @@ package com.puppycrawl.tools.checkstyle.checks.coding;
 
 import static com.puppycrawl.tools.checkstyle.checks.coding.EqualsAvoidNullCheck.MSG_EQUALS_AVOID_NULL;
 import static com.puppycrawl.tools.checkstyle.checks.coding.EqualsAvoidNullCheck.MSG_EQUALS_IGNORE_CASE_AVOID_NULL;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
-import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
 
 public class EqualsAvoidNullCheckTest extends AbstractModuleTestSupport {
 
@@ -162,6 +161,7 @@ public class EqualsAvoidNullCheckTest extends AbstractModuleTestSupport {
 
         final String[] expected = {
             "7:28: " + getCheckMessage(MSG_EQUALS_AVOID_NULL),
+            "14:17: " + getCheckMessage(MSG_EQUALS_AVOID_NULL),
         };
         verify(checkConfig, getPath("InputEqualsAvoidNullOnTheSameLine.java"), expected);
     }
@@ -185,20 +185,40 @@ public class EqualsAvoidNullCheckTest extends AbstractModuleTestSupport {
     }
 
     @Test
+    public void testInputEqualsAvoidNullEnhancedInstanceof() throws Exception {
+        final DefaultConfiguration checkConfig =
+                createModuleConfig(EqualsAvoidNullCheck.class);
+
+        final String[] expected = {
+            "27:45: " + getCheckMessage(MSG_EQUALS_AVOID_NULL),
+            "30:36: " + getCheckMessage(MSG_EQUALS_AVOID_NULL),
+            "38:50: " + getCheckMessage(MSG_EQUALS_AVOID_NULL),
+            "39:38: " + getCheckMessage(MSG_EQUALS_AVOID_NULL),
+            "40:38: " + getCheckMessage(MSG_EQUALS_AVOID_NULL),
+            "40:65: " + getCheckMessage(MSG_EQUALS_AVOID_NULL),
+        };
+        verify(checkConfig,
+                getNonCompilablePath("InputEqualsAvoidNullEnhancedInstanceof.java"),
+                expected);
+    }
+
+    @Test
     public void testMisc() throws Exception {
         final DefaultConfiguration checkConfig =
                 createModuleConfig(EqualsAvoidNullCheck.class);
 
-        final String[] expected = CommonUtil.EMPTY_STRING_ARRAY;
+        final String[] expected = {
+            "13:17: " + getCheckMessage(MSG_EQUALS_AVOID_NULL),
+        };
         verify(checkConfig, getPath("InputEqualsAvoidNullMisc.java"), expected);
     }
 
     @Test
     public void testTokensNotNull() {
         final EqualsAvoidNullCheck check = new EqualsAvoidNullCheck();
-        Assert.assertNotNull("Acceptable tokens should not be null", check.getAcceptableTokens());
-        Assert.assertNotNull("Default tokens should not be null", check.getDefaultTokens());
-        Assert.assertNotNull("Required tokens should not be null", check.getRequiredTokens());
+        assertNotNull(check.getAcceptableTokens(), "Acceptable tokens should not be null");
+        assertNotNull(check.getDefaultTokens(), "Default tokens should not be null");
+        assertNotNull(check.getRequiredTokens(), "Required tokens should not be null");
     }
 
 }

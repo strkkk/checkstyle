@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,9 +19,7 @@
 
 package com.puppycrawl.tools.checkstyle.api;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -53,7 +51,8 @@ public final class FileContents implements CommentListener {
     /** The text. */
     private final FileText text;
 
-    /** Map of the Javadoc comments indexed on the last line of the comment.
+    /**
+     * Map of the Javadoc comments indexed on the last line of the comment.
      * The hack is it assumes that there is only one Javadoc comment per line.
      */
     private final Map<Integer, TextBlock> javadocComments = new HashMap<>();
@@ -69,25 +68,48 @@ public final class FileContents implements CommentListener {
     /**
      * Creates a new {@code FileContents} instance.
      *
-     * @param filename name of the file
-     * @param lines the contents of the file
-     * @deprecated Use {@link #FileContents(FileText)} instead
-     *     in order to preserve the original line breaks where possible.
-     */
-    @Deprecated
-    public FileContents(String filename, String... lines) {
-        fileName = filename;
-        text = new FileText(new File(filename), Arrays.asList(lines));
-    }
-
-    /**
-     * Creates a new {@code FileContents} instance.
-     *
      * @param text the contents of the file
      */
     public FileContents(FileText text) {
         fileName = text.getFile().toString();
         this.text = new FileText(text);
+    }
+
+    /**
+     * Get the full text of the file.
+     *
+     * @return an object containing the full text of the file
+     */
+    public FileText getText() {
+        return new FileText(text);
+    }
+
+    /**
+     * Gets the lines in the file.
+     *
+     * @return the lines in the file
+     */
+    public String[] getLines() {
+        return text.toLinesArray();
+    }
+
+    /**
+     * Get the line from text of the file.
+     *
+     * @param index index of the line
+     * @return line from text of the file
+     */
+    public String getLine(int index) {
+        return text.get(index);
+    }
+
+    /**
+     * Gets the name of the file.
+     *
+     * @return the name of the file
+     */
+    public String getFileName() {
+        return fileName;
     }
 
     @Override
@@ -98,6 +120,7 @@ public final class FileContents implements CommentListener {
 
     /**
      * Report the location of a single line comment.
+     *
      * @param startLineNo the starting line number
      * @param startColNo the starting column number
      **/
@@ -117,12 +140,13 @@ public final class FileContents implements CommentListener {
 
     /**
      * Report the location of a block comment.
+     *
      * @param startLineNo the starting line number
      * @param startColNo the starting column number
      * @param endLineNo the ending line number
      * @param endColNo the ending column number
      **/
-    private void reportBlockComment(int startLineNo, int startColNo,
+    public void reportBlockComment(int startLineNo, int startColNo,
             int endLineNo, int endColNo) {
         final String[] cComment = extractBlockComment(startLineNo, startColNo,
                 endLineNo, endColNo);
@@ -148,76 +172,8 @@ public final class FileContents implements CommentListener {
     }
 
     /**
-     * Report the location of a C++ style comment.
-     * @param startLineNo the starting line number
-     * @param startColNo the starting column number
-     * @deprecated Use {@link #reportSingleLineComment(int, int)} instead.
-     **/
-    @Deprecated
-    public void reportCppComment(int startLineNo, int startColNo) {
-        reportSingleLineComment(startLineNo, startColNo);
-    }
-
-    /**
-     * Returns a map of all the C++ style comments. The key is a line number,
-     * the value is the comment {@link TextBlock} at the line.
-     * @return the Map of comments
-     * @deprecated Use {@link #getSingleLineComments()} instead.
-     */
-    @Deprecated
-    public Map<Integer, TextBlock> getCppComments() {
-        return getSingleLineComments();
-    }
-
-    /**
-     * Returns a map of all the single line comments. The key is a line number,
-     * the value is the comment {@link TextBlock} at the line.
-     * @return the Map of comments
-     */
-    public Map<Integer, TextBlock> getSingleLineComments() {
-        return Collections.unmodifiableMap(cppComments);
-    }
-
-    /**
-     * Report the location of a C-style comment.
-     * @param startLineNo the starting line number
-     * @param startColNo the starting column number
-     * @param endLineNo the ending line number
-     * @param endColNo the ending column number
-     * @deprecated Use {@link #reportBlockComment(int, int, int, int)} instead.
-     **/
-    // -@cs[AbbreviationAsWordInName] Can't change yet since class is API.
-    @Deprecated
-    public void reportCComment(int startLineNo, int startColNo,
-            int endLineNo, int endColNo) {
-        reportBlockComment(startLineNo, startColNo, endLineNo, endColNo);
-    }
-
-    /**
-     * Returns a map of all C style comments. The key is the line number, the
-     * value is a {@link List} of C style comment {@link TextBlock}s
-     * that start at that line.
-     * @return the map of comments
-     * @deprecated Use {@link #getBlockComments()} instead.
-     */
-    // -@cs[AbbreviationAsWordInName] Can't change yet since class is API.
-    @Deprecated
-    public Map<Integer, List<TextBlock>> getCComments() {
-        return getBlockComments();
-    }
-
-    /**
-     * Returns a map of all block comments. The key is the line number, the
-     * value is a {@link List} of block comment {@link TextBlock}s
-     * that start at that line.
-     * @return the map of comments
-     */
-    public Map<Integer, List<TextBlock>> getBlockComments() {
-        return Collections.unmodifiableMap(clangComments);
-    }
-
-    /**
      * Returns the specified block comment as a String array.
+     *
      * @param startLineNo the starting line number
      * @param startColNo the starting column number
      * @param endLineNo the ending line number
@@ -245,8 +201,22 @@ public final class FileContents implements CommentListener {
     }
 
     /**
+     * Get a single line.
+     * For internal use only, as getText().get(lineNo) is just as
+     * suitable for external use and avoids method duplication.
+     *
+     * @param lineNo the number of the line to get
+     * @return the corresponding line, without terminator
+     * @throws IndexOutOfBoundsException if lineNo is invalid
+     */
+    private String line(int lineNo) {
+        return text.get(lineNo);
+    }
+
+    /**
      * Returns the Javadoc comment before the specified line.
      * A return value of {@code null} means there is no such comment.
+     *
      * @param lineNoBefore the line number to check before
      * @return the Javadoc comment, or {@code null} if none
      **/
@@ -263,52 +233,8 @@ public final class FileContents implements CommentListener {
     }
 
     /**
-     * Get a single line.
-     * For internal use only, as getText().get(lineNo) is just as
-     * suitable for external use and avoids method duplication.
-     * @param lineNo the number of the line to get
-     * @return the corresponding line, without terminator
-     * @throws IndexOutOfBoundsException if lineNo is invalid
-     */
-    private String line(int lineNo) {
-        return text.get(lineNo);
-    }
-
-    /**
-     * Get the full text of the file.
-     * @return an object containing the full text of the file
-     */
-    public FileText getText() {
-        return new FileText(text);
-    }
-
-    /**
-     * Gets the lines in the file.
-     * @return the lines in the file
-     */
-    public String[] getLines() {
-        return text.toLinesArray();
-    }
-
-    /**
-     * Get the line from text of the file.
-     * @param index index of the line
-     * @return line from text of the file
-     */
-    public String getLine(int index) {
-        return text.get(index);
-    }
-
-    /**
-     * Gets the name of the file.
-     * @return the name of the file
-     */
-    public String getFileName() {
-        return fileName;
-    }
-
-    /**
      * Checks if the specified line is blank.
+     *
      * @param lineNo the line number to check
      * @return if the specified line consists only of tabs and spaces.
      **/
@@ -318,6 +244,7 @@ public final class FileContents implements CommentListener {
 
     /**
      * Checks if the specified line is a single-line comment without code.
+     *
      * @param lineNo  the line number to check
      * @return if the specified line consists of only a single line comment
      *         without code.
@@ -328,6 +255,7 @@ public final class FileContents implements CommentListener {
 
     /**
      * Checks if the specified position intersects with a comment.
+     *
      * @param startLineNo the starting line number
      * @param startColNo the starting column number
      * @param endLineNo the ending line number
@@ -342,15 +270,8 @@ public final class FileContents implements CommentListener {
     }
 
     /**
-     * Checks if the current file is a package-info.java file.
-     * @return true if the package file.
-     */
-    public boolean inPackageInfo() {
-        return fileName.endsWith("package-info.java");
-    }
-
-    /**
      * Checks if the specified position intersects with a block comment.
+     *
      * @param startLineNo the starting line number
      * @param startColNo the starting column number
      * @param endLineNo the ending line number
@@ -378,6 +299,7 @@ public final class FileContents implements CommentListener {
 
     /**
      * Checks if the specified position intersects with a single line comment.
+     *
      * @param startLineNo the starting line number
      * @param startColNo the starting column number
      * @param endLineNo the ending line number
@@ -398,6 +320,36 @@ public final class FileContents implements CommentListener {
             }
         }
         return hasIntersection;
+    }
+
+    /**
+     * Returns a map of all the single line comments. The key is a line number,
+     * the value is the comment {@link TextBlock} at the line.
+     *
+     * @return the Map of comments
+     */
+    public Map<Integer, TextBlock> getSingleLineComments() {
+        return Collections.unmodifiableMap(cppComments);
+    }
+
+    /**
+     * Returns a map of all block comments. The key is the line number, the
+     * value is a {@link List} of block comment {@link TextBlock}s
+     * that start at that line.
+     *
+     * @return the map of comments
+     */
+    public Map<Integer, List<TextBlock>> getBlockComments() {
+        return Collections.unmodifiableMap(clangComments);
+    }
+
+    /**
+     * Checks if the current file is a package-info.java file.
+     *
+     * @return true if the package file.
+     */
+    public boolean inPackageInfo() {
+        return fileName.endsWith("package-info.java");
     }
 
 }

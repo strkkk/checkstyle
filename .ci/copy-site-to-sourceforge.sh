@@ -47,6 +47,14 @@ cd /home/project-web/checkstyle
 tar -xzvf checkstyle.github.io.tar.gz
 mv htdocs htdocs-$PREV_RELEASE
 mv checkstyle.github.io htdocs
+
+echo "create .htaccess for dtds redirection"
+cat <<HTACCESS >> htdocs/.htaccess
+Redirect 301 "/dtds" "https://checkstyle.org/dtds"
+RedirectMatch 301 "/version/.*/dtds/(.*)" "https://checkstyle.org/dtds/\$1"
+HTACCESS
+chmod o+r htdocs/.htaccess
+
 ln -s /home/project-web/checkstyle/reports htdocs/reports
 echo "remove dtds folder from unsecure web site"
 rm -r htdocs/dtds
@@ -59,7 +67,7 @@ mv htdocs-$PREV_RELEASE.tar.gz htdocs-archive/
 rm -rf htdocs-$PREV_RELEASE/
 
 echo "Extracting archive to previous releases documentation"
-tar -xzvf htdocs-archive/htdocs-$PREV_RELEASE.tar.gz -C htdocs-version/ \
+tar -xzvf htdocs-archive/htdocs-$PREV_RELEASE.tar.gz -C htdocs-version/ --same-owner \
 --exclude="*/apidocs" \
 --exclude="*/xref" --exclude="*/xref-test" --exclude="*/cobertura" --exclude="*/dsm" \
 --exclude="*/api" --exclude="reports" --exclude="jacoco" --exclude="dtds" \

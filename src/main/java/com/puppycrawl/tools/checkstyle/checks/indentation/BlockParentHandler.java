@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,7 @@ package com.puppycrawl.tools.checkstyle.checks.indentation;
 
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+import com.puppycrawl.tools.checkstyle.utils.TokenUtil;
 
 /**
  * Handler for parents of blocks ('if', 'else', 'while', etc).
@@ -74,6 +75,7 @@ public class BlockParentHandler extends AbstractExpressionHandler {
 
     /**
      * Returns array of token types which should be checked among children.
+     *
      * @return array of token types to check.
      */
     protected int[] getCheckedChildren() {
@@ -238,7 +240,7 @@ public class BlockParentHandler extends AbstractExpressionHandler {
         }
         else {
             // NOTE: switch statements usually don't have curlies
-            if (!hasCurlies() || !areOnSameLine(getLeftCurly(), getRightCurly())) {
+            if (!hasCurlies() || !TokenUtil.areOnSameLine(getLeftCurly(), getRightCurly())) {
                 checkChildren(listChild,
                         getCheckedChildren(),
                         getChildrenExpectedIndent(),
@@ -250,6 +252,7 @@ public class BlockParentHandler extends AbstractExpressionHandler {
 
     /**
      * Gets indentation level expected for children.
+     *
      * @return indentation level expected for children
      */
     protected IndentLevel getChildrenExpectedIndent() {
@@ -278,6 +281,7 @@ public class BlockParentHandler extends AbstractExpressionHandler {
 
     /**
      * A shortcut for {@code IndentationCheck} property.
+     *
      * @return value of lineWrappingIndentation property
      *         of {@code IndentationCheck}
      */

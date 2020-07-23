@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -31,45 +31,69 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  * More specifically, it checks that it is not followed by whitespace,
  * or (if linebreaks are allowed) all characters on the line after are
  * whitespace. To forbid linebreaks after a token, set property
- * allowLineBreaks to false.
- * </p>
-  * <p> By default the check will check the following operators:
- *  {@link TokenTypes#ARRAY_INIT ARRAY_INIT},
- *  {@link TokenTypes#AT AT},
- *  {@link TokenTypes#BNOT BNOT},
- *  {@link TokenTypes#DEC DEC},
- *  {@link TokenTypes#DOT DOT},
- *  {@link TokenTypes#INC INC},
- *  {@link TokenTypes#LNOT LNOT},
- *  {@link TokenTypes#UNARY_MINUS UNARY_MINUS},
- *  {@link TokenTypes#UNARY_PLUS UNARY_PLUS},
- *  {@link TokenTypes#TYPECAST TYPECAST},
- *  {@link TokenTypes#ARRAY_DECLARATOR ARRAY_DECLARATOR},
- *  {@link TokenTypes#INDEX_OP INDEX_OP}.
+ * {@code allowLineBreaks} to {@code false}.
  * </p>
  * <p>
  * The check processes
- * {@link TokenTypes#ARRAY_DECLARATOR ARRAY_DECLARATOR},
- * {@link TokenTypes#INDEX_OP INDEX_OP}
- * specially from other tokens. Actually it is checked that there is
- * no whitespace before this tokens, not after them.
- * Spaces after the {@link TokenTypes#ANNOTATIONS ANNOTATIONS}
- * before {@link TokenTypes#ARRAY_DECLARATOR ARRAY_DECLARATOR}
- * and {@link TokenTypes#INDEX_OP INDEX_OP} will be ignored.
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#ARRAY_DECLARATOR">
+ * ARRAY_DECLARATOR</a> and
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#INDEX_OP">
+ * INDEX_OP</a> tokens specially from other tokens. Actually it is checked that
+ * there is no whitespace before this tokens, not after them. Space after the
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#ANNOTATIONS">
+ * ANNOTATIONS</a> before
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#ARRAY_DECLARATOR">
+ * ARRAY_DECLARATOR</a> and
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#INDEX_OP">
+ * INDEX_OP</a> will be ignored.
  * </p>
+ * <ul>
+ * <li>
+ * Property {@code allowLineBreaks} - Control whether whitespace is allowed
+ * if the token is at a linebreak.
+ * Type is {@code boolean}.
+ * Default value is {@code true}.
+ * </li>
+ * <li>
+ * Property {@code tokens} - tokens to check
+ * Type is {@code int[]}.
+ * Default value is:
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#ARRAY_INIT">
+ * ARRAY_INIT</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#AT">
+ * AT</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#INC">
+ * INC</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#DEC">
+ * DEC</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#UNARY_MINUS">
+ * UNARY_MINUS</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#UNARY_PLUS">
+ * UNARY_PLUS</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#BNOT">
+ * BNOT</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#LNOT">
+ * LNOT</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#DOT">
+ * DOT</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#ARRAY_DECLARATOR">
+ * ARRAY_DECLARATOR</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#INDEX_OP">
+ * INDEX_OP</a>.
+ * </li>
+ * </ul>
  * <p>
- * An example of how to configure the check is:
+ * To configure the check:
  * </p>
  * <pre>
- * &lt;module name="NoWhitespaceAfter"/&gt;
+ * &lt;module name=&quot;NoWhitespaceAfter&quot;/&gt;
  * </pre>
- * <p> An example of how to configure the check to forbid linebreaks after
- * a {@link TokenTypes#DOT DOT} token is:
+ * <p>To configure the check to forbid linebreaks after a DOT token:
  * </p>
  * <pre>
- * &lt;module name="NoWhitespaceAfter"&gt;
- *     &lt;property name="tokens" value="DOT"/&gt;
- *     &lt;property name="allowLineBreaks" value="false"/&gt;
+ * &lt;module name=&quot;NoWhitespaceAfter&quot;&gt;
+ *   &lt;property name=&quot;tokens&quot; value=&quot;DOT&quot;/&gt;
+ *   &lt;property name=&quot;allowLineBreaks&quot; value=&quot;false&quot;/&gt;
  * &lt;/module&gt;
  * </pre>
  * <p>
@@ -78,6 +102,19 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  * <pre>
  * public void foo(final char @NotNull [] param) {} // No violation
  * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code ws.followed}
+ * </li>
+ * </ul>
+ *
+ * @since 3.0
  */
 @StatelessCheck
 public class NoWhitespaceAfterCheck extends AbstractCheck {
@@ -88,7 +125,7 @@ public class NoWhitespaceAfterCheck extends AbstractCheck {
      */
     public static final String MSG_KEY = "ws.followed";
 
-    /** Whether whitespace is allowed if the AST is at a linebreak. */
+    /** Control whether whitespace is allowed if the token is at a linebreak. */
     private boolean allowLineBreaks = true;
 
     @Override
@@ -134,7 +171,8 @@ public class NoWhitespaceAfterCheck extends AbstractCheck {
     }
 
     /**
-     * Control whether whitespace is flagged at linebreaks.
+     * Setter to control whether whitespace is allowed if the token is at a linebreak.
+     *
      * @param allowLineBreaks whether whitespace should be
      *     flagged at linebreaks.
      */
@@ -146,8 +184,7 @@ public class NoWhitespaceAfterCheck extends AbstractCheck {
     public void visitToken(DetailAST ast) {
         final DetailAST whitespaceFollowedAst = getWhitespaceFollowedNode(ast);
 
-        if (whitespaceFollowedAst.getNextSibling() == null
-                || whitespaceFollowedAst.getNextSibling().getType() != TokenTypes.ANNOTATIONS) {
+        if (shouldCheckWhitespaceAfter(whitespaceFollowedAst)) {
             final int whitespaceColumnNo = getPositionAfter(whitespaceFollowedAst);
             final int whitespaceLineNo = whitespaceFollowedAst.getLineNo();
 
@@ -160,6 +197,7 @@ public class NoWhitespaceAfterCheck extends AbstractCheck {
     /**
      * For a visited ast node returns node that should be checked
      * for not being followed by whitespace.
+     *
      * @param ast
      *        , visited node.
      * @return node before ast.
@@ -183,13 +221,36 @@ public class NoWhitespaceAfterCheck extends AbstractCheck {
     }
 
     /**
+     * Returns whether whitespace after a visited node should be checked. For example, whitespace
+     * is not allowed between a type and an array declarator (returns true), except when there is
+     * an annotation in between the type and array declarator (returns false).
+     *
+     * @param ast the visited node
+     * @return true if whitespace after ast should be checked
+     */
+    private static boolean shouldCheckWhitespaceAfter(DetailAST ast) {
+        boolean checkWhitespace = true;
+        final DetailAST sibling = ast.getNextSibling();
+        if (sibling != null) {
+            if (sibling.getType() == TokenTypes.ANNOTATIONS) {
+                checkWhitespace = false;
+            }
+            else if (sibling.getType() == TokenTypes.ARRAY_DECLARATOR) {
+                checkWhitespace = sibling.getFirstChild().getType() != TokenTypes.ANNOTATIONS;
+            }
+        }
+        return checkWhitespace;
+    }
+
+    /**
      * Gets position after token (place of possible redundant whitespace).
+     *
      * @param ast Node representing token.
      * @return position after token.
      */
     private static int getPositionAfter(DetailAST ast) {
         final int after;
-        //If target of possible redundant whitespace is in method definition.
+        // If target of possible redundant whitespace is in method definition.
         if (ast.getType() == TokenTypes.IDENT
                 && ast.getNextSibling() != null
                 && ast.getNextSibling().getType() == TokenTypes.LPAREN) {
@@ -205,6 +266,7 @@ public class NoWhitespaceAfterCheck extends AbstractCheck {
 
     /**
      * Checks if there is unwanted whitespace after the visited node.
+     *
      * @param ast
      *        , visited node.
      * @param whitespaceColumnNo
@@ -231,6 +293,7 @@ public class NoWhitespaceAfterCheck extends AbstractCheck {
      * Returns proper argument for getPositionAfter method, it is a token after
      * {@link TokenTypes#ARRAY_DECLARATOR ARRAY_DECLARATOR}, in can be {@link TokenTypes#RBRACK
      * RBRACK}, {@link TokenTypes#IDENT IDENT} or an array type definition (literal).
+     *
      * @param ast
      *        , {@link TokenTypes#ARRAY_DECLARATOR ARRAY_DECLARATOR} node.
      * @return previous node by text order.
@@ -274,7 +337,7 @@ public class NoWhitespaceAfterCheck extends AbstractCheck {
                 case TokenTypes.METHOD_REF:
                     final DetailAST ident = getIdentLastToken(ast);
                     if (ident == null) {
-                        //i.e. int[]::new
+                        // i.e. int[]::new
                         previousElement = ast.getFirstChild();
                     }
                     else {
@@ -292,6 +355,7 @@ public class NoWhitespaceAfterCheck extends AbstractCheck {
      * Gets previous node for {@link TokenTypes#INDEX_OP INDEX_OP} token
      * for usage in getPositionAfter method, it is a simplified copy of
      * getArrayDeclaratorPreviousElement method.
+     *
      * @param ast
      *        , {@link TokenTypes#INDEX_OP INDEX_OP} node.
      * @return previous node by text order.
@@ -326,6 +390,7 @@ public class NoWhitespaceAfterCheck extends AbstractCheck {
 
     /**
      * Get node that owns {@link TokenTypes#ARRAY_DECLARATOR ARRAY_DECLARATOR} sequence.
+     *
      * @param ast
      *        , {@link TokenTypes#ARRAY_DECLARATOR ARRAY_DECLARATOR} node.
      * @return owner node.
@@ -341,6 +406,7 @@ public class NoWhitespaceAfterCheck extends AbstractCheck {
     /**
      * Searches parameter node for a type node.
      * Returns it or its last node if it has an extended structure.
+     *
      * @param ast
      *        , subject node.
      * @return type node.
@@ -350,7 +416,7 @@ public class NoWhitespaceAfterCheck extends AbstractCheck {
         if (result == null) {
             result = getIdentLastToken(ast);
             if (result == null) {
-                //primitive literal expected
+                // primitive literal expected
                 result = ast.getFirstChild();
             }
         }
@@ -363,6 +429,7 @@ public class NoWhitespaceAfterCheck extends AbstractCheck {
     /**
      * Finds previous node by text order for an array declarator,
      * which parent type is {@link TokenTypes#TYPE TYPE}.
+     *
      * @param ast
      *        , array declarator node.
      * @param parent
@@ -383,7 +450,7 @@ public class NoWhitespaceAfterCheck extends AbstractCheck {
         else if (ident.getLineNo() < ast.getLineNo()) {
             previousElement = ident;
         }
-        //ident and lastTypeNode lay on one line
+        // ident and lastTypeNode lay on one line
         else {
             final int instanceOfSize = 13;
             // +2 because ast has `[]` after the ident
@@ -402,6 +469,7 @@ public class NoWhitespaceAfterCheck extends AbstractCheck {
 
     /**
      * Gets leftmost token of identifier.
+     *
      * @param ast
      *        , token possibly possessing an identifier.
      * @return leftmost token of identifier.

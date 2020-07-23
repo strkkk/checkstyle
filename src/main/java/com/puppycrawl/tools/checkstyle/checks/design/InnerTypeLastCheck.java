@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -27,10 +27,42 @@ import com.puppycrawl.tools.checkstyle.utils.ScopeUtil;
 
 /**
  * <p>
- * Check nested (internal) classes/interfaces are declared at the bottom of the
- * class after all method and field declarations.
+ * Checks nested (internal) classes/interfaces are declared at the bottom of the
+ * primary (top-level) class after all method and field declarations.
  * </p>
+ * <p>
+ * To configure the check:
+ * </p>
+ * <pre>
+ * &lt;module name=&quot;InnerTypeLast&quot;/&gt;
+ * </pre>
+ * <p>Example:</p>
+ * <pre>
+ * class Test {
+ *     private String s; // OK
+ *     class InnerTest1 {}
+ *     public void test() {} // violation, method should be declared before inner types.
+ * }
  *
+ * class Test2 {
+ *     private String s; // OK
+ *     public void test() {} // OK
+ *     class InnerTest1 {}
+ * }
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code arrangement.members.before.inner}
+ * </li>
+ * </ul>
+ *
+ * @since 5.2
  */
 @FileStatefulCheck
 public class InnerTypeLastCheck extends AbstractCheck {

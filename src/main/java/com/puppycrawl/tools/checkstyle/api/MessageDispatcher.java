@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -28,18 +28,21 @@ public interface MessageDispatcher {
 
     /**
      * Notify all listeners about the beginning of a file audit.
+     *
      * @param fileName the file to be audited
      */
     void fireFileStarted(String fileName);
 
     /**
      * Notify all listeners about the end of a file audit.
+     *
      * @param fileName the audited file
      */
     void fireFileFinished(String fileName);
 
     /**
      * Notify all listeners about the errors in a file.
+     *
      * @param fileName the audited file
      * @param errors the audit errors from the file
      */

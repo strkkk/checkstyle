@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -57,6 +57,7 @@ public class XmlLoader
 
     /**
      * Creates a new instance.
+     *
      * @param publicIdToResourceNameMap maps public IDs to DTD resource names
      * @throws SAXException if an error occurs
      * @throws ParserConfigurationException if an error occurs
@@ -75,6 +76,7 @@ public class XmlLoader
 
     /**
      * Parses the specified input source.
+     *
      * @param inputSource the input source to parse.
      * @throws IOException if an error occurs
      * @throws SAXException in an error occurs
@@ -88,7 +90,7 @@ public class XmlLoader
     public InputSource resolveEntity(String publicId, String systemId)
             throws SAXException, IOException {
         final InputSource inputSource;
-        if (publicIdToResourceNameMap.keySet().contains(publicId)) {
+        if (publicIdToResourceNameMap.containsKey(publicId)) {
             final String dtdResourceName =
                     publicIdToResourceNameMap.get(publicId);
             final ClassLoader loader =
@@ -124,6 +126,9 @@ public class XmlLoader
         /** Feature that enables including external general entities in XML files. */
         public static final String EXTERNAL_GENERAL_ENTITIES =
                 "http://xml.org/sax/features/external-general-entities";
+        /** Feature that enables including external parameter entities in XML files. */
+        public static final String EXTERNAL_PARAMETER_ENTITIES =
+                "http://xml.org/sax/features/external-parameter-entities";
 
         /** Stop instances being created. **/
         private LoadExternalDtdFeatureProvider() {
@@ -134,6 +139,7 @@ public class XmlLoader
          * to use external DTD file loading, this is not activated by default to no allow
          * usage of schema files that checkstyle do not know
          * it is even security problem to allow files from outside.
+         *
          * @param factory factory to be configured with special features
          * @throws SAXException if an error occurs
          * @throws ParserConfigurationException if an error occurs
@@ -141,11 +147,12 @@ public class XmlLoader
         public static void setFeaturesBySystemProperty(SAXParserFactory factory)
                 throws SAXException, ParserConfigurationException {
 
-            final boolean enableExternalDtdLoad = Boolean.valueOf(
+            final boolean enableExternalDtdLoad = Boolean.parseBoolean(
                 System.getProperty(ENABLE_EXTERNAL_DTD_LOAD, "false"));
 
             factory.setFeature(LOAD_EXTERNAL_DTD, enableExternalDtdLoad);
             factory.setFeature(EXTERNAL_GENERAL_ENTITIES, enableExternalDtdLoad);
+            factory.setFeature(EXTERNAL_PARAMETER_ENTITIES, enableExternalDtdLoad);
         }
 
     }

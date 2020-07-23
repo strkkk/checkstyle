@@ -23,10 +23,6 @@
     <logo name="GitHub" href="https://github.com/checkstyle/checkstyle"
         img="images/github_logo_social_coding_outlined.png"
           />
-    <logo name="SourceForge"
-          img="images/sflogo.gif"
-          href="https://sourceforge.net/projects/checkstyle/"
-          />
     <logo name="Twitter"
           img="images/twitter_button.png"
           href="https://twitter.com/checkstyle_java/"
@@ -38,14 +34,6 @@
     <logo name="GoogleGroups"
           img="images/groups.png"
           href="https://groups.google.com/forum/#!forum/checkstyle"
-          />
-    <logo name="Rss"
-          img="images/rss-long.png"
-          href="https://sourceforge.net/p/checkstyle/news/feed"
-          />
-    <logo name="Google+"
-          img="images/Google-Plus-Logo-120x38.png"
-          href="https://plus.google.com/+CheckstyleJava"
           />
     <logo name="JProfiler"
           img="https://www.ej-technologies.com/images/product_banners/jprofiler_medium.png"
@@ -66,6 +54,7 @@
         <item name="Property Types" href="property_types.html"/>
         <item name="Filters" href="config_filters.html"/>
         <item name="File Filters" href="config_filefilters.html"/>
+        <item name="System Properties" href="config_system_properties.html"/>
       </item>
 
       <item name="Running" href="running.html">

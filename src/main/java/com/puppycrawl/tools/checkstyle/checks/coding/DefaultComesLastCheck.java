@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -38,6 +38,7 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
  * <li>
  * Property {@code skipIfLastAndSharedWithCase} - Control whether to allow {@code default}
  * along with {@code case} if they are not last.
+ * Type is {@code boolean}.
  * Default value is {@code false}.
  * </li>
  * </ul>
@@ -47,35 +48,82 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
  * <pre>
  * &lt;module name=&quot;DefaultComesLast&quot;/&gt;
  * </pre>
- * <p>
- * To configure the check for skipIfLastAndSharedWithCase:
+ * <p>Example:</p>
+ * <pre>
+ * switch (i) {
+ *   case 1:
+ *     break;
+ *   case 2:
+ *     break;
+ *   default: // OK
+ *     break;
+ * }
+ *
+ * switch (i) {
+ *   case 1:
+ *     break;
+ *   case 2:
+ *     break; // OK, no default
+ * }
+ *
+ * switch (i) {
+ *   case 1:
+ *     break;
+ *   default: // violation, 'default' before 'case'
+ *     break;
+ *   case 2:
+ *     break;
+ * }
+ *
+ * switch (i) {
+ *   case 1:
+ *   default: // violation, 'default' before 'case'
+ *     break;
+ *   case 2:
+ *     break;
+ * }
+ * </pre>
+ * <p>To configure the check to allow default label to be not last if it is shared with case:
  * </p>
  * <pre>
  * &lt;module name=&quot;DefaultComesLast&quot;&gt;
  *   &lt;property name=&quot;skipIfLastAndSharedWithCase&quot; value=&quot;true&quot;/&gt;
  * &lt;/module&gt;
  * </pre>
- * <p>
- * Example when skipIfLastAndSharedWithCase is set to true.
- * </p>
+ * <p>Example:</p>
  * <pre>
  * switch (i) {
  *   case 1:
  *     break;
  *   case 2:
- *   default: // No violation with the new option is expected
+ *   default: // OK
  *     break;
  *   case 3:
  *     break;
  * }
+ *
  * switch (i) {
  *   case 1:
  *     break;
- *   default: // violation with the new option is expected
+ *   default: // violation
  *   case 2:
  *     break;
  * }
  * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code default.comes.last}
+ * </li>
+ * <li>
+ * {@code default.comes.last.in.casegroup}
+ * </li>
+ * </ul>
  *
  * @since 3.4
  */
@@ -118,6 +166,7 @@ public class DefaultComesLastCheck extends AbstractCheck {
     /**
      * Setter to control whether to allow {@code default} along with
      * {@code case} if they are not last.
+     *
      * @param newValue whether to ignore checking.
      */
     public void setSkipIfLastAndSharedWithCase(boolean newValue) {
@@ -127,24 +176,19 @@ public class DefaultComesLastCheck extends AbstractCheck {
     @Override
     public void visitToken(DetailAST ast) {
         final DetailAST defaultGroupAST = ast.getParent();
-        //default keywords used in annotations too - not what we're
-        //interested in
-        if (defaultGroupAST.getType() != TokenTypes.ANNOTATION_FIELD_DEF
-                && defaultGroupAST.getType() != TokenTypes.MODIFIERS) {
-            if (skipIfLastAndSharedWithCase) {
-                if (Objects.nonNull(findNextSibling(ast, TokenTypes.LITERAL_CASE))) {
-                    log(ast, MSG_KEY_SKIP_IF_LAST_AND_SHARED_WITH_CASE);
-                }
-                else if (ast.getPreviousSibling() == null
-                    && Objects.nonNull(findNextSibling(defaultGroupAST,
-                                                       TokenTypes.CASE_GROUP))) {
-                    log(ast, MSG_KEY);
-                }
+        if (skipIfLastAndSharedWithCase) {
+            if (Objects.nonNull(findNextSibling(ast, TokenTypes.LITERAL_CASE))) {
+                log(ast, MSG_KEY_SKIP_IF_LAST_AND_SHARED_WITH_CASE);
             }
-            else if (Objects.nonNull(findNextSibling(defaultGroupAST,
-                                                     TokenTypes.CASE_GROUP))) {
+            else if (ast.getPreviousSibling() == null
+                && Objects.nonNull(findNextSibling(defaultGroupAST,
+                                                   TokenTypes.CASE_GROUP))) {
                 log(ast, MSG_KEY);
             }
+        }
+        else if (Objects.nonNull(findNextSibling(defaultGroupAST,
+                                                 TokenTypes.CASE_GROUP))) {
+            log(ast, MSG_KEY);
         }
     }
 

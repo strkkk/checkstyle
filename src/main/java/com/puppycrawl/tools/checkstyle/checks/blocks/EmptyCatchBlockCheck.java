@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -41,12 +41,14 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
  * Property {@code exceptionVariableName} - Specify the RegExp for the name of the variable
  * associated with exception. If check meets variable name matching specified value - empty
  * block is suppressed.
+ * Type is {@code java.util.regex.Pattern}.
  * Default value is {@code "^$" (empty)}.
  * </li>
  * <li>
  * Property {@code commentFormat} - Specify the RegExp for the first comment inside empty
  * catch block. If check meets comment inside empty catch block matching specified format
  * - empty block is suppressed. If it is multi-line comment - only its first line is analyzed.
+ * Type is {@code java.util.regex.Pattern}.
  * Default value is {@code ".*"}.
  * </li>
  * </ul>
@@ -147,6 +149,17 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
  *
  * }
  * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code catch.block.empty}
+ * </li>
+ * </ul>
  *
  * @since 6.4
  */
@@ -158,6 +171,11 @@ public class EmptyCatchBlockCheck extends AbstractCheck {
      * file.
      */
     public static final String MSG_KEY_CATCH_BLOCK_EMPTY = "catch.block.empty";
+
+    /**
+     * A pattern to split on line ends.
+     */
+    private static final Pattern LINE_END_PATTERN = Pattern.compile("\\r?+\\n|\\r");
 
     /**
      * Specify the RegExp for the name of the variable associated with exception.
@@ -175,6 +193,7 @@ public class EmptyCatchBlockCheck extends AbstractCheck {
     /**
      * Setter to specify the RegExp for the name of the variable associated with exception.
      * If check meets variable name matching specified value - empty block is suppressed.
+     *
      * @param exceptionVariablePattern
      *        pattern of exception's variable name.
      */
@@ -186,6 +205,7 @@ public class EmptyCatchBlockCheck extends AbstractCheck {
      * Setter to specify the RegExp for the first comment inside empty catch block.
      * If check meets comment inside empty catch block matching specified format - empty
      * block is suppressed. If it is multi-line comment - only its first line is analyzed.
+     *
      * @param commentPattern
      *        pattern of comment.
      */
@@ -224,13 +244,14 @@ public class EmptyCatchBlockCheck extends AbstractCheck {
      * Visits catch ast node, if it is empty catch block - checks it according to
      *  Check's options. If exception's variable name or comment inside block are matching
      *   specified regexp - skips from consideration, else - puts violation.
+     *
      * @param catchAst {@link TokenTypes#LITERAL_CATCH LITERAL_CATCH}
      */
     private void visitCatchBlock(DetailAST catchAst) {
         if (isEmptyCatchBlock(catchAst)) {
             final String commentContent = getCommentFirstLine(catchAst);
             if (isVerifiable(catchAst, commentContent)) {
-                log(catchAst.getLineNo(), MSG_KEY_CATCH_BLOCK_EMPTY);
+                log(catchAst.findFirstToken(TokenTypes.SLIST), MSG_KEY_CATCH_BLOCK_EMPTY);
             }
         }
     }
@@ -238,6 +259,7 @@ public class EmptyCatchBlockCheck extends AbstractCheck {
     /**
      * Gets the first line of comment in catch block. If comment is single-line -
      *  returns it fully, else if comment is multi-line - returns the first line.
+     *
      * @param catchAst {@link TokenTypes#LITERAL_CATCH LITERAL_CATCH}
      * @return the first line of comment in catch block, "" if no comment was found.
      */
@@ -250,7 +272,7 @@ public class EmptyCatchBlockCheck extends AbstractCheck {
         }
         else if (firstElementInBlock.getType() == TokenTypes.BLOCK_COMMENT_BEGIN) {
             commentContent = firstElementInBlock.getFirstChild().getText();
-            final String[] lines = commentContent.split(System.getProperty("line.separator"));
+            final String[] lines = LINE_END_PATTERN.split(commentContent);
             for (String line : lines) {
                 if (!line.isEmpty()) {
                     commentContent = line;
@@ -264,6 +286,7 @@ public class EmptyCatchBlockCheck extends AbstractCheck {
     /**
      * Checks if current empty catch block is verifiable according to Check's options
      *  (exception's variable name and comment format are both in consideration).
+     *
      * @param emptyCatchAst empty catch {@link TokenTypes#LITERAL_CATCH LITERAL_CATCH} block.
      * @param commentContent text of comment.
      * @return true if empty catch block is verifiable by Check.
@@ -279,6 +302,7 @@ public class EmptyCatchBlockCheck extends AbstractCheck {
 
     /**
      * Checks if catch block is empty or contains only comments.
+     *
      * @param catchAst {@link TokenTypes#LITERAL_CATCH LITERAL_CATCH}
      * @return true if catch block is empty.
      */
@@ -299,6 +323,7 @@ public class EmptyCatchBlockCheck extends AbstractCheck {
 
     /**
      * Gets variable's name associated with exception.
+     *
      * @param catchAst {@link TokenTypes#LITERAL_CATCH LITERAL_CATCH}
      * @return Variable's name associated with exception.
      */

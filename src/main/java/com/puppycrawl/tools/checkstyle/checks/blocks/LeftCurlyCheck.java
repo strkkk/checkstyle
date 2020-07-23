@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -26,6 +26,7 @@ import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
+import com.puppycrawl.tools.checkstyle.utils.TokenUtil;
 
 /**
  * <p>
@@ -35,14 +36,17 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  * <li>
  * Property {@code option} - Specify the policy on placement of a left curly brace
  * (<code>'{'</code>).
+ * Type is {@code com.puppycrawl.tools.checkstyle.checks.blocks.LeftCurlyOption}.
  * Default value is {@code eol}.
  * </li>
  * <li>
  * Property {@code ignoreEnums} - Allow to ignore enums when left curly brace policy is EOL.
+ * Type is {@code boolean}.
  * Default value is {@code true}.
  * </li>
  * <li>
  * Property {@code tokens} - tokens to check
+ * Type is {@code int[]}.
  * Default value is:
  * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#ANNOTATION_DEF">
  * ANNOTATION_DEF</a>,
@@ -113,9 +117,25 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  *   &lt;property name=&quot;ignoreEnums&quot; value=&quot;false&quot;/&gt;
  * &lt;/module&gt;
  * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code line.break.after}
+ * </li>
+ * <li>
+ * {@code line.new}
+ * </li>
+ * <li>
+ * {@code line.previous}
+ * </li>
+ * </ul>
  *
  * @since 3.0
- * @noinspection HtmlTagCanBeJavadocTag
  */
 @StatelessCheck
 public class LeftCurlyCheck
@@ -147,15 +167,14 @@ public class LeftCurlyCheck
 
     /**
      * Specify the policy on placement of a left curly brace (<code>'{'</code>).
-     * @noinspection HtmlTagCanBeJavadocTag
      * */
     private LeftCurlyOption option = LeftCurlyOption.EOL;
 
     /**
      * Setter to specify the policy on placement of a left curly brace (<code>'{'</code>).
+     *
      * @param optionStr string to decode option from
      * @throws IllegalArgumentException if unable to decode
-     * @noinspection HtmlTagCanBeJavadocTag
      */
     public void setOption(String optionStr) {
         option = LeftCurlyOption.valueOf(optionStr.trim().toUpperCase(Locale.ENGLISH));
@@ -163,6 +182,7 @@ public class LeftCurlyCheck
 
     /**
      * Setter to allow to ignore enums when left curly brace policy is EOL.
+     *
      * @param ignoreEnums check's option for ignoring enums.
      */
     public void setIgnoreEnums(boolean ignoreEnums) {
@@ -271,6 +291,7 @@ public class LeftCurlyCheck
 
     /**
      * Gets a SLIST if it is the first child of the AST.
+     *
      * @param ast {@code DetailAST}.
      * @return {@code DetailAST} if the first child is {@code TokenTypes.SLIST},
      *     {@code null} otherwise.
@@ -288,6 +309,7 @@ public class LeftCurlyCheck
 
     /**
      * Skip all {@code TokenTypes.ANNOTATION}s to the first non-annotation.
+     *
      * @param ast {@code DetailAST}.
      * @return {@code DetailAST}.
      */
@@ -313,6 +335,7 @@ public class LeftCurlyCheck
     /**
      * Find the last token of type {@code TokenTypes.ANNOTATION}
      * under the given set of modifiers.
+     *
      * @param modifiers {@code DetailAST}.
      * @return {@code DetailAST} or null if there are no annotations.
      */
@@ -328,6 +351,7 @@ public class LeftCurlyCheck
     /**
      * Verifies that a specified left curly brace is placed correctly
      * according to policy.
+     *
      * @param brace token for left curly brace
      * @param startToken token for start of expression
      */
@@ -346,7 +370,7 @@ public class LeftCurlyCheck
             else if (option == LeftCurlyOption.EOL) {
                 validateEol(brace, braceLine);
             }
-            else if (startToken.getLineNo() != brace.getLineNo()) {
+            else if (!TokenUtil.areOnSameLine(startToken, brace)) {
                 validateNewLinePosition(brace, startToken, braceLine);
             }
         }
@@ -354,6 +378,7 @@ public class LeftCurlyCheck
 
     /**
      * Validate EOL case.
+     *
      * @param brace brace AST
      * @param braceLine line content
      */
@@ -368,6 +393,7 @@ public class LeftCurlyCheck
 
     /**
      * Validate token on new Line position.
+     *
      * @param brace brace AST
      * @param startToken start Token
      * @param braceLine content of line with Brace
@@ -389,6 +415,7 @@ public class LeftCurlyCheck
 
     /**
      * Checks if left curly has line break after.
+     *
      * @param leftCurly
      *        Left curly token.
      * @return
@@ -407,7 +434,7 @@ public class LeftCurlyCheck
         }
         return nextToken == null
                 || nextToken.getType() == TokenTypes.RCURLY
-                || leftCurly.getLineNo() != nextToken.getLineNo();
+                || !TokenUtil.areOnSameLine(leftCurly, nextToken);
     }
 
 }

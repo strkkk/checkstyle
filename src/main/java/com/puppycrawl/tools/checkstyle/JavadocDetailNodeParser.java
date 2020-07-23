@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -96,6 +96,7 @@ public class JavadocDetailNodeParser {
 
     /**
      * Parses Javadoc comment as DetailNode tree.
+     *
      * @param javadocCommentAst
      *        DetailAST of Javadoc comment
      * @return DetailNode tree of Javadoc comment
@@ -161,6 +162,7 @@ public class JavadocDetailNodeParser {
 
     /**
      * Parses block comment content as javadoc comment.
+     *
      * @param blockComment
      *        block comment content.
      * @return parse tree
@@ -201,8 +203,7 @@ public class JavadocDetailNodeParser {
         while (currentJavadocParent != null) {
             // remove unnecessary children tokens
             if (currentJavadocParent.getType() == JavadocTokenTypes.TEXT) {
-                currentJavadocParent
-                        .setChildren((DetailNode[]) JavadocNodeImpl.EMPTY_DETAIL_NODE_ARRAY);
+                currentJavadocParent.setChildren(JavadocNodeImpl.EMPTY_DETAIL_NODE_ARRAY);
             }
 
             final JavadocNodeImpl[] children =
@@ -245,6 +246,7 @@ public class JavadocDetailNodeParser {
 
     /**
      * Creates child nodes for each node from 'nodes' array.
+     *
      * @param parseTreeParent original ParseTree parent node
      * @param nodes array of JavadocNodeImpl nodes
      */
@@ -254,12 +256,13 @@ public class JavadocDetailNodeParser {
             final ParseTree currentParseTreeNodeChild = parseTreeParent.getChild(i);
             final JavadocNodeImpl[] subChildren =
                     createChildrenNodes(currentJavadocNode, currentParseTreeNodeChild);
-            currentJavadocNode.setChildren((DetailNode[]) subChildren);
+            currentJavadocNode.setChildren(subChildren);
         }
     }
 
     /**
      * Creates children Javadoc nodes base on ParseTree node's children.
+     *
      * @param parentJavadocNode node that will be parent for created children
      * @param parseTreeNode original ParseTree node
      * @return array of Javadoc nodes
@@ -280,6 +283,7 @@ public class JavadocDetailNodeParser {
 
     /**
      * Creates root JavadocNodeImpl node base on ParseTree root node.
+     *
      * @param parseTreeNode ParseTree root node
      * @return root Javadoc node
      */
@@ -320,12 +324,13 @@ public class JavadocDetailNodeParser {
         node.setIndex(index);
         node.setType(getTokenType(parseTree));
         node.setParent(parent);
-        node.setChildren((DetailNode[]) new JavadocNodeImpl[parseTree.getChildCount()]);
+        node.setChildren(new JavadocNodeImpl[parseTree.getChildCount()]);
         return node;
     }
 
     /**
      * Adjust first line nodes to javadoc indent.
+     *
      * @param tree DetailNode tree root
      * @param javadocColumnNumber javadoc indent
      */
@@ -341,6 +346,7 @@ public class JavadocDetailNodeParser {
 
     /**
      * Gets line number from ParseTree node.
+     *
      * @param tree
      *        ParseTree node
      * @return line number
@@ -359,6 +365,7 @@ public class JavadocDetailNodeParser {
 
     /**
      * Gets column number from ParseTree node.
+     *
      * @param tree
      *        ParseTree node
      * @return column number
@@ -377,6 +384,7 @@ public class JavadocDetailNodeParser {
 
     /**
      * Gets next sibling of ParseTree node.
+     *
      * @param node ParseTree node
      * @return next sibling of ParseTree node.
      */
@@ -400,6 +408,7 @@ public class JavadocDetailNodeParser {
 
     /**
      * Gets token type of ParseTree node from JavadocTokenTypes class.
+     *
      * @param node ParseTree node.
      * @return token type from JavadocTokenTypes
      */
@@ -420,6 +429,7 @@ public class JavadocDetailNodeParser {
     /**
      * Gets class name of ParseTree node and removes 'Context' postfix at the
      * end and formats it.
+     *
      * @param node {@code ParseTree} node whose class name is to be formatted and returned
      * @return uppercased class name without the word 'Context' and with appropriately
      *     inserted underscores
@@ -432,6 +442,7 @@ public class JavadocDetailNodeParser {
     /**
      * Gets class name of ParseTree node and removes 'Context' postfix at the
      * end.
+     *
      * @param node
      *        ParseTree node.
      * @return class name without 'Context'
@@ -466,6 +477,7 @@ public class JavadocDetailNodeParser {
      * <thead>
      * <tfoot>
      * }
+     *
      * @param exception {@code NoViableAltException} object catched while parsing javadoc
      * @return returns appropriate {@link Token} if a HTML close tag is missed;
      *     null otherwise
@@ -527,6 +539,7 @@ public class JavadocDetailNodeParser {
     /**
      * Converts the given {@code text} from camel case to all upper case with
      * underscores separating each word.
+     *
      * @param text The string to convert.
      * @return The result of the conversion.
      */
@@ -562,6 +575,7 @@ public class JavadocDetailNodeParser {
 
         /**
          * Getter for error message during parsing.
+         *
          * @return Error message during parsing.
          */
         private ParseErrorMessage getErrorMessage() {
@@ -572,6 +586,7 @@ public class JavadocDetailNodeParser {
          * Sets offset. Offset is line number of beginning of the Javadoc
          * comment. Log messages should have line number in scope of file, not
          * in scope of Javadoc comment.
+         *
          * @param offset
          *        offset line number
          */
@@ -603,14 +618,14 @@ public class JavadocDetailNodeParser {
 
                 throw new IllegalArgumentException(msg);
             }
-            else {
-                final int ruleIndex = ex.getCtx().getRuleIndex();
-                final String ruleName = recognizer.getRuleNames()[ruleIndex];
-                final String upperCaseRuleName = convertUpperCamelToUpperUnderscore(ruleName);
 
-                errorMessage = new ParseErrorMessage(lineNumber,
-                        MSG_JAVADOC_PARSE_RULE_ERROR, charPositionInLine, msg, upperCaseRuleName);
-            }
+            final int ruleIndex = ex.getCtx().getRuleIndex();
+            final String ruleName = recognizer.getRuleNames()[ruleIndex];
+            final String upperCaseRuleName = convertUpperCamelToUpperUnderscore(ruleName);
+
+            errorMessage = new ParseErrorMessage(lineNumber,
+                    MSG_JAVADOC_PARSE_RULE_ERROR, charPositionInLine, msg, upperCaseRuleName);
+
         }
 
     }
@@ -642,6 +657,7 @@ public class JavadocDetailNodeParser {
 
         /**
          * Getter for DetailNode tree.
+         *
          * @return DetailNode tree if parsing was successful, null otherwise.
          */
         public DetailNode getTree() {
@@ -650,6 +666,7 @@ public class JavadocDetailNodeParser {
 
         /**
          * Sets DetailNode tree.
+         *
          * @param tree DetailNode tree.
          */
         public void setTree(DetailNode tree) {
@@ -658,6 +675,7 @@ public class JavadocDetailNodeParser {
 
         /**
          * Getter for error message during parsing.
+         *
          * @return Error message if parsing was unsuccessful, null otherwise.
          */
         public ParseErrorMessage getParseErrorMessage() {
@@ -666,6 +684,7 @@ public class JavadocDetailNodeParser {
 
         /**
          * Sets parse error message.
+         *
          * @param parseErrorMessage Parse error message.
          */
         public void setParseErrorMessage(ParseErrorMessage parseErrorMessage) {
@@ -685,10 +704,12 @@ public class JavadocDetailNodeParser {
         }
 
         /**
-         * Getter for {@link #firstNonTightHtmlTag}.
+         * Getter for the first non-tight HTML tag encountered while parsing javadoc.
          *
          * @return the first non-tight HTML tag that is encountered while parsing Javadoc,
          *     if one exists
+         * @see <a href="https://checkstyle.org/writingjavadocchecks.html#Tight-HTML_rules">
+         *     Tight HTML rules</a>
          */
         public Token getFirstNonTightHtmlTag() {
             return firstNonTightHtmlTag;
@@ -732,6 +753,7 @@ public class JavadocDetailNodeParser {
 
         /**
          * Getter for line number where parse error occurred.
+         *
          * @return Line number where parse error occurred.
          */
         public int getLineNumber() {
@@ -740,6 +762,7 @@ public class JavadocDetailNodeParser {
 
         /**
          * Getter for key for error message.
+         *
          * @return Key for error message.
          */
         public String getMessageKey() {
@@ -748,6 +771,7 @@ public class JavadocDetailNodeParser {
 
         /**
          * Getter for error message arguments.
+         *
          * @return Array of error message arguments.
          */
         public Object[] getMessageArguments() {

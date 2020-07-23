@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,16 +19,16 @@
 
 package com.puppycrawl.tools.checkstyle;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.api.AuditEvent;
 import com.puppycrawl.tools.checkstyle.api.AutomaticBean;
@@ -59,8 +59,8 @@ public class XMLLoggerTest extends AbstractXmlTestSupport {
     @Test
     public void testEncode()
             throws IOException {
-        final XMLLogger test = new XMLLogger(outStream, false);
-        assertNotNull("should be able to create XMLLogger without issue", test);
+        final XMLLogger test = new XMLLogger(outStream, OutputStreamOptions.NONE);
+        assertNotNull(test, "should be able to create XMLLogger without issue");
         final String[][] encodings = {
             {"<", "&lt;"},
             {">", "&gt;"},
@@ -77,7 +77,7 @@ public class XMLLoggerTest extends AbstractXmlTestSupport {
         };
         for (String[] encoding : encodings) {
             final String encoded = XMLLogger.encode(encoding[0]);
-            assertEquals("\"" + encoding[0] + "\"", encoding[1], encoded);
+            assertEquals(encoding[1], encoded, "\"" + encoding[0] + "\"");
         }
         outStream.close();
     }
@@ -85,8 +85,8 @@ public class XMLLoggerTest extends AbstractXmlTestSupport {
     @Test
     public void testIsReference()
             throws IOException {
-        final XMLLogger test = new XMLLogger(outStream, false);
-        assertNotNull("should be able to create XMLLogger without issue", test);
+        final XMLLogger test = new XMLLogger(outStream, OutputStreamOptions.NONE);
+        assertNotNull(test, "should be able to create XMLLogger without issue");
         final String[] references = {
             "&#0;",
             "&#x0;",
@@ -97,8 +97,8 @@ public class XMLLoggerTest extends AbstractXmlTestSupport {
             "&amp;",
         };
         for (String reference : references) {
-            assertTrue("reference: " + reference,
-                    XMLLogger.isReference(reference));
+            assertTrue(
+                    XMLLogger.isReference(reference), "reference: " + reference);
         }
         final String[] noReferences = {
             "&",
@@ -112,8 +112,7 @@ public class XMLLoggerTest extends AbstractXmlTestSupport {
             "ref",
         };
         for (String noReference : noReferences) {
-            assertFalse("no reference: " + noReference,
-                    XMLLogger.isReference(noReference));
+            assertFalse(XMLLogger.isReference(noReference), "no reference: " + noReference);
         }
 
         outStream.close();
@@ -127,7 +126,7 @@ public class XMLLoggerTest extends AbstractXmlTestSupport {
         logger.auditStarted(null);
         logger.auditFinished(null);
 
-        assertEquals("Invalid close count", 1, outStream.getCloseCount());
+        assertEquals(1, outStream.getCloseCount(), "Invalid close count");
 
         verifyXml(getPath("ExpectedXMLLoggerEmpty.xml"), outStream);
     }
@@ -140,7 +139,7 @@ public class XMLLoggerTest extends AbstractXmlTestSupport {
         logger.auditStarted(null);
         logger.auditFinished(null);
 
-        assertEquals("Invalid close count", 0, outStream.getCloseCount());
+        assertEquals(0, outStream.getCloseCount(), "Invalid close count");
 
         outStream.close();
         verifyXml(getPath("ExpectedXMLLoggerEmpty.xml"), outStream);
@@ -149,7 +148,7 @@ public class XMLLoggerTest extends AbstractXmlTestSupport {
     @Test
     public void testFileStarted()
             throws Exception {
-        final XMLLogger logger = new XMLLogger(outStream, true);
+        final XMLLogger logger = new XMLLogger(outStream, OutputStreamOptions.CLOSE);
         logger.auditStarted(null);
         final AuditEvent ev = new AuditEvent(this, "Test.java");
         logger.fileStarted(ev);
@@ -161,7 +160,7 @@ public class XMLLoggerTest extends AbstractXmlTestSupport {
     @Test
     public void testFileFinished()
             throws Exception {
-        final XMLLogger logger = new XMLLogger(outStream, true);
+        final XMLLogger logger = new XMLLogger(outStream, OutputStreamOptions.CLOSE);
         logger.auditStarted(null);
         final AuditEvent ev = new AuditEvent(this, "Test.java");
         logger.fileFinished(ev);
@@ -171,7 +170,7 @@ public class XMLLoggerTest extends AbstractXmlTestSupport {
 
     @Test
     public void testAddError() throws Exception {
-        final XMLLogger logger = new XMLLogger(outStream, true);
+        final XMLLogger logger = new XMLLogger(outStream, OutputStreamOptions.CLOSE);
         logger.auditStarted(null);
         final LocalizedMessage message =
             new LocalizedMessage(1, 1,
@@ -187,7 +186,7 @@ public class XMLLoggerTest extends AbstractXmlTestSupport {
 
     @Test
     public void testAddErrorWithNullFileName() throws Exception {
-        final XMLLogger logger = new XMLLogger(outStream, true);
+        final XMLLogger logger = new XMLLogger(outStream, OutputStreamOptions.CLOSE);
         logger.auditStarted(null);
         final LocalizedMessage message =
                 new LocalizedMessage(1, 1,
@@ -202,7 +201,7 @@ public class XMLLoggerTest extends AbstractXmlTestSupport {
 
     @Test
     public void testAddErrorModuleId() throws Exception {
-        final XMLLogger logger = new XMLLogger(outStream, true);
+        final XMLLogger logger = new XMLLogger(outStream, OutputStreamOptions.CLOSE);
         logger.auditStarted(null);
         final LocalizedMessage message =
             new LocalizedMessage(1, 1,
@@ -216,7 +215,7 @@ public class XMLLoggerTest extends AbstractXmlTestSupport {
 
     @Test
     public void testAddErrorOnZeroColumns() throws Exception {
-        final XMLLogger logger = new XMLLogger(outStream, true);
+        final XMLLogger logger = new XMLLogger(outStream, OutputStreamOptions.CLOSE);
         logger.auditStarted(null);
         final LocalizedMessage message =
                 new LocalizedMessage(1, 0,
@@ -233,7 +232,7 @@ public class XMLLoggerTest extends AbstractXmlTestSupport {
 
     @Test
     public void testAddIgnored() throws Exception {
-        final XMLLogger logger = new XMLLogger(outStream, true);
+        final XMLLogger logger = new XMLLogger(outStream, OutputStreamOptions.CLOSE);
         logger.auditStarted(null);
         final LocalizedMessage message =
                 new LocalizedMessage(1, 1,
@@ -257,13 +256,13 @@ public class XMLLoggerTest extends AbstractXmlTestSupport {
         logger.addException(ev, new TestException("msg", new RuntimeException("msg")));
         logger.auditFinished(null);
         verifyXml(getPath("ExpectedXMLLoggerException.xml"), outStream);
-        assertEquals("Invalid close count", 1, outStream.getCloseCount());
+        assertEquals(1, outStream.getCloseCount(), "Invalid close count");
     }
 
     @Test
     public void testAddExceptionWithNullFileName()
             throws Exception {
-        final XMLLogger logger = new XMLLogger(outStream, true);
+        final XMLLogger logger = new XMLLogger(outStream, OutputStreamOptions.CLOSE);
         logger.auditStarted(null);
         final LocalizedMessage message =
                 new LocalizedMessage(1, 1,
@@ -272,13 +271,13 @@ public class XMLLoggerTest extends AbstractXmlTestSupport {
         logger.addException(ev, new TestException("msg", new RuntimeException("msg")));
         logger.auditFinished(null);
         verifyXml(getPath("ExpectedXMLLoggerExceptionNullFileName.xml"), outStream);
-        assertEquals("Invalid close count", 1, outStream.getCloseCount());
+        assertEquals(1, outStream.getCloseCount(), "Invalid close count");
     }
 
     @Test
     public void testAddExceptionAfterFileStarted()
             throws Exception {
-        final XMLLogger logger = new XMLLogger(outStream, true);
+        final XMLLogger logger = new XMLLogger(outStream, OutputStreamOptions.CLOSE);
         logger.auditStarted(null);
 
         final AuditEvent fileStartedEvent = new AuditEvent(this, "Test.java");
@@ -293,13 +292,13 @@ public class XMLLoggerTest extends AbstractXmlTestSupport {
         logger.fileFinished(ev);
         logger.auditFinished(null);
         verifyXml(getPath("ExpectedXMLLoggerException2.xml"), outStream);
-        assertEquals("Invalid close count", 1, outStream.getCloseCount());
+        assertEquals(1, outStream.getCloseCount(), "Invalid close count");
     }
 
     @Test
     public void testAddExceptionBeforeFileFinished()
             throws Exception {
-        final XMLLogger logger = new XMLLogger(outStream, true);
+        final XMLLogger logger = new XMLLogger(outStream, OutputStreamOptions.CLOSE);
         logger.auditStarted(null);
         final LocalizedMessage message =
                 new LocalizedMessage(1, 1,
@@ -310,13 +309,13 @@ public class XMLLoggerTest extends AbstractXmlTestSupport {
         logger.fileFinished(fileFinishedEvent);
         logger.auditFinished(null);
         verifyXml(getPath("ExpectedXMLLoggerException3.xml"), outStream);
-        assertEquals("Invalid close count", 1, outStream.getCloseCount());
+        assertEquals(1, outStream.getCloseCount(), "Invalid close count");
     }
 
     @Test
     public void testAddExceptionBetweenFileStartedAndFinished()
             throws Exception {
-        final XMLLogger logger = new XMLLogger(outStream, true);
+        final XMLLogger logger = new XMLLogger(outStream, OutputStreamOptions.CLOSE);
         logger.auditStarted(null);
         final LocalizedMessage message =
                 new LocalizedMessage(1, 1,
@@ -329,12 +328,12 @@ public class XMLLoggerTest extends AbstractXmlTestSupport {
         logger.fileFinished(fileFinishedEvent);
         logger.auditFinished(null);
         verifyXml(getPath("ExpectedXMLLoggerException2.xml"), outStream);
-        assertEquals("Invalid close count", 1, outStream.getCloseCount());
+        assertEquals(1, outStream.getCloseCount(), "Invalid close count");
     }
 
     @Test
     public void testAuditFinishedWithoutFileFinished() throws Exception {
-        final XMLLogger logger = new XMLLogger(outStream, true);
+        final XMLLogger logger = new XMLLogger(outStream, OutputStreamOptions.CLOSE);
         logger.auditStarted(null);
         final AuditEvent fileStartedEvent = new AuditEvent(this, "Test.java");
         logger.fileStarted(fileStartedEvent);
@@ -356,22 +355,22 @@ public class XMLLoggerTest extends AbstractXmlTestSupport {
         try {
             final XMLLogger logger = new XMLLogger(outStream, null);
             // assert required to calm down eclipse's 'The allocated object is never used' violation
-            assertNotNull("Null instance", logger);
+            assertNotNull(logger, "Null instance");
             fail("Exception was expected");
         }
         catch (IllegalArgumentException exception) {
-            assertEquals("Invalid error message", "Parameter outputStreamOptions can not be null",
-                    exception.getMessage());
+            assertEquals("Parameter outputStreamOptions can not be null",
+                    exception.getMessage(), "Invalid error message");
         }
     }
 
     @Test
     public void testFinishLocalSetup() {
-        final XMLLogger logger = new XMLLogger(outStream, true);
+        final XMLLogger logger = new XMLLogger(outStream, OutputStreamOptions.CLOSE);
         logger.finishLocalSetup();
         logger.auditStarted(null);
         logger.auditFinished(null);
-        assertNotNull("instance should not be null", logger);
+        assertNotNull(logger, "instance should not be null");
     }
 
     private static class TestException extends RuntimeException {

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,11 +19,11 @@
 
 package com.puppycrawl.tools.checkstyle.api;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
@@ -43,7 +43,7 @@ public class FileSetCheckTest
         final String[] expected = CommonUtil.EMPTY_STRING_ARRAY;
         verify(checkConfig, getPath("InputFileSetIllegalTokens.java"), expected);
 
-        assertTrue("destroy() not called by Checker", TestFileSetCheck.isDestroyed());
+        assertTrue(TestFileSetCheck.isDestroyed(), "destroy() not called by Checker");
     }
 
     @Test
@@ -54,11 +54,11 @@ public class FileSetCheckTest
 
         verify(checkConfig, getPath("InputFileSetIllegalTokens.java"), expected);
 
-        assertTrue("FileContent should be available during finishProcessing() call",
-                TestFileSetCheck.isFileContentAvailable());
+        assertTrue(TestFileSetCheck.isFileContentAvailable(),
+                "FileContent should be available during finishProcessing() call");
     }
 
-    private static class TestFileSetCheck extends AbstractFileSetCheck {
+    public static class TestFileSetCheck extends AbstractFileSetCheck {
 
         private static boolean destroyed;
         private static boolean fileContentAvailable;

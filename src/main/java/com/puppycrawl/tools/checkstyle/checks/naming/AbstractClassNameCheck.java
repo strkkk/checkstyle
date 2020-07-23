@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -39,23 +39,39 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
  * </p>
  * <ul>
  * <li>
- * Property {@code format} - Specify valid identifiers. Default value is
- * {@code "^Abstract.+$"}.</li>
+ * Property {@code format} - Specify valid identifiers.
+ * Type is {@code java.util.regex.Pattern}.
+ * Default value is {@code "^Abstract.+$"}.</li>
  * <li>
  * Property {@code ignoreModifier} - Control whether to ignore checking for the
- * {@code abstract} modifier on classes that match the name. Default value is
- * {@code false}.</li>
+ * {@code abstract} modifier on classes that match the name.
+ * Type is {@code boolean}.
+ * Default value is {@code false}.</li>
  * <li>
  * Property {@code ignoreName} - Control whether to ignore checking the name.
  * Realistically only useful if using the check to identify that match name and
- * do not have the {@code abstract} modifier. Default value is
- * {@code false}.</li>
+ * do not have the {@code abstract} modifier.
+ * Type is {@code boolean}.
+ * Default value is {@code false}.
+ * </li>
  * </ul>
  * <p>
- * The following example shows how to configure the {@code AbstractClassName} to
- * checks names, but ignore missing {@code abstract} modifiers:
+ * To configure the check:
  * </p>
- * <p>Configuration:</p>
+ * <pre>
+ * &lt;module name="AbstractClassName"/&gt;
+ * </pre>
+ * <p>Example:</p>
+ * <pre>
+ * abstract class AbstractFirstClass {} // OK
+ * abstract class SecondClass {} // violation, it should match pattern "^Abstract.+$"
+ * class AbstractThirdClass {} // violation, must be declared 'abstract'
+ * class FourthClass {} // OK
+ * </pre>
+ * <p>
+ * To configure the check so that it check name
+ * but ignore {@code abstract} modifier:
+ * </p>
  * <pre>
  * &lt;module name="AbstractClassName"&gt;
  *   &lt;property name="ignoreModifier" value="true"/&gt;
@@ -64,9 +80,57 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
  * <p>Example:</p>
  * <pre>
  * abstract class AbstractFirstClass {} // OK
- * abstract class SecondClass {} // violation, it should match the pattern "^Abstract.+$"
+ * abstract class SecondClass {} // violation, it should match pattern "^Abstract.+$"
  * class AbstractThirdClass {} // OK, no "abstract" modifier
+ * class FourthClass {} // OK
  * </pre>
+ * <p>
+ * To configure the check to ignore name
+ * validation when class declared as 'abstract'
+ * </p>
+ * <pre>
+ * &lt;module name="AbstractClassName"&gt;
+ *   &lt;property name="ignoreName" value="true"/&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>Example:</p>
+ * <pre>
+ * abstract class AbstractFirstClass {} // OK
+ * abstract class SecondClass {} // OK, name validation is ignored
+ * class AbstractThirdClass {} // violation, must be declared as 'abstract'
+ * class FourthClass {} // OK, no "abstract" modifier
+ * </pre>
+ * <p>
+ * To configure the check
+ * with {@code format}:
+ * </p>
+ * <pre>
+ * &lt;module name="AbstractClassName"&gt;
+ *   &lt;property name="format" value="^Generator.+$"/&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>Example:</p>
+ * <pre>
+ * abstract class GeneratorFirstClass {} // OK
+ * abstract class SecondClass {} // violation, must match pattern '^Generator.+$'
+ * class GeneratorThirdClass {} // violation, must be declared 'abstract'
+ * class FourthClass {} // OK, no "abstract" modifier
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code illegal.abstract.class.name}
+ * </li>
+ * <li>
+ * {@code no.abstract.class.modifier}
+ * </li>
+ * </ul>
+ *
  * @since 3.2
  */
 @StatelessCheck
@@ -103,6 +167,7 @@ public final class AbstractClassNameCheck extends AbstractCheck {
     /**
      * Setter to control whether to ignore checking for the {@code abstract} modifier on
      * classes that match the name.
+     *
      * @param value new value
      */
     public void setIgnoreModifier(boolean value) {
@@ -112,6 +177,7 @@ public final class AbstractClassNameCheck extends AbstractCheck {
     /**
      * Setter to control whether to ignore checking the name. Realistically only useful if
      * using the check to identify that match name and do not have the {@code abstract} modifier.
+     *
      * @param value new value.
      */
     public void setIgnoreName(boolean value) {
@@ -120,6 +186,7 @@ public final class AbstractClassNameCheck extends AbstractCheck {
 
     /**
      * Setter to specify valid identifiers.
+     *
      * @param pattern the new pattern
      */
     public void setFormat(Pattern pattern) {
@@ -148,6 +215,7 @@ public final class AbstractClassNameCheck extends AbstractCheck {
 
     /**
      * Checks class definition.
+     *
      * @param ast class definition for check.
      */
     private void visitClassDef(DetailAST ast) {
@@ -166,6 +234,7 @@ public final class AbstractClassNameCheck extends AbstractCheck {
 
     /**
      * Checks if declared class is abstract or not.
+     *
      * @param ast class definition for check.
      * @return true if a given class declared as abstract.
      */
@@ -178,6 +247,7 @@ public final class AbstractClassNameCheck extends AbstractCheck {
 
     /**
      * Returns true if class name matches format of abstract class names.
+     *
      * @param className class name for check.
      * @return true if class name matches format of abstract class names.
      */

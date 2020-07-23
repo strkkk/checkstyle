@@ -28,7 +28,7 @@ pipeline {
   agent {
     label "${BUILD_SLAVES_LABEL}"
   }
-    
+
   options {
     ansiColor('xterm')
   }
@@ -52,7 +52,7 @@ pipeline {
 
         // Debug: print all the build envvars
         // echo sh(returnStdout: true, script: 'env')
-        
+
         sh "mvn --version"
       }
     }
@@ -72,12 +72,12 @@ pipeline {
         git 'git@github.com:checkstyle/checkstyle.git' /* clone the master branch */
       }
     }
- 
+
     stage('Build') {
       parallel {
         stage('Package') {
           steps {
-            sh "mvn -B package"
+            sh "mvn -e -B package"
           }
         }
       }

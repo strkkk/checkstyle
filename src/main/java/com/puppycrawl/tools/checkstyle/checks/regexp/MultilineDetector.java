@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -63,6 +63,7 @@ class MultilineDetector {
 
     /**
      * Creates an instance.
+     *
      * @param options the options to use.
      */
     /* package */ MultilineDetector(DetectorOptions options) {
@@ -71,6 +72,7 @@ class MultilineDetector {
 
     /**
      * Processes an entire text file looking for matches.
+     *
      * @param fileText the text to process
      */
     public void processLines(FileText fileText) {

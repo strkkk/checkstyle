@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -96,8 +96,8 @@ public class MainFrameModelPowerTest extends AbstractModuleTestSupport {
                     ParseMode.PLAIN_JAVA, ParseMode.JAVA_WITH_COMMENTS,
                     ParseMode.JAVA_WITH_JAVADOC_AND_COMMENTS, unknownParseMode, });
 
+        model.setParseMode(unknownParseMode);
         try {
-            model.setParseMode(unknownParseMode);
             model.openFile(testData);
 
             fail("Expected IllegalArgumentException is not thrown.");

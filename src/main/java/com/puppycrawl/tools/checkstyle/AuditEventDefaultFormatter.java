@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -81,6 +81,7 @@ public class AuditEventDefaultFormatter implements AuditEventFormatter {
      * Returns the length of the buffer for StringBuilder.
      * bufferLength = fileNameLength + messageLength + lengthOfAllSeparators +
      * + severityNameLength + checkNameLength.
+     *
      * @param event audit event.
      * @param severityLevelNameLength length of severity level name.
      * @return the length of the buffer for StringBuilder.
@@ -93,6 +94,7 @@ public class AuditEventDefaultFormatter implements AuditEventFormatter {
 
     /**
      * Returns check name without 'Check' suffix.
+     *
      * @param event audit event.
      * @return check name without 'Check' suffix.
      */

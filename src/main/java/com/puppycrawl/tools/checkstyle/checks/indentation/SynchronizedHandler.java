@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -70,6 +70,7 @@ public class SynchronizedHandler extends BlockParentHandler {
 
     /**
      * Checks if given synchronized is modifier of method.
+     *
      * @param ast synchronized(TokenTypes.LITERAL_SYNCHRONIZED) to check
      * @return true if synchronized only modifies method
      */
@@ -79,6 +80,7 @@ public class SynchronizedHandler extends BlockParentHandler {
 
     /**
      * Returns right parenthesis of synchronized statement.
+     *
      * @param syncStatementAST ast node(TokenTypes.LITERAL_SYNCHRONIZED)
      * @return right parenthesis of synchronized statement.
      */

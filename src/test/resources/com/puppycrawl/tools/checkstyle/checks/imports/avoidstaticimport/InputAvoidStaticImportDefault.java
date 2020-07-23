@@ -23,9 +23,10 @@ import javax.swing.BorderFactory;
 import static java.io.File.listRoots;
 
 import static javax.swing.WindowConstants.*;
-import static javax.swing.WindowConstants.*;
 import static java.io.File.createTempFile;
 import static java.io.File.pathSeparator;
+import static java.lang.Math.E;
+import static java.lang.Math.sqrt;
 import static com.puppycrawl.tools.checkstyle.checks.imports.avoidstaticimport.InputAvoidStaticImportNestedClass.InnerClass;
 import static com.puppycrawl.tools.checkstyle.checks.imports.avoidstaticimport.InputAvoidStaticImportNestedClass.InnerClass.one;
 
@@ -91,7 +92,7 @@ class InputAvoidStaticImportDefault
      * method comment with JavaDoc-only import {@link BitSet#aMethod()}
      */
     public void Label() {}
-    
+
     /**
      * Renders to a {@linkplain Graphics2D graphics context}.
      * @throws HeadlessException if no graphis environment can be found.

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,7 @@ import java.io.Serializable;
 
 /**
  * Thread mode settings for the checkstyle modules.
+ *
  * @noinspection SerializableHasSerializationMethods
  */
 public class ThreadModeSettings implements Serializable {
@@ -54,6 +55,7 @@ public class ThreadModeSettings implements Serializable {
 
     /**
      * Initializes the thread mode configuration.
+     *
      * @param checkerThreadsNumber the Checker threads number
      * @param treeWalkerThreadsNumber the TreeWalker threads number
      */
@@ -64,6 +66,7 @@ public class ThreadModeSettings implements Serializable {
 
     /**
      * Gets the number of threads for the Checker module.
+     *
      * @return the number of threads for the Checker module.
      */
     public int getCheckerThreadsNumber() {
@@ -72,6 +75,7 @@ public class ThreadModeSettings implements Serializable {
 
     /**
      * Gets the number of threads for the TreeWalker module.
+     *
      * @return the number of threads for the TreeWalker module.
      */
     public int getTreeWalkerThreadsNumber() {
@@ -80,8 +84,10 @@ public class ThreadModeSettings implements Serializable {
 
     /**
      * Resolves the module name according to the thread settings.
+     *
      * @param name The original module name.
      * @return resolved module name.
+     * @throws IllegalArgumentException when name is Checker or TreeWalker
      */
     public final String resolveName(String name) {
         if (checkerThreadsNumber > 1) {

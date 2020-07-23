@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,9 @@
 package com.puppycrawl.tools.checkstyle.checks.naming;
 
 import static com.puppycrawl.tools.checkstyle.checks.naming.AbstractNameCheck.MSG_INVALID_PATTERN;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
@@ -42,8 +42,8 @@ public class MethodTypeParameterNameCheckTest
             new MethodTypeParameterNameCheck();
         final int[] expected = {TokenTypes.TYPE_PARAMETER};
 
-        assertArrayEquals("Default acceptable tokens are invalid",
-                expected, methodTypeParameterNameCheck.getAcceptableTokens());
+        assertArrayEquals(expected, methodTypeParameterNameCheck.getAcceptableTokens(),
+                "Default acceptable tokens are invalid");
     }
 
     @Test
@@ -51,8 +51,8 @@ public class MethodTypeParameterNameCheckTest
         final MethodTypeParameterNameCheck checkObj =
             new MethodTypeParameterNameCheck();
         final int[] expected = {TokenTypes.TYPE_PARAMETER};
-        assertArrayEquals("Default required tokens are invalid",
-            expected, checkObj.getRequiredTokens());
+        assertArrayEquals(expected, checkObj.getRequiredTokens(),
+                "Default required tokens are invalid");
     }
 
     @Test
@@ -89,7 +89,7 @@ public class MethodTypeParameterNameCheckTest
             "28:10: " + getCheckMessage(MSG_INVALID_PATTERN, "_fo", pattern),
             "35:6: " + getCheckMessage(MSG_INVALID_PATTERN, "E", pattern),
             "37:14: " + getCheckMessage(MSG_INVALID_PATTERN, "T", pattern),
-            //"40:14: Name 'EE' must match pattern '^foo$'.",
+            // "40:14: Name 'EE' must match pattern '^foo$'.",
         };
         verify(checkConfig, getPath("InputMethodTypeParameterName.java"), expected);
     }

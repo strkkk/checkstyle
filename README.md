@@ -6,8 +6,10 @@
 [![][shippable img]][shippable]
 [![][coverage img]][coverage]
 [![][snyk img]][snyk]
+[![][semaphoreci img]][semaphoreci]
 
 [![][codeship img]][codeship]
+[![][dependabot img]][dependabot]
 [![][buddy img]][buddy]
 
 [![][mavenbadge img]][mavenbadge]
@@ -24,7 +26,7 @@ or set of validation rules (best practices).
 
 The latest release version can be found at
 [GitHub releases](https://github.com/checkstyle/checkstyle/releases/)
-or at [Maven repo](http://repo1.maven.org/maven2/com/puppycrawl/tools/checkstyle/).
+or at [Maven repo](https://repo1.maven.org/maven2/com/puppycrawl/tools/checkstyle/).
 
 Each-commit builds of maven artifacts can be found at
 [Maven Snapshot repository](https://oss.sonatype.org/content/repositories/snapshots/com/puppycrawl/tools/checkstyle/) .
@@ -50,7 +52,6 @@ Continuous integration and Quality reports
 ======================
 Travis (Linux & MacOS build): [![][travis img]][travis]
 AppVeyor (Windows build): [![][appveyor img]][appveyor]
-[Distelli CI](https://www.distelli.com/checkstyle/builds)
 
 Quality reports: https://checkstyle.org/project-reports.html
 
@@ -113,8 +114,8 @@ are in the file named "LICENSE.apache20" in this directory.
 [appveyor]:https://ci.appveyor.com/project/checkstyle/checkstyle/history
 [appveyor img]:https://ci.appveyor.com/api/projects/status/rw6bw3dl9kph6ucc?svg=true
 
-[sonar]:https://sonarcloud.io/dashboard?id=com.puppycrawl.tools%3Acheckstyle
-[sonar img]:https://sonarcloud.io/api/project_badges/measure?project=com.puppycrawl.tools%3Acheckstyle&metric=sqale_index
+[sonar]:https://sonarcloud.io/dashboard?id=org.checkstyle%3Acheckstyle
+[sonar img]:https://sonarcloud.io/api/project_badges/measure?project=org.checkstyle%3Acheckstyle&metric=sqale_index
 
 [codacy]:https://www.codacy.com/app/checkstyle/checkstyle
 [codacy img]:https://api.codacy.com/project/badge/3adf12d434314ba8b38277ea46d3c44b
@@ -155,10 +156,13 @@ are in the file named "LICENSE.apache20" in this directory.
 [buddy]: https://app.buddy.works/ivanovjr/checkstyle/pipelines/pipeline/135806
 [buddy img]: https://app.buddy.works/ivanovjr/checkstyle/pipelines/pipeline/135806/badge.svg?token=240176b1ce495d0a03a141f3f2f77971f43fe892a98de31cbc0e392ce5341f76 "buddy pipeline"
 
-[snyk]: https://snyk.io/test/github/checkstyle/checkstyle:pom.xml?targetFile=pom.xml
+[snyk]: https://snyk.io/test/github/checkstyle/checkstyle?targetFile=pom.xml
 [snyk img]: https://snyk.io/test/github/checkstyle/checkstyle/badge.svg
 
-[flattr]:https://flattr.com/submit/auto?fid=g39d10&amp;url=http%3A%2F%2Fcheckstyle.sourceforge.net
+[semaphoreci]: https://checkstyle.semaphoreci.com/projects/checkstyle
+[semaphoreci img]: https://checkstyle.semaphoreci.com/badges/checkstyle/branches/master.svg?style=shields
+
+[flattr]:https://flattr.com/submit/auto?fid=g39d10&amp;url=https%3A%2F%2Fcheckstyle.org
 [flattr img]:https://button.flattr.com/flattr-badge-large.png
 
 [liberapay]:https://liberapay.com/checkstyle/
@@ -175,3 +179,6 @@ are in the file named "LICENSE.apache20" in this directory.
 
 [sponsors.opencollective]:https://opencollective.com/checkstyle/
 [sponsors.opencollective img]:https://opencollective.com/checkstyle/sponsors/badge.svg
+
+[dependabot]:https://dependabot.com
+[dependabot img]:https://api.dependabot.com/badges/status?host=github&repo=checkstyle/checkstyle

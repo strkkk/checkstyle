@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -33,35 +33,121 @@ import com.puppycrawl.tools.checkstyle.utils.JavadocUtil;
 
 /**
  * <p>
- * Checks that <a href=
- * "https://www.oracle.com/technetwork/java/javase/documentation/index-137868.html#firstsentence">
+ * Checks that
+ * <a href="https://www.oracle.com/technical-resources/articles/java/javadoc-tool.html#firstsentence">
  * Javadoc summary sentence</a> does not contain phrases that are not recommended to use.
- * Check also violate javadoc that does not contain first sentence.
- * By default Check validate that first sentence is not empty:</p><br>
+ * Summaries that contain only the {@code {@inheritDoc}} tag are skipped.
+ * Check also violate Javadoc that does not contain first sentence.
+ * </p>
+ * <ul>
+ * <li>
+ * Property {@code violateExecutionOnNonTightHtml} - Control when to print violations
+ * if the Javadoc being examined by this check violates the tight html rules defined at
+ * <a href="https://checkstyle.org/writingjavadocchecks.html#Tight-HTML_rules">Tight-HTML Rules</a>.
+ * Type is {@code boolean}.
+ * Default value is {@code false}.
+ * </li>
+ * <li>
+ * Property {@code forbiddenSummaryFragments} - Specify the regexp for forbidden summary fragments.
+ * Type is {@code java.util.regex.Pattern}.
+ * Default value is {@code "^$" (empty)}.
+ * </li>
+ * <li>
+ * Property {@code period} - Specify the period symbol at the end of first javadoc sentence.
+ * Type is {@code java.lang.String}.
+ * Default value is {@code "."}.
+ * </li>
+ * </ul>
+ * <p>
+ * By default Check validate that first sentence is not empty and first sentence is not missing:
+ * </p>
  * <pre>
  * &lt;module name=&quot;SummaryJavadocCheck&quot;/&gt;
  * </pre>
- *
- * <p>To ensure that summary do not contain phrase like "This method returns",
- *  use following config:
- *
+ * <p>
+ * Example of {@code {@inheritDoc}} without summary.
+ * </p>
  * <pre>
- * &lt;module name=&quot;SummaryJavadocCheck&quot;&gt;
- *     &lt;property name=&quot;forbiddenSummaryFragments&quot;
- *     value=&quot;^This method returns.*&quot;/&gt;
+ * public class Test extends Exception {
+ * //Valid
+ *   &#47;**
+ *    * {&#64;inheritDoc}
+ *    *&#47;
+ *   public String ValidFunction(){
+ *     return "";
+ *   }
+ *   //Violation
+ *   &#47;**
+ *    *
+ *    *&#47;
+ *   public String InvalidFunction(){
+ *     return "";
+ *   }
+ * }
+ * </pre>
+ * <p>
+ * To ensure that summary do not contain phrase like "This method returns",
+ * use following config:
+ * </p>
+ * <pre>
+ * &lt;module name="SummaryJavadocCheck"&gt;
+ *   &lt;property name="forbiddenSummaryFragments"
+ *     value="^This method returns.*"/&gt;
  * &lt;/module&gt;
  * </pre>
  * <p>
- * To specify period symbol at the end of first javadoc sentence - use following config:
+ * To specify period symbol at the end of first javadoc sentence:
  * </p>
  * <pre>
- * &lt;module name=&quot;SummaryJavadocCheck&quot;&gt;
- *     &lt;property name=&quot;period&quot;
- *     value=&quot;period&quot;/&gt;
+ * &lt;module name="SummaryJavadocCheck"&gt;
+ *   &lt;property name="period" value="。"/&gt;
  * &lt;/module&gt;
  * </pre>
+ * <p>
+ * Example of period property.
+ * </p>
+ * <pre>
+ * public class TestClass {
+ *   &#47;**
+ *   * This is invalid java doc.
+ *   *&#47;
+ *   void invalidJavaDocMethod() {
+ *   }
+ *   &#47;**
+ *   * This is valid java doc。
+ *   *&#47;
+ *   void validJavaDocMethod() {
+ *   }
+ * }
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code javadoc.missed.html.close}
+ * </li>
+ * <li>
+ * {@code javadoc.parse.rule.error}
+ * </li>
+ * <li>
+ * {@code javadoc.wrong.singleton.html.tag}
+ * </li>
+ * <li>
+ * {@code summary.first.sentence}
+ * </li>
+ * <li>
+ * {@code summary.javaDoc}
+ * </li>
+ * <li>
+ * {@code summary.javaDoc.missing}
+ * </li>
+ * </ul>
  *
- *
+ * @since 6.0
  */
 @StatelessCheck
 public class SummaryJavadocCheck extends AbstractJavadocCheck {
@@ -97,14 +183,15 @@ public class SummaryJavadocCheck extends AbstractJavadocCheck {
                     JavadocTokenTypes.WS))
     );
 
-    /** Regular expression for forbidden summary fragments. */
+    /** Specify the regexp for forbidden summary fragments. */
     private Pattern forbiddenSummaryFragments = CommonUtil.createPattern("^$");
 
-    /** Period symbol at the end of first javadoc sentence. */
+    /** Specify the period symbol at the end of first javadoc sentence. */
     private String period = PERIOD;
 
     /**
-     * Sets custom value of regular expression for forbidden summary fragments.
+     * Setter to specify the regexp for forbidden summary fragments.
+     *
      * @param pattern a pattern.
      */
     public void setForbiddenSummaryFragments(Pattern pattern) {
@@ -112,7 +199,8 @@ public class SummaryJavadocCheck extends AbstractJavadocCheck {
     }
 
     /**
-     * Sets value of period symbol at the end of first javadoc sentence.
+     * Setter to specify the period symbol at the end of first javadoc sentence.
+     *
      * @param period period's value.
      */
     public void setPeriod(String period) {
@@ -154,6 +242,7 @@ public class SummaryJavadocCheck extends AbstractJavadocCheck {
 
     /**
      * Checks if the node starts with an {&#64;inheritDoc}.
+     *
      * @param root The root node to examine.
      * @return {@code true} if the javadoc starts with an {&#64;inheritDoc}.
      */
@@ -178,8 +267,9 @@ public class SummaryJavadocCheck extends AbstractJavadocCheck {
 
     /**
      * Checks if period is at the end of sentence.
+     *
      * @param ast Javadoc root node.
-     * @return error string
+     * @return violation string
      */
     private static String getSummarySentence(DetailNode ast) {
         boolean flag = true;
@@ -205,6 +295,7 @@ public class SummaryJavadocCheck extends AbstractJavadocCheck {
 
     /**
      * Concatenates string within text of html tags.
+     *
      * @param result javadoc string
      * @param detailNode javadoc tag node
      * @return java doc tag content appended in result
@@ -223,6 +314,7 @@ public class SummaryJavadocCheck extends AbstractJavadocCheck {
 
     /**
      * Finds and returns first sentence.
+     *
      * @param ast Javadoc root node.
      * @return first sentence.
      */
@@ -242,15 +334,15 @@ public class SummaryJavadocCheck extends AbstractJavadocCheck {
                 result.append(text, 0, text.indexOf(periodSuffix) + 1);
                 break;
             }
-            else {
-                result.append(text);
-            }
+
+            result.append(text);
         }
         return result.toString();
     }
 
     /**
      * Tests if first sentence contains forbidden summary fragment.
+     *
      * @param firstSentence String with first sentence.
      * @return true, if first sentence contains forbidden summary fragment.
      */
@@ -262,6 +354,7 @@ public class SummaryJavadocCheck extends AbstractJavadocCheck {
 
     /**
      * Trims the given {@code text} of duplicate whitespaces.
+     *
      * @param text The text to transform.
      * @return The finalized form of the text.
      */

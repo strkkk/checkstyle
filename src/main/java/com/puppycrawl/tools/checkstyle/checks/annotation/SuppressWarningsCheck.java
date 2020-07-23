@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -31,8 +31,8 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
 
 /**
  * <p>
- * This check allows you to specify what warnings that
- * &#64;SuppressWarnings is not allowed to suppress.
+ * Allows to specify what warnings that
+ * {@code @SuppressWarnings} is not allowed to suppress.
  * You can also specify a list of TokenTypes that
  * the configured warning(s) cannot be suppressed on.
  * </p>
@@ -70,10 +70,12 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  * <li>
  * Property {@code format} - Specify the RegExp to match against warnings. Any warning
  * being suppressed matching this pattern will be flagged.
+ * Type is {@code java.util.regex.Pattern}.
  * Default value is {@code "^\s*+$"}.
  * </li>
  * <li>
  * Property {@code tokens} - tokens to check
+ * Type is {@code int[]}.
  * Default value is:
  * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#CLASS_DEF">
  * CLASS_DEF</a>,
@@ -119,6 +121,17 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  *     &quot;/&gt;
  * &lt;/module&gt;
  * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code suppressed.warning.not.allowed}
+ * </li>
+ * </ul>
  *
  * @since 5.0
  */
@@ -151,6 +164,7 @@ public class SuppressWarningsCheck extends AbstractCheck {
     /**
      * Setter to specify the RegExp to match against warnings. Any warning
      * being suppressed matching this pattern will be flagged.
+     *
      * @param pattern the new pattern
      */
     public final void setFormat(Pattern pattern) {
@@ -203,9 +217,9 @@ public class SuppressWarningsCheck extends AbstractCheck {
                 warning = token.findFirstToken(TokenTypes.EXPR);
             }
 
-            //rare case with empty array ex: @SuppressWarnings({})
+            // rare case with empty array ex: @SuppressWarnings({})
             if (warning == null) {
-                //check to see if empty warnings are forbidden -- are by default
+                // check to see if empty warnings are forbidden -- are by default
                 logMatch(warningHolder, "");
             }
             else {
@@ -213,7 +227,7 @@ public class SuppressWarningsCheck extends AbstractCheck {
                     if (warning.getType() == TokenTypes.EXPR) {
                         final DetailAST fChild = warning.getFirstChild();
                         switch (fChild.getType()) {
-                            //typical case
+                            // typical case
                             case TokenTypes.STRING_LITERAL:
                                 final String warningText =
                                     removeQuotes(warning.getFirstChild().getText());

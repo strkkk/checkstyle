@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -41,6 +41,7 @@ public class CodeSelectorPresentation {
 
     /**
      * Constructor.
+     *
      * @param ast ast node.
      * @param lines2position list to map lines.
      * @noinspection AssignmentOrReturnOfFieldWithMutableType
@@ -52,6 +53,7 @@ public class CodeSelectorPresentation {
 
     /**
      * Constructor.
+     *
      * @param node DetailNode node.
      * @param lines2position list to map lines.
      * @noinspection AssignmentOrReturnOfFieldWithMutableType
@@ -63,6 +65,7 @@ public class CodeSelectorPresentation {
 
     /**
      * Returns selection start position.
+     *
      * @return selection start position.
      */
     public int getSelectionStart() {
@@ -71,6 +74,7 @@ public class CodeSelectorPresentation {
 
     /**
      * Returns selection end position.
+     *
      * @return selection end position.
      */
     public int getSelectionEnd() {
@@ -91,22 +95,23 @@ public class CodeSelectorPresentation {
 
     /**
      * Find start and end selection positions from AST line and Column.
+     *
      * @param ast DetailAST node for which selection finds
      */
     private void findSelectionPositions(DetailAST ast) {
         selectionStart = lines2position.get(ast.getLineNo()) + ast.getColumnNo();
 
-        if (ast.getChildCount() == 0
-                && TokenUtil.getTokenName(ast.getType()).equals(ast.getText())) {
-            selectionEnd = selectionStart;
+        if (ast.hasChildren() || !TokenUtil.getTokenName(ast.getType()).equals(ast.getText())) {
+            selectionEnd = findLastPosition(ast);
         }
         else {
-            selectionEnd = findLastPosition(ast);
+            selectionEnd = selectionStart;
         }
     }
 
     /**
      * Find start and end selection positions from DetailNode line and Column.
+     *
      * @param detailNode DetailNode node for which selection finds
      */
     private void findSelectionPositions(DetailNode detailNode) {
@@ -118,23 +123,25 @@ public class CodeSelectorPresentation {
 
     /**
      * Finds the last position of node without children.
+     *
      * @param astNode DetailAST node.
      * @return Last position of node without children.
      */
     private int findLastPosition(final DetailAST astNode) {
         final int lastPosition;
-        if (astNode.getChildCount() == 0) {
-            lastPosition = lines2position.get(astNode.getLineNo()) + astNode.getColumnNo()
-                    + astNode.getText().length();
+        if (astNode.hasChildren()) {
+            lastPosition = findLastPosition(astNode.getLastChild());
         }
         else {
-            lastPosition = findLastPosition(astNode.getLastChild());
+            lastPosition = lines2position.get(astNode.getLineNo()) + astNode.getColumnNo()
+                    + astNode.getText().length();
         }
         return lastPosition;
     }
 
     /**
      * Finds the last position of node without children.
+     *
      * @param detailNode DetailNode node.
      * @return Last position of node without children.
      */

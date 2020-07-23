@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -30,6 +30,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -73,6 +74,7 @@ public class PropertyCacheFilePowerTest extends AbstractPathTestSupport {
     /**
      * This SuppressWarning("unchecked") required to suppress
      * "Unchecked generics array creation for varargs parameter" during mock.
+     *
      * @throws IOException when smth wrong with file creation or cache.load
      */
     @Test
@@ -172,7 +174,9 @@ public class PropertyCacheFilePowerTest extends AbstractPathTestSupport {
             cache.persist();
 
             final Properties cacheDetails = new Properties();
-            cacheDetails.load(Files.newBufferedReader(cacheFile.toPath()));
+            try (BufferedReader reader = Files.newBufferedReader(cacheFile.toPath())) {
+                cacheDetails.load(reader);
+            }
 
             final int expectedNumberOfObjectsInCacheFile = 2;
             assertEquals("Unexpected number of objects in cache",
@@ -226,7 +230,9 @@ public class PropertyCacheFilePowerTest extends AbstractPathTestSupport {
             cache.persist();
 
             final Properties cacheDetails = new Properties();
-            cacheDetails.load(Files.newBufferedReader(cacheFile.toPath()));
+            try (BufferedReader reader = Files.newBufferedReader(cacheFile.toPath())) {
+                cacheDetails.load(reader);
+            }
 
             final int expectedNumberOfObjectsInCacheFile = 2;
             assertEquals("Unexpected number of objects in cache",

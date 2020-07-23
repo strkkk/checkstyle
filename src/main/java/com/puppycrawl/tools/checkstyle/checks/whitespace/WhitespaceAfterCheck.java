@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -29,34 +29,92 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  * <p>
  * Checks that a token is followed by whitespace, with the exception that it
  * does not check for whitespace after the semicolon of an empty for iterator.
- * Use Check {@link EmptyForIteratorPadCheck EmptyForIteratorPad} to validate
- * empty for iterators.
+ * Use Check <a href="https://checkstyle.org/config_whitespace.html#EmptyForIteratorPad">
+ * EmptyForIteratorPad</a> to validate empty for iterators.
  * </p>
- * <p> By default the check will check the following tokens:
- *  {@link TokenTypes#COMMA COMMA},
- *  {@link TokenTypes#SEMI SEMI},
- *  {@link TokenTypes#TYPECAST TYPECAST},
- *  {@link TokenTypes#LITERAL_IF LITERAL_IF},
- *  {@link TokenTypes#LITERAL_ELSE LITERAL_ELSE},
- *  {@link TokenTypes#LITERAL_WHILE LITERAL_WHILE},
- *  {@link TokenTypes#LITERAL_FOR LITERAL_FOR},
- *  {@link TokenTypes#LITERAL_DO LITERAL_DO},
- *  {@link TokenTypes#DO_WHILE DO_WHILE}.
- * </p>
+ * <ul>
+ * <li>
+ * Property {@code tokens} - tokens to check
+ * Type is {@code int[]}.
+ * Default value is:
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#COMMA">
+ * COMMA</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#SEMI">
+ * SEMI</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#TYPECAST">
+ * TYPECAST</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#LITERAL_IF">
+ * LITERAL_IF</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#LITERAL_ELSE">
+ * LITERAL_ELSE</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#LITERAL_WHILE">
+ * LITERAL_WHILE</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#LITERAL_DO">
+ * LITERAL_DO</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#LITERAL_FOR">
+ * LITERAL_FOR</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#LITERAL_DO">
+ * DO_WHILE</a>.
+ * </li>
+ * </ul>
  * <p>
- * An example of how to configure the check is:
+ * To configure the check:
  * </p>
  * <pre>
- * &lt;module name="WhitespaceAfter"/&gt;
+ * &lt;module name=&quot;WhitespaceAfter&quot;/&gt;
  * </pre>
- * <p> An example of how to configure the check for whitespace only after
- * {@link TokenTypes#COMMA COMMA} and {@link TokenTypes#SEMI SEMI} tokens is:
+ * <p>Example:</p>
+ * <pre>
+ *  public void myTest() {
+ *      if (foo) {              // OK
+ *              //...
+ *      } else if(bar) {        // violation
+ *              //...
+ *      }
+ *
+ *      testMethod(foo, bar);   // OK
+ *      testMethod(foo,bar);    // violation
+ *
+ *      for (;;){}               // OK
+ *      for(;;){}                // violation, space after 'for' is required
+ *      }
+ * </pre>
+ * <p>
+ * To configure the check for whitespace only after COMMA and SEMI tokens:
  * </p>
  * <pre>
- * &lt;module name="WhitespaceAfter"&gt;
- *     &lt;property name="tokens" value="COMMA, SEMI"/&gt;
+ * &lt;module name=&quot;WhitespaceAfter&quot;&gt;
+ *   &lt;property name=&quot;tokens&quot; value=&quot;COMMA, SEMI&quot;/&gt;
  * &lt;/module&gt;
  * </pre>
+ * <p>Example:</p>
+ * <pre>
+ *     public void myTest() {
+ *         int a; int b;           // OK
+ *         int a;int b;            // violation
+ *
+ *         testMethod(foo, bar);   // OK
+ *         testMethod(foo,bar);    // violation
+ *
+ *         for(;;) {} // OK
+ *     }
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code ws.notFollowed}
+ * </li>
+ * <li>
+ * {@code ws.typeCast}
+ * </li>
+ * </ul>
+ *
+ * @since 3.0
  */
 @StatelessCheck
 public class WhitespaceAfterCheck
@@ -119,6 +177,7 @@ public class WhitespaceAfterCheck
 
     /**
      * Checks whether token is followed by a whitespace.
+     *
      * @param targetAST Ast token.
      * @param line The line associated with the ast token.
      * @return true if ast token is followed by a whitespace.

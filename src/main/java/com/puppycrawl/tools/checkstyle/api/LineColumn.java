@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -35,6 +35,7 @@ public class LineColumn implements Comparable<LineColumn> {
 
     /**
      * Constructs a new pair of line and column numbers.
+     *
      * @param line the one-based line number
      * @param column the zero-based column number
      */
@@ -45,6 +46,7 @@ public class LineColumn implements Comparable<LineColumn> {
 
     /**
      * Gets the one-based line number.
+     *
      * @return the one-based line number
      */
     public int getLine() {
@@ -53,6 +55,7 @@ public class LineColumn implements Comparable<LineColumn> {
 
     /**
      * Gets the zero-based column number.
+     *
      * @return the zero-based column number
      */
     public int getColumn() {

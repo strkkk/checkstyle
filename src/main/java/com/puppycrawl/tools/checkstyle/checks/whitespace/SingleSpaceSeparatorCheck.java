@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -30,11 +30,11 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  * whitespace. Separating characters by tabs or multiple spaces will be
  * reported. Currently the check doesn't permit horizontal alignment. To inspect
  * whitespaces before and after comments, set the property
- * <b>validateComments</b> to true.
+ * {@code validateComments} to true.
  * </p>
  *
  * <p>
- * Setting <b>validateComments</b> to false will ignore cases like:
+ * Setting {@code validateComments} to false will ignore cases like:
  * </p>
  *
  * <pre>
@@ -50,25 +50,33 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  * </p>
  *
  * <pre>
- * public long toNanos(long d)  { return d;             }  &#47;&#47; 2 violations
+ * public long toNanos(long d)  { return d;             } &#47;&#47; 2 violations
  * public long toMicros(long d) { return d / (C1 / C0); }
  * </pre>
- *
- * <p>
- * Check have following options:
- * </p>
- *
  * <ul>
- * <li>validateComments - Boolean when set to {@code true}, whitespaces
- * surrounding comments will be ignored. Default value is {@code false}.</li>
+ * <li>
+ * Property {@code validateComments} - Control whether to validate whitespaces
+ * surrounding comments.
+ * Type is {@code boolean}.
+ * Default value is {@code false}.
+ * </li>
  * </ul>
- *
  * <p>
  * To configure the check:
  * </p>
  *
  * <pre>
  * &lt;module name=&quot;SingleSpaceSeparator&quot;/&gt;
+ * </pre>
+ * <p>Example:</p>
+ * <pre>
+ * int foo()   { // violation, 3 whitespaces
+ *   return  1; // violation, 2 whitespaces
+ * }
+ * int fun1() { // OK, 1 whitespace
+ *   return 3; // OK, 1 whitespace
+ * }
+ * void  fun2() {} // violation, 2 whitespaces
  * </pre>
  *
  * <p>
@@ -77,10 +85,41 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  *
  * <pre>
  * &lt;module name=&quot;SingleSpaceSeparator&quot;&gt;
- * &lt;property name=&quot;validateComments&quot; value=&quot;true&quot;/&gt;
+ *   &lt;property name=&quot;validateComments&quot; value=&quot;true&quot;/&gt;
  * &lt;/module&gt;
  * </pre>
+ * <p>Example:</p>
+ * <pre>
+ * void fun1() {}  // violation, 2 whitespaces before the comment starts
+ * void fun2() { return; }  /* violation here, 2 whitespaces before the comment starts *&#47;
  *
+ * /* violation, 2 whitespaces after the comment ends *&#47;  int a;
+ *
+ * String s; /* OK, 1 whitespace *&#47;
+ *
+ * /**
+ * * This is a Javadoc comment
+ * *&#47;  int b; // violation, 2 whitespaces after the javadoc comment ends
+ *
+ * float f1; // OK, 1 whitespace
+ *
+ * /**
+ * * OK, 1 white space after the doc comment ends
+ * *&#47; float f2;
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code single.space.separator}
+ * </li>
+ * </ul>
+ *
+ * @since 6.19
  */
 @StatelessCheck
 public class SingleSpaceSeparatorCheck extends AbstractCheck {
@@ -91,11 +130,11 @@ public class SingleSpaceSeparatorCheck extends AbstractCheck {
      */
     public static final String MSG_KEY = "single.space.separator";
 
-    /** Indicates if whitespaces surrounding comments will be ignored. */
+    /** Control whether to validate whitespaces surrounding comments. */
     private boolean validateComments;
 
     /**
-     * Sets whether or not to validate surrounding whitespaces at comments.
+     * Setter to control whether to validate whitespaces surrounding comments.
      *
      * @param validateComments {@code true} to validate surrounding whitespaces at comments.
      */
@@ -118,8 +157,6 @@ public class SingleSpaceSeparatorCheck extends AbstractCheck {
         return CommonUtil.EMPTY_INT_ARRAY;
     }
 
-    // -@cs[SimpleAccessorNameNotation] Overrides method from base class.
-    // Issue: https://github.com/sevntu-checkstyle/sevntu.checkstyle/issues/166
     @Override
     public boolean isCommentNodesRequired() {
         return validateComments;

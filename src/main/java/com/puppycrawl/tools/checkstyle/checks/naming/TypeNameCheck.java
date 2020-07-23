@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -24,65 +24,111 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
 
 /**
  * <p>
- * Checks that type names for classes, interfaces, enums, and annotations conform to a format
- * specified by the format property.
+ * Checks that type names conform to a specified pattern.
  * </p>
  * <ul>
  * <li>
- * Property {@code format} - Specifies valid identifiers. Default value is
- * {@code "^[A-Z][a-zA-Z0-9]*$"}.
+ * Property {@code format} - Specifies valid identifiers.
+ * Type is {@code java.util.regex.Pattern}.
+ * Default value is {@code "^[A-Z][a-zA-Z0-9]*$"}.
  * </li>
  * <li>
  * Property {@code applyToPublic} - Controls whether to apply the check to public member.
+ * Type is {@code boolean}.
  * Default value is {@code true}.
  * </li>
  * <li>
  * Property {@code applyToProtected} - Controls whether to apply the check to protected member.
+ * Type is {@code boolean}.
  * Default value is {@code true}.
  * </li>
  * <li>
  * Property {@code applyToPackage} - Controls whether to apply the check to package-private member.
+ * Type is {@code boolean}.
  * Default value is {@code true}.
  * </li>
  * <li>
  * Property {@code applyToPrivate} - Controls whether to apply the check to private member.
+ * Type is {@code boolean}.
  * Default value is {@code true}.
  * </li>
  * <li>
- * Property {@code tokens} - tokens to check Default value is:
- * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#CLASS_DEF">CLASS_DEF</a>,
- * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#INTERFACE_DEF">INTERFACE_DEF</a>,
- * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#ENUM_DEF">ENUM_DEF</a>,
- * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#ANNOTATION_DEF">ANNOTATION_DEF</a>.
+ * Property {@code tokens} - tokens to check
+ * Type is {@code int[]}.
+ * Default value is:
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#CLASS_DEF">
+ * CLASS_DEF</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#INTERFACE_DEF">
+ * INTERFACE_DEF</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#ENUM_DEF">
+ * ENUM_DEF</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#ANNOTATION_DEF">
+ * ANNOTATION_DEF</a>.
  * </li>
  * </ul>
  * <p>
  * An example of how to configure the check is:
  * </p>
  * <pre>
- * &lt;module name="TypeName"/&gt;
+ * &lt;module name=&quot;TypeName&quot;/&gt;
+ * </pre>
+ * <p>Code Example:</p>
+ * <pre>
+ * public interface FirstName {} // OK
+ * protected class SecondName {} // OK
+ * enum Third_Name {} // violation, name 'Third_Name' must match pattern '^[A-Z][a-zA-Z0-9]*$'
+ * private class FourthName_ {} // violation, name 'FourthName_'
+ *                              // must match pattern '^[A-Z][a-zA-Z0-9]*$'
  * </pre>
  * <p>
  * An example of how to configure the check for names that begin with
- * a lower case letter, followed by letters, digits, and underscores is:
+ * a lower case letter, followed by letters, digits, and underscores.
+ * Also, suppress the check from being applied to protected and private type:
  * </p>
  * <pre>
- * &lt;module name="TypeName"&gt;
- *   &lt;property name="format" value="^[a-z](_?[a-zA-Z0-9]+)*$"/&gt;
+ * &lt;module name=&quot;TypeName&quot;&gt;
+ *   &lt;property name=&quot;format&quot; value=&quot;^[a-z](_?[a-zA-Z0-9]+)*$&quot;/&gt;
+ *   &lt;property name=&quot;applyToProtected&quot; value=&quot;false&quot;/&gt;
+ *   &lt;property name=&quot;applyToPrivate&quot; value=&quot;false&quot;/&gt;
  * &lt;/module&gt;
+ * </pre>
+ * <p>Code Example:</p>
+ * <pre>
+ * public interface firstName {} // OK
+ * public class SecondName {} // violation, name 'SecondName'
+ *                            // must match pattern '^[a-z](_?[a-zA-Z0-9]+)*$'
+ * protected class ThirdName {} // OK
+ * private class FourthName {} // OK
  * </pre>
  * <p>
  * The following configuration element ensures that interface names begin with {@code "I_"},
  * followed by letters and digits:
  * </p>
  * <pre>
- * &lt;module name="TypeName"&gt;
- *   &lt;property name="format"
- *     value="^I_[a-zA-Z0-9]*$"/&gt;
- *   &lt;property name="tokens"
- *     value="INTERFACE_DEF"/&gt;
+ * &lt;module name=&quot;TypeName&quot;&gt;
+ *   &lt;property name=&quot;format&quot;
+ *     value=&quot;^I_[a-zA-Z0-9]*$&quot;/&gt;
+ *   &lt;property name=&quot;tokens&quot;
+ *     value=&quot;INTERFACE_DEF&quot;/&gt;
  * &lt;/module&gt;
  * </pre>
+ * <p>Code Example:</p>
+ * <pre>
+ * public interface I_firstName {} // OK
+ * interface SecondName {} // violation, name 'SecondName'
+ *                         // must match pattern '^I_[a-zA-Z0-9]*$'
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code name.invalidPattern}
+ * </li>
+ * </ul>
  *
  * @since 3.0
  */

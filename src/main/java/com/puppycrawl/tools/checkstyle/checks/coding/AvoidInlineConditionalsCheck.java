@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -30,7 +30,7 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
  * </p>
  * <pre>
  * String a = getParameter("a");
- * String b = (a==null || a.length&lt;1) ? null : a.substring(1);
+ * String b = (a==null || a.length()&lt;1) ? null : a.substring(1);
  * </pre>
  * <p>
  * Rationale: Some developers find inline conditionals hard to read, so
@@ -42,6 +42,34 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
  * <pre>
  * &lt;module name=&quot;AvoidInlineConditionals&quot;/&gt;
  * </pre>
+ * <p>Example:</p>
+ * <pre>
+ * int x = 5;
+ * boolean foobar = (x == 5); // OK
+ *
+ * String text;
+ * text = (text == null) ? "" : text; // violation
+ *
+ * String b;
+ * if (a != null &amp;&amp; a.length() &gt;= 1) { // OK
+ *   b = a.substring(1);
+ * } else {
+ *   b = null;
+ * }
+ *
+ * b = (a != null &amp;&amp; a.length() &gt;= 1) ? a.substring(1) : null; // violation
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code inline.conditional.avoid}
+ * </li>
+ * </ul>
  *
  * @since 3.1
  */

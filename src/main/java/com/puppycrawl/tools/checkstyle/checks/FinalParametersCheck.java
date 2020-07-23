@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -32,24 +32,70 @@ import com.puppycrawl.tools.checkstyle.utils.CheckUtil;
 import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
 
 /**
- * Check that method/constructor/catch/foreach parameters are final.
- * The user can set the token set to METHOD_DEF, CONSTRUCTOR_DEF,
- * LITERAL_CATCH, FOR_EACH_CLAUSE or any combination of these token
- * types, to control the scope of this check.
- * Default scope is both METHOD_DEF and CONSTRUCTOR_DEF.
  * <p>
- * Check has an option <b>ignorePrimitiveTypes</b> which allows ignoring lack of
- * final modifier at
+ * Checks that parameters for methods, constructors, catch and for-each blocks are final.
+ * Interface, abstract, and native methods are not checked: the final keyword
+ * does not make sense for interface, abstract, and native method parameters as
+ * there is no code that could modify the parameter.
+ * </p>
+ * <p>
+ * Rationale: Changing the value of parameters during the execution of the method's
+ * algorithm can be confusing and should be avoided. A great way to let the Java compiler
+ * prevent this coding style is to declare parameters final.
+ * </p>
+ * <ul>
+ * <li>
+ * Property {@code ignorePrimitiveTypes} - Ignore primitive types as parameters.
+ * Type is {@code boolean}.
+ * Default value is {@code false}.
+ * </li>
+ * <li>
+ * Property {@code tokens} - tokens to check
+ * Type is {@code int[]}.
+ * Default value is:
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#METHOD_DEF">
+ * METHOD_DEF</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#CTOR_DEF">
+ * CTOR_DEF</a>.
+ * </li>
+ * </ul>
+ * <p>
+ * To configure the check to enforce final parameters for methods and constructors:
+ * </p>
+ * <pre>
+ * &lt;module name=&quot;FinalParameters&quot;/&gt;
+ * </pre>
+ * <p>
+ * To configure the check to enforce final parameters only for constructors:
+ * </p>
+ * <pre>
+ * &lt;module name=&quot;FinalParameters&quot;&gt;
+ *   &lt;property name=&quot;tokens&quot; value=&quot;CTOR_DEF&quot;/&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>
+ * To configure the check to allow ignoring
  * <a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html">
- *  primitive data type</a> parameter. Default value <b>false</b>.
+ * primitive datatypes</a> as parameters:
  * </p>
- * E.g.:
+ * <pre>
+ * &lt;module name=&quot;FinalParameters&quot;&gt;
+ *   &lt;property name=&quot;ignorePrimitiveTypes&quot; value=&quot;true&quot;/&gt;
+ * &lt;/module&gt;
+ * </pre>
  * <p>
- * {@code
- * private void foo(int x) { ... } //parameter is of primitive type
- * }
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
  * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code final.parameter}
+ * </li>
+ * </ul>
  *
+ * @since 3.0
  */
 @StatelessCheck
 public class FinalParametersCheck extends AbstractCheck {
@@ -78,12 +124,13 @@ public class FinalParametersCheck extends AbstractCheck {
         .collect(Collectors.toSet()));
 
     /**
-     * Option to ignore primitive types as params.
+     * Ignore primitive types as parameters.
      */
     private boolean ignorePrimitiveTypes;
 
     /**
-     * Sets ignoring primitive types as params.
+     * Setter to ignore primitive types as parameters.
+     *
      * @param ignorePrimitiveTypes true or false.
      */
     public void setIgnorePrimitiveTypes(boolean ignorePrimitiveTypes) {
@@ -132,6 +179,7 @@ public class FinalParametersCheck extends AbstractCheck {
 
     /**
      * Checks parameters of the method or ctor.
+     *
      * @param method method or ctor to check.
      */
     private void visitMethod(final DetailAST method) {
@@ -156,6 +204,7 @@ public class FinalParametersCheck extends AbstractCheck {
 
     /**
      * Checks parameter of the catch block.
+     *
      * @param catchClause catch block to check.
      */
     private void visitCatch(final DetailAST catchClause) {
@@ -164,6 +213,7 @@ public class FinalParametersCheck extends AbstractCheck {
 
     /**
      * Checks parameter of the for each clause.
+     *
      * @param forEachClause for each clause to check.
      */
     private void visitForEachClause(final DetailAST forEachClause) {
@@ -172,6 +222,7 @@ public class FinalParametersCheck extends AbstractCheck {
 
     /**
      * Checks if the given parameter is final.
+     *
      * @param param parameter to check.
      */
     private void checkParam(final DetailAST param) {
@@ -187,6 +238,7 @@ public class FinalParametersCheck extends AbstractCheck {
 
     /**
      * Checks for skip current param due to <b>ignorePrimitiveTypes</b> option.
+     *
      * @param paramDef {@link TokenTypes#PARAMETER_DEF PARAMETER_DEF}
      * @return true if param has to be skipped.
      */

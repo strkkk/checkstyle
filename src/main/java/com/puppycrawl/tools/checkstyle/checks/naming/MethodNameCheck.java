@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -25,8 +25,7 @@ import com.puppycrawl.tools.checkstyle.utils.AnnotationUtil;
 
 /**
  * <p>
- * Checks that method names conform to a format specified
- * by the format property.
+ * Checks that method names conform to a specified pattern.
  * </p>
  *
  * <p>Also, checks if a method name has the same name as the residing class.
@@ -40,6 +39,7 @@ import com.puppycrawl.tools.checkstyle.utils.AnnotationUtil;
  * <ul>
  * <li>
  * Property {@code format} - Specifies valid identifiers.
+ * Type is {@code java.util.regex.Pattern}.
  * Default value is {@code "^[a-z][a-zA-Z0-9]*$"}.
  * </li>
  * <li>
@@ -51,22 +51,28 @@ import com.puppycrawl.tools.checkstyle.utils.AnnotationUtil;
  *     public void MyClass() {} //this is a method
  *     public MyClass() {} //this is a constructor
  * }
- * </pre> Default value is {@code false}.
+ * </pre>
+ * Type is {@code boolean}.
+ * Default value is {@code false}.
  * </li>
  * <li>
  * Property {@code applyToPublic} - Controls whether to apply the check to public member.
+ * Type is {@code boolean}.
  * Default value is {@code true}.
  * </li>
  * <li>
  * Property {@code applyToProtected} - Controls whether to apply the check to protected member.
+ * Type is {@code boolean}.
  * Default value is {@code true}.
  * </li>
  * <li>
  * Property {@code applyToPackage} - Controls whether to apply the check to package-private member.
+ * Type is {@code boolean}.
  * Default value is {@code true}.
  * </li>
  * <li>
  * Property {@code applyToPrivate} - Controls whether to apply the check to private member.
+ * Type is {@code boolean}.
  * Default value is {@code true}.
  * </li>
  * </ul>
@@ -136,8 +142,8 @@ import com.puppycrawl.tools.checkstyle.utils.AnnotationUtil;
  * <pre>
  * &lt;module name="MethodName"&gt;
  *    &lt;property name="format" value="^[a-z](_?[a-zA-Z0-9]+)*$"/&gt;
- *    &lt;property name="applyToPublic" value="false"&gt;
- *    &lt;property name="applyToProtected" value="false"&gt;
+ *    &lt;property name="applyToPublic" value="false"/&gt;
+ *    &lt;property name="applyToProtected" value="false"/&gt;
  * &lt;/module&gt;
  * </pre>
  * <p>Code Example:</p>
@@ -151,6 +157,20 @@ import com.puppycrawl.tools.checkstyle.utils.AnnotationUtil;
  *                          // pattern '^[a-z](_?[a-zA-Z0-9]+)*$'
  * }
  * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code method.name.equals.class.name}
+ * </li>
+ * <li>
+ * {@code name.invalidPattern}
+ * </li>
+ * </ul>
  *
  * @since 3.0
  */
@@ -217,8 +237,8 @@ public class MethodNameCheck
         if (!allowClassName) {
             final DetailAST method =
                 ast.findFirstToken(TokenTypes.IDENT);
-            //in all cases this will be the classDef type except anon inner
-            //with anon inner classes this will be the Literal_New keyword
+            // in all cases this will be the classDef type except anon inner
+            // with anon inner classes this will be the Literal_New keyword
             final DetailAST classDefOrNew = ast.getParent().getParent();
             final DetailAST classIdent =
                 classDefOrNew.findFirstToken(TokenTypes.IDENT);

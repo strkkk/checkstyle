@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,13 +19,13 @@
 
 package com.google.checkstyle.test.chapter3filestructure.rule3sourcefile;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import com.google.checkstyle.test.base.AbstractModuleTestSupport;
+import com.google.checkstyle.test.base.AbstractGoogleModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.api.Configuration;
 import com.puppycrawl.tools.checkstyle.checks.whitespace.EmptyLineSeparatorCheck;
 
-public class EmptyLineSeparatorTest extends AbstractModuleTestSupport {
+public class EmptyLineSeparatorTest extends AbstractGoogleModuleTestSupport {
 
     @Override
     protected String getPackageLocation() {
@@ -38,15 +38,15 @@ public class EmptyLineSeparatorTest extends AbstractModuleTestSupport {
         final String messageKey = "empty.line.separator";
 
         final String[] expected = {
-            "19: " + getCheckMessage(clazz, messageKey, "package"),
-            "20: " + getCheckMessage(clazz, messageKey, "import"),
-            "33: " + getCheckMessage(clazz, messageKey, "CLASS_DEF"),
-            "37: " + getCheckMessage(clazz, messageKey, "STATIC_INIT"),
-            "66: " + getCheckMessage(clazz, messageKey, "METHOD_DEF"),
-            "75: " + getCheckMessage(clazz, messageKey, "INTERFACE_DEF"),
-            "82: " + getCheckMessage(clazz, messageKey, "INSTANCE_INIT"),
-            "113: " + getCheckMessage(clazz, messageKey, "CLASS_DEF"),
-            "119: " + getCheckMessage(clazz, messageKey, "VARIABLE_DEF"),
+            "19:1: " + getCheckMessage(clazz, messageKey, "package"),
+            "20:1: " + getCheckMessage(clazz, messageKey, "import"),
+            "33:1: " + getCheckMessage(clazz, messageKey, "CLASS_DEF"),
+            "37:5: " + getCheckMessage(clazz, messageKey, "STATIC_INIT"),
+            "66:5: " + getCheckMessage(clazz, messageKey, "METHOD_DEF"),
+            "75:5: " + getCheckMessage(clazz, messageKey, "INTERFACE_DEF"),
+            "82:9: " + getCheckMessage(clazz, messageKey, "INSTANCE_INIT"),
+            "113:1: " + getCheckMessage(clazz, messageKey, "CLASS_DEF"),
+            "119:5: " + getCheckMessage(clazz, messageKey, "VARIABLE_DEF"),
         };
 
         final Configuration checkConfig = getModuleConfig("EmptyLineSeparator");

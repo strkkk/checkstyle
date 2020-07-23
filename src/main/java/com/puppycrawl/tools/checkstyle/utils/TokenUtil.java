@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -68,6 +68,7 @@ public final class TokenUtil {
     /**
      * Gets the value of a static or instance field of type int or of another primitive type
      * convertible to type int via a widening conversion. Does not throw any checked exceptions.
+     *
      * @param field from which the int should be extracted
      * @param object to extract the int value from
      * @return the value of the field converted to type int
@@ -87,6 +88,7 @@ public final class TokenUtil {
     /**
      * Creates a map of 'field name' to 'field value' from all {@code public} {@code int} fields
      * of a class.
+     *
      * @param cls source class
      * @return unmodifiable name to value map
      */
@@ -99,6 +101,7 @@ public final class TokenUtil {
 
     /**
      * Creates an array of map keys for quick value-to-name lookup for the map.
+     *
      * @param map source map
      * @return array of map keys
      */
@@ -122,6 +125,7 @@ public final class TokenUtil {
 
     /**
      * Get total number of TokenTypes.
+     *
      * @return total number of TokenTypes.
      */
     public static int getTokenTypesTotalNumber() {
@@ -130,6 +134,7 @@ public final class TokenUtil {
 
     /**
      * Get all token IDs that are available in TokenTypes.
+     *
      * @return array of token IDs
      */
     public static int[] getAllTokenIds() {
@@ -140,8 +145,10 @@ public final class TokenUtil {
 
     /**
      * Returns the name of a token for a given ID.
+     *
      * @param id the ID of the token name to get
      * @return a token name
+     * @throws IllegalArgumentException when id is not valid
      */
     public static String getTokenName(int id) {
         if (id > TOKEN_VALUE_TO_NAME.length - 1) {
@@ -156,8 +163,10 @@ public final class TokenUtil {
 
     /**
      * Returns the ID of a token for a given name.
+     *
      * @param name the name of the token ID to get
      * @return a token ID
+     * @throws IllegalArgumentException when id is null
      */
     public static int getTokenId(String name) {
         final Integer id = TOKEN_NAME_TO_VALUE.get(name);
@@ -169,8 +178,10 @@ public final class TokenUtil {
 
     /**
      * Returns the short description of a token for a given name.
+     *
      * @param name the name of the token ID to get
      * @return a short description
+     * @throws IllegalArgumentException when name is unknown
      */
     public static String getShortDescription(String name) {
         if (!TOKEN_NAME_TO_VALUE.containsKey(name)) {
@@ -186,6 +197,7 @@ public final class TokenUtil {
     /**
      * Is argument comment-related type (SINGLE_LINE_COMMENT,
      * BLOCK_COMMENT_BEGIN, BLOCK_COMMENT_END, COMMENT_CONTENT).
+     *
      * @param type
      *        token type.
      * @return true if type is comment-related type.
@@ -200,6 +212,7 @@ public final class TokenUtil {
     /**
      * Is argument comment-related type name (SINGLE_LINE_COMMENT,
      * BLOCK_COMMENT_BEGIN, BLOCK_COMMENT_END, COMMENT_CONTENT).
+     *
      * @param type
      *        token type name.
      * @return true if type is comment-related type name.
@@ -211,6 +224,7 @@ public final class TokenUtil {
     /**
      * Finds the first {@link Optional} child token of {@link DetailAST} root node
      * which matches the given predicate.
+     *
      * @param root root node.
      * @param predicate predicate.
      * @return {@link Optional} of {@link DetailAST} node which matches the predicate.
@@ -230,6 +244,7 @@ public final class TokenUtil {
     /**
      * Performs an action for each child of {@link DetailAST} root node
      * which matches the given token type.
+     *
      * @param root root node.
      * @param type token type to match.
      * @param action action to perform on the nodes.
@@ -242,4 +257,31 @@ public final class TokenUtil {
         }
     }
 
+    /**
+     * Determines if two ASTs are on the same line.
+     *
+     * @param ast1   the first AST
+     * @param ast2   the second AST
+     *
+     * @return true if they are on the same line.
+     */
+    public static boolean areOnSameLine(DetailAST ast1, DetailAST ast2) {
+        return ast1.getLineNo() == ast2.getLineNo();
+    }
+
+    /**
+     * Is type declaration token type (CLASS_DEF, INTERFACE_DEF,
+     * ANNOTATION_DEF, ENUM_DEF, RECORD_DEF).
+     *
+     * @param type
+     *        token type.
+     * @return true if type is type declaration token type.
+     */
+    public static boolean isTypeDeclaration(int type) {
+        return type == TokenTypes.CLASS_DEF
+                || type == TokenTypes.INTERFACE_DEF
+                || type == TokenTypes.ANNOTATION_DEF
+                || type == TokenTypes.ENUM_DEF
+                || type == TokenTypes.RECORD_DEF;
+    }
 }

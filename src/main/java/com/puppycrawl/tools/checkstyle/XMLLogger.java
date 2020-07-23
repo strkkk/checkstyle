@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -41,7 +41,6 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  * It outputs everything in UTF-8 (default XML encoding is UTF-8) in case
  * we want to localize error messages or simply that file names are
  * localized and takes care about escaping as well.
-
  */
 // -@cs[AbbreviationAsWordInName] We can not change it as,
 // check's name is part of API (used in configurations).
@@ -77,20 +76,7 @@ public class XMLLogger
     /**
      * Creates a new {@code XMLLogger} instance.
      * Sets the output to a defined stream.
-     * @param outputStream the stream to write logs to.
-     * @param closeStream close oS in auditFinished
-     * @deprecated in order to fulfill demands of BooleanParameter IDEA check.
-     * @noinspection BooleanParameter
-     */
-    @Deprecated
-    public XMLLogger(OutputStream outputStream, boolean closeStream) {
-        writer = new PrintWriter(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
-        this.closeStream = closeStream;
-    }
-
-    /**
-     * Creates a new {@code XMLLogger} instance.
-     * Sets the output to a defined stream.
+     *
      * @param outputStream the stream to write logs to.
      * @param outputStreamOptions if {@code CLOSE} stream should be closed in auditFinished()
      */
@@ -146,6 +132,7 @@ public class XMLLogger
 
     /**
      * Prints the file section with all file errors and exceptions.
+     *
      * @param fileName The file name, as should be printed in the opening file tag.
      * @param messages The file messages.
      */
@@ -164,6 +151,7 @@ public class XMLLogger
 
     /**
      * Prints the "file" opening tag with the given filename.
+     *
      * @param fileName The filename to output.
      */
     private void writeFileOpeningTag(String fileName) {
@@ -195,6 +183,7 @@ public class XMLLogger
 
     /**
      * Outputs the given event to the writer.
+     *
      * @param event An event to print.
      */
     private void writeFileError(AuditEvent event) {
@@ -234,6 +223,7 @@ public class XMLLogger
 
     /**
      * Writes the exception event to the print writer.
+     *
      * @param throwable The
      */
     private void writeException(Throwable throwable) {
@@ -251,6 +241,7 @@ public class XMLLogger
 
     /**
      * Escape &lt;, &gt; &amp; &#39; and &quot; as their entities.
+     *
      * @param value the value to escape.
      * @return the escaped value if necessary.
      */
@@ -298,42 +289,43 @@ public class XMLLogger
 
     /**
      * Finds whether the given argument is character or entity reference.
+     *
      * @param ent the possible entity to look for.
      * @return whether the given argument a character or entity reference
      */
     public static boolean isReference(String ent) {
         boolean reference = false;
 
-        if (ent.charAt(0) != '&' || !CommonUtil.endsWithChar(ent, ';')) {
-            reference = false;
-        }
-        else if (ent.charAt(1) == '#') {
-            // prefix is "&#"
-            int prefixLength = 2;
+        if (ent.charAt(0) == '&' && CommonUtil.endsWithChar(ent, ';')) {
+            if (ent.charAt(1) == '#') {
+                // prefix is "&#"
+                int prefixLength = 2;
 
-            int radix = BASE_10;
-            if (ent.charAt(2) == 'x') {
-                prefixLength++;
-                radix = BASE_16;
-            }
-            try {
-                Integer.parseInt(
-                    ent.substring(prefixLength, ent.length() - 1), radix);
-                reference = true;
-            }
-            catch (final NumberFormatException ignored) {
-                reference = false;
-            }
-        }
-        else {
-            final String name = ent.substring(1, ent.length() - 1);
-            for (String element : ENTITIES) {
-                if (name.equals(element)) {
+                int radix = BASE_10;
+                if (ent.charAt(2) == 'x') {
+                    prefixLength++;
+                    radix = BASE_16;
+                }
+                try {
+                    Integer.parseInt(
+                        ent.substring(prefixLength, ent.length() - 1), radix);
                     reference = true;
-                    break;
+                }
+                catch (final NumberFormatException ignored) {
+                    reference = false;
+                }
+            }
+            else {
+                final String name = ent.substring(1, ent.length() - 1);
+                for (String element : ENTITIES) {
+                    if (name.equals(element)) {
+                        reference = true;
+                        break;
+                    }
                 }
             }
         }
+
         return reference;
     }
 
@@ -350,6 +342,7 @@ public class XMLLogger
 
         /**
          * Returns the file error events.
+         *
          * @return the file error events.
          */
         public List<AuditEvent> getErrors() {
@@ -358,6 +351,7 @@ public class XMLLogger
 
         /**
          * Adds the given error event to the messages.
+         *
          * @param event the error event.
          */
         public void addError(AuditEvent event) {
@@ -366,6 +360,7 @@ public class XMLLogger
 
         /**
          * Returns the file exceptions.
+         *
          * @return the file exceptions.
          */
         public List<Throwable> getExceptions() {
@@ -374,6 +369,7 @@ public class XMLLogger
 
         /**
          * Adds the given exception to the messages.
+         *
          * @param throwable the file exception
          */
         public void addException(Throwable throwable) {

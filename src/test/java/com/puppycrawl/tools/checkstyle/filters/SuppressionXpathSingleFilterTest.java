@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,15 +19,16 @@
 
 package com.puppycrawl.tools.checkstyle.filters;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.PatternSyntaxException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.JavaParser;
@@ -43,7 +44,7 @@ public class SuppressionXpathSingleFilterTest
     private File file;
     private FileContents fileContents;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         file = new File(getPath("InputSuppressionXpathSingleFilter.java"));
         fileContents = new FileContents(new FileText(file,
@@ -63,7 +64,7 @@ public class SuppressionXpathSingleFilterTest
                         null, null, xpath);
         final TreeWalkerAuditEvent ev = createEvent(3, 0,
                 TokenTypes.CLASS_DEF);
-        assertFalse("Event should be rejected", filter.accept(ev));
+        assertFalse(filter.accept(ev), "Event should be rejected");
     }
 
     @Test
@@ -74,7 +75,7 @@ public class SuppressionXpathSingleFilterTest
                         null, null, xpath);
         final TreeWalkerAuditEvent ev = createEvent(3, 0,
                 TokenTypes.CLASS_DEF);
-        assertTrue("Event should be accepted", filter.accept(ev));
+        assertTrue(filter.accept(ev), "Event should be accepted");
     }
 
     @Test
@@ -85,7 +86,7 @@ public class SuppressionXpathSingleFilterTest
                         null, null, xpath);
         final TreeWalkerAuditEvent ev = createEvent(100, 0,
                 TokenTypes.CLASS_DEF);
-        assertTrue("Event should be accepted", filter.accept(ev));
+        assertTrue(filter.accept(ev), "Event should be accepted");
     }
 
     @Test
@@ -96,7 +97,7 @@ public class SuppressionXpathSingleFilterTest
                         null, null, xpath);
         final TreeWalkerAuditEvent ev = createEvent(3, 100,
                 TokenTypes.CLASS_DEF);
-        assertTrue("Event should be accepted", filter.accept(ev));
+        assertTrue(filter.accept(ev), "Event should be accepted");
     }
 
     @Test
@@ -113,9 +114,9 @@ public class SuppressionXpathSingleFilterTest
                 TokenTypes.VARIABLE_DEF);
         final TreeWalkerAuditEvent eventThree = createEvent(15, 8,
                 TokenTypes.VARIABLE_DEF);
-        assertFalse("Event should be rejected", filter.accept(eventOne));
-        assertTrue("Event should be accepted", filter.accept(eventTwo));
-        assertFalse("Event should be rejected", filter.accept(eventThree));
+        assertFalse(filter.accept(eventOne), "Event should be rejected");
+        assertTrue(filter.accept(eventTwo), "Event should be accepted");
+        assertFalse(filter.accept(eventThree), "Event should be rejected");
     }
 
     @Test
@@ -128,8 +129,8 @@ public class SuppressionXpathSingleFilterTest
             fail("Exception was expected but got " + test);
         }
         catch (IllegalArgumentException ex) {
-            assertTrue("Message should be: Unexpected xpath query",
-                    ex.getMessage().contains("Incorrect xpath query"));
+            assertTrue(ex.getMessage().contains("Incorrect xpath query"),
+                    "Message should be: Unexpected xpath query");
         }
     }
 
@@ -140,7 +141,7 @@ public class SuppressionXpathSingleFilterTest
         final SuppressionXpathSingleFilter filter =
                 createSuppressionXpathSingleFilter("InputSuppressionXpathSingleFilter", "Test",
                         null, null, null);
-        assertFalse("Event should be accepted", filter.accept(event));
+        assertFalse(filter.accept(event), "Event should be accepted");
     }
 
     @Test
@@ -151,7 +152,7 @@ public class SuppressionXpathSingleFilterTest
                         null, null, xpath);
         final TreeWalkerAuditEvent ev = new TreeWalkerAuditEvent(null,
                 null, null, null);
-        assertTrue("Event should be accepted", filter.accept(ev));
+        assertTrue(filter.accept(ev), "Event should be accepted");
     }
 
     @Test
@@ -162,7 +163,33 @@ public class SuppressionXpathSingleFilterTest
                         null, null, xpath);
         final TreeWalkerAuditEvent ev = createEvent(3, 0,
                 TokenTypes.CLASS_DEF);
-        assertTrue("Event should be accepted", filter.accept(ev));
+        assertTrue(filter.accept(ev), "Event should be accepted");
+    }
+
+    @Test
+    public void testInvalidFileRegexp() {
+        final SuppressionXpathSingleFilter filter = new SuppressionXpathSingleFilter();
+        try {
+            filter.setFiles("e[l");
+            fail("PatternSyntaxException is expected");
+        }
+        catch (PatternSyntaxException ex) {
+            assertTrue(ex.getMessage().contains("Unclosed character class"),
+                    "Message should be: Unclosed character class");
+        }
+    }
+
+    @Test
+    public void testInvalidCheckRegexp() {
+        final SuppressionXpathSingleFilter filter = new SuppressionXpathSingleFilter();
+        try {
+            filter.setChecks("e[l");
+            fail("PatternSyntaxException is expected");
+        }
+        catch (PatternSyntaxException ex) {
+            assertTrue(ex.getMessage().contains("Unclosed character class"),
+                    "Message should be: Unclosed character class");
+        }
     }
 
     @Test
@@ -173,7 +200,7 @@ public class SuppressionXpathSingleFilterTest
                         null, null, xpath);
         final TreeWalkerAuditEvent ev = new TreeWalkerAuditEvent(null,
                 file.getName(), null, null);
-        assertTrue("Event should be accepted", filter.accept(ev));
+        assertTrue(filter.accept(ev), "Event should be accepted");
     }
 
     @Test
@@ -188,7 +215,7 @@ public class SuppressionXpathSingleFilterTest
                         getClass(), null);
         final TreeWalkerAuditEvent ev = new TreeWalkerAuditEvent(fileContents, file.getName(),
                 message, JavaParser.parseFile(file, JavaParser.Options.WITHOUT_COMMENTS));
-        assertTrue("Event should be accepted", filter.accept(ev));
+        assertTrue(filter.accept(ev), "Event should be accepted");
     }
 
     @Test
@@ -203,7 +230,7 @@ public class SuppressionXpathSingleFilterTest
                         getClass(), null);
         final TreeWalkerAuditEvent ev = new TreeWalkerAuditEvent(fileContents, file.getName(),
                 message, JavaParser.parseFile(file, JavaParser.Options.WITHOUT_COMMENTS));
-        assertFalse("Event should be rejected", filter.accept(ev));
+        assertFalse(filter.accept(ev), "Event should be rejected");
     }
 
     @Test
@@ -218,7 +245,7 @@ public class SuppressionXpathSingleFilterTest
                         getClass(), null);
         final TreeWalkerAuditEvent ev = new TreeWalkerAuditEvent(fileContents, file.getName(),
                 message, JavaParser.parseFile(file, JavaParser.Options.WITHOUT_COMMENTS));
-        assertTrue("Event should be accepted", filter.accept(ev));
+        assertTrue(filter.accept(ev), "Event should be accepted");
     }
 
     @Test
@@ -229,7 +256,7 @@ public class SuppressionXpathSingleFilterTest
                         null, null, null, xpath);
         final TreeWalkerAuditEvent ev = createEvent(3, 0,
                 TokenTypes.CLASS_DEF);
-        assertTrue("Event should be accepted", filter.accept(ev));
+        assertTrue(filter.accept(ev), "Event should be accepted");
     }
 
     @Test
@@ -239,7 +266,7 @@ public class SuppressionXpathSingleFilterTest
                 "InputSuppressionXpathSingleFilter", "NonMatchingRegexp", null, null, xpath);
         final TreeWalkerAuditEvent ev = createEvent(3, 0,
                 TokenTypes.CLASS_DEF);
-        assertTrue("Event should be accepted", filter.accept(ev));
+        assertTrue(filter.accept(ev), "Event should be accepted");
     }
 
     @Test
@@ -253,8 +280,8 @@ public class SuppressionXpathSingleFilterTest
                 null, null, "Test", null, null);
         final SuppressionXpathSingleFilter filter2 = createSuppressionXpathSingleFilter(
                 null, null, "Bad", null, null);
-        assertFalse("Message match", filter1.accept(ev));
-        assertTrue("Message not match", filter2.accept(ev));
+        assertFalse(filter1.accept(ev), "Message match");
+        assertTrue(filter2.accept(ev), "Message not match");
     }
 
     @Test
@@ -274,8 +301,8 @@ public class SuppressionXpathSingleFilterTest
             fail("Exception is expected");
         }
         catch (IllegalStateException ex) {
-            assertTrue("Exception message does not match expected one",
-                    ex.getMessage().contains("Cannot initialize context and evaluate query"));
+            assertTrue(ex.getMessage().contains("Cannot initialize context and evaluate query"),
+                    "Exception message does not match expected one");
         }
     }
 

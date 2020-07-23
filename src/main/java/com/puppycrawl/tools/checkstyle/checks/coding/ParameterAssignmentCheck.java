@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -33,7 +33,7 @@ import com.puppycrawl.tools.checkstyle.utils.CheckUtil;
 
 /**
  * <p>
- * Disallow assignment of parameters.
+ * Disallows assignment of parameters.
  * </p>
  * <p>
  * Rationale:
@@ -43,6 +43,25 @@ import com.puppycrawl.tools.checkstyle.utils.CheckUtil;
  * ensure that parameters are never assigned would give
  * the best of both worlds.
  * </p>
+ * <p>
+ * To configure the check:
+ * </p>
+ * <pre>
+ * &lt;module name=&quot;ParameterAssignment&quot;/&gt;
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code parameter.assignment}
+ * </li>
+ * </ul>
+ *
+ * @since 3.2
  */
 @FileStatefulCheck
 public final class ParameterAssignmentCheck extends AbstractCheck {
@@ -163,6 +182,7 @@ public final class ParameterAssignmentCheck extends AbstractCheck {
 
     /**
      * Checks if this is assignments of parameter.
+     *
      * @param ast assignment to check.
      */
     private void visitAssign(DetailAST ast) {
@@ -171,6 +191,7 @@ public final class ParameterAssignmentCheck extends AbstractCheck {
 
     /**
      * Checks if this is increment/decrement of parameter.
+     *
      * @param ast dec/inc to check.
      */
     private void visitIncDec(DetailAST ast) {
@@ -179,22 +200,22 @@ public final class ParameterAssignmentCheck extends AbstractCheck {
 
     /**
      * Check if ident is parameter.
+     *
      * @param ast ident to check.
      */
     private void checkIdent(DetailAST ast) {
-        if (!parameterNames.isEmpty()) {
-            final DetailAST identAST = ast.getFirstChild();
+        final DetailAST identAST = ast.getFirstChild();
 
-            if (identAST != null
-                && identAST.getType() == TokenTypes.IDENT
-                && parameterNames.contains(identAST.getText())) {
-                log(ast, MSG_KEY, identAST.getText());
-            }
+        if (identAST != null
+            && identAST.getType() == TokenTypes.IDENT
+            && parameterNames.contains(identAST.getText())) {
+            log(ast, MSG_KEY, identAST.getText());
         }
     }
 
     /**
      * Creates new set of parameters and store old one in stack.
+     *
      * @param ast a method to process.
      */
     private void visitMethodDef(DetailAST ast) {
@@ -211,6 +232,7 @@ public final class ParameterAssignmentCheck extends AbstractCheck {
 
     /**
      * Creates new parameter set for given method.
+     *
      * @param ast a method for process.
      */
     private void visitMethodParameters(DetailAST ast) {

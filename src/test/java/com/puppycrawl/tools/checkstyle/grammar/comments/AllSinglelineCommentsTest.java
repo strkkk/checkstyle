@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,24 +19,28 @@
 
 package com.puppycrawl.tools.checkstyle.grammar.comments;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
 import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+import com.puppycrawl.tools.checkstyle.internal.utils.CheckUtil;
 import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
 
 public class AllSinglelineCommentsTest extends AbstractModuleTestSupport {
 
     private static final Set<String> ALL_COMMENTS = new LinkedHashSet<>();
 
-    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+    private static String lineSeparator;
 
     @Override
     protected String getPackageLocation() {
@@ -44,15 +48,17 @@ public class AllSinglelineCommentsTest extends AbstractModuleTestSupport {
     }
 
     @Test
-    public void testAllBlockComments() throws Exception {
+    public void testAllSinglelineComments() throws Exception {
         final DefaultConfiguration checkConfig =
             createModuleConfig(SinglelineCommentListenerCheck.class);
+        final String path = getPath("InputFullOfSinglelineComments.java");
+        lineSeparator = CheckUtil.getLineSeparatorForFile(path, StandardCharsets.UTF_8);
         final String[] expected = CommonUtil.EMPTY_STRING_ARRAY;
-        verify(checkConfig, getPath("InputFullOfSinglelineComments.java"), expected);
-        Assert.assertTrue("All comments should be empty", ALL_COMMENTS.isEmpty());
+        verify(checkConfig, path, expected);
+        assertTrue(ALL_COMMENTS.isEmpty(), "All comments should be empty");
     }
 
-    private static class SinglelineCommentListenerCheck extends AbstractCheck {
+    public static class SinglelineCommentListenerCheck extends AbstractCheck {
 
         @Override
         public boolean isCommentNodesRequired() {
@@ -78,7 +84,7 @@ public class AllSinglelineCommentsTest extends AbstractModuleTestSupport {
         public void init() {
             final int lines = 63;
             for (int i = 0; i < lines; i++) {
-                ALL_COMMENTS.add(i + LINE_SEPARATOR);
+                ALL_COMMENTS.add(i + lineSeparator);
             }
             ALL_COMMENTS.add(String.valueOf(lines));
         }
@@ -87,7 +93,7 @@ public class AllSinglelineCommentsTest extends AbstractModuleTestSupport {
         public void visitToken(DetailAST ast) {
             final String commentContent = ast.getFirstChild().getText();
             if (!ALL_COMMENTS.remove(commentContent)) {
-                Assert.fail("Unexpected comment: " + commentContent);
+                fail("Unexpected comment: " + commentContent);
             }
         }
 

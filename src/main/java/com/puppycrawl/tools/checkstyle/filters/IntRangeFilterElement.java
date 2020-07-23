@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -35,6 +35,7 @@ class IntRangeFilterElement implements IntFilterElement {
     /**
      * Constructs a {@code IntRangeFilterElement} with a
      * lower bound and an upper bound for the range.
+     *
      * @param lowerBound the lower bound of the range.
      * @param upperBound the upper bound of the range.
      */

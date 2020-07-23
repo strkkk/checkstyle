@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -28,7 +28,7 @@ import java.util.EventObject;
  * I'm not very satisfied about the design of this event since there are
  * optional methods that will return null in most of the case. This will
  * need some work to clean it up especially if we want to introduce
- * a more sequential reporting action rather than a packet error
+ * a more sequential reporting action rather than a packet
  * reporting. This will allow for example to follow the process quickly
  * in an interface or a servlet (yep, that's cool to run a check via
  * a web interface in a source repository ;-)
@@ -50,6 +50,7 @@ public final class AuditEvent
 
     /**
      * Creates a new instance.
+     *
      * @param source the object that created the event
      */
     public AuditEvent(Object source) {
@@ -58,6 +59,7 @@ public final class AuditEvent
 
     /**
      * Creates a new {@code AuditEvent} instance.
+     *
      * @param src source of the event
      * @param fileName file associated with the event
      */
@@ -80,6 +82,7 @@ public final class AuditEvent
 
     /**
      * Returns name of file being audited.
+     *
      * @return the file name currently being audited or null if there is
      *     no relation to a file.
      */
@@ -90,6 +93,7 @@ public final class AuditEvent
     /**
      * Return the line number on the source file where the event occurred.
      * This may be 0 if there is no relation to a file content.
+     *
      * @return an integer representing the line number in the file source code.
      */
     public int getLine() {
@@ -98,6 +102,7 @@ public final class AuditEvent
 
     /**
      * Return the message associated to the event.
+     *
      * @return the event message
      */
     public String getMessage() {
@@ -106,6 +111,7 @@ public final class AuditEvent
 
     /**
      * Gets the column associated with the message.
+     *
      * @return the column associated with the message
      */
     public int getColumn() {
@@ -114,6 +120,7 @@ public final class AuditEvent
 
     /**
      * Gets the audit event severity level.
+     *
      * @return the audit event severity level
      */
     public SeverityLevel getSeverityLevel() {
@@ -126,6 +133,7 @@ public final class AuditEvent
 
     /**
      * Returns id of module.
+     *
      * @return the identifier of the module that generated the event. Can return
      *         null.
      */
@@ -135,6 +143,7 @@ public final class AuditEvent
 
     /**
      * Gets the name of the source for the message.
+     *
      * @return the name of the source for the message
      */
     public String getSourceName() {
@@ -143,6 +152,7 @@ public final class AuditEvent
 
     /**
      * Gets the localized message.
+     *
      * @return the localized message
      */
     public LocalizedMessage getLocalizedMessage() {

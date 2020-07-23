@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -23,14 +23,14 @@ import static com.puppycrawl.tools.checkstyle.JavadocDetailNodeParser.MSG_JAVADO
 import static com.puppycrawl.tools.checkstyle.JavadocDetailNodeParser.MSG_JAVADOC_PARSE_RULE_ERROR;
 import static com.puppycrawl.tools.checkstyle.JavadocDetailNodeParser.MSG_JAVADOC_WRONG_SINGLETON_TAG;
 import static com.puppycrawl.tools.checkstyle.internal.utils.TestUtil.isUtilsClassHasPrivateConstructor;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.lang.reflect.Method;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.powermock.reflect.Whitebox;
 
 import com.puppycrawl.tools.checkstyle.JavadocDetailNodeParser.ParseErrorMessage;
@@ -51,8 +51,8 @@ public class DetailNodeTreeStringPrinterTest extends AbstractTreeTestSupport {
 
     @Test
     public void testIsProperUtilsClass() throws ReflectiveOperationException {
-        assertTrue("Constructor is not private",
-                isUtilsClassHasPrivateConstructor(DetailNodeTreeStringPrinter.class, true));
+        assertTrue(isUtilsClassHasPrivateConstructor(DetailNodeTreeStringPrinter.class, true),
+                "Constructor is not private");
     }
 
     @Test
@@ -63,16 +63,17 @@ public class DetailNodeTreeStringPrinterTest extends AbstractTreeTestSupport {
 
     @Test
     public void testParseFileWithError() throws Exception {
+        final File file = new File(
+                getPath("InputDetailNodeTreeStringPrinterJavadocWithError.javadoc"));
         try {
-            DetailNodeTreeStringPrinter.printFileAst(
-                    new File(getPath("InputDetailNodeTreeStringPrinterJavadocWithError.javadoc")));
-            Assert.fail("Javadoc parser didn't fail on missing end tag");
+            DetailNodeTreeStringPrinter.printFileAst(file);
+            fail("Javadoc parser didn't fail on missing end tag");
         }
         catch (IllegalArgumentException ex) {
             final String expected = (String) GET_PARSE_ERROR_MESSAGE.invoke(null,
                     new ParseErrorMessage(0, MSG_JAVADOC_MISSED_HTML_CLOSE, 1, "qwe"));
-            assertEquals("Generated and expected parse error messages don't match",
-                    expected, ex.getMessage());
+            assertEquals(expected, ex.getMessage(),
+                    "Generated and expected parse error messages don't match");
         }
     }
 
@@ -96,8 +97,8 @@ public class DetailNodeTreeStringPrinterTest extends AbstractTreeTestSupport {
                 DetailNodeTreeStringPrinter.class,
                 null);
         final String expected = "[ERROR:35] " + localizedMessage.getMessage();
-        assertEquals("Javadoc parse error message for missed HTML tag doesn't meet expectations",
-                expected, actual);
+        assertEquals(expected, actual,
+                "Javadoc parse error message for missed HTML tag doesn't meet expectations");
     }
 
     @Test
@@ -114,7 +115,7 @@ public class DetailNodeTreeStringPrinterTest extends AbstractTreeTestSupport {
                 DetailNodeTreeStringPrinter.class,
                 null);
         final String expected = "[ERROR:10] " + localizedMessage.getMessage();
-        assertEquals("Javadoc parse error message doesn't meet expectations", expected, actual);
+        assertEquals(expected, actual, "Javadoc parse error message doesn't meet expectations");
     }
 
     @Test
@@ -131,88 +132,91 @@ public class DetailNodeTreeStringPrinterTest extends AbstractTreeTestSupport {
                 DetailNodeTreeStringPrinter.class,
                 null);
         final String expected = "[ERROR:100] " + localizedMessage.getMessage();
-        assertEquals("Javadoc parse error message for void elements with close tag "
-                + "doesn't meet expectations", expected, actual);
+        assertEquals(expected, actual,
+                "Javadoc parse error message for void elements with close tag "
+                    + "doesn't meet expectations");
     }
 
     @Test
     public void testUnescapedJavaCodeWithGenericsInJavadoc() throws Exception {
+        final File file = new File(
+                getPath("InputDetailNodeTreeStringPrinter"
+                        + "UnescapedJavaCodeWithGenericsInJavadoc.javadoc"));
         try {
-            DetailNodeTreeStringPrinter.printFileAst(new File(
-                    getPath("InputDetailNodeTreeStringPrinter"
-                            + "UnescapedJavaCodeWithGenericsInJavadoc.javadoc")));
-            Assert.fail("Exception is expected");
+            DetailNodeTreeStringPrinter.printFileAst(file);
+            fail("Exception is expected");
         }
         catch (IllegalArgumentException ex) {
             final String expected = (String) GET_PARSE_ERROR_MESSAGE.invoke(null,
                     new ParseErrorMessage(35, MSG_JAVADOC_MISSED_HTML_CLOSE, 7, "parsing"));
-            assertEquals("Generated and expected parse error messages don't match",
-                    expected, ex.getMessage());
+            assertEquals(expected, ex.getMessage(),
+                    "Generated and expected parse error messages don't match");
         }
     }
 
     @Test
     public void testNoViableAltException() throws Exception {
+        final File file = new File(
+                getPath("InputDetailNodeTreeStringPrinterNoViableAltException.javadoc"));
         try {
-            DetailNodeTreeStringPrinter.printFileAst(new File(getPath(
-                    "InputDetailNodeTreeStringPrinterNoViableAltException.javadoc")));
-            Assert.fail("Exception is expected");
+            DetailNodeTreeStringPrinter.printFileAst(file);
+            fail("Exception is expected");
         }
         catch (IllegalArgumentException ex) {
             final String expected = (String) GET_PARSE_ERROR_MESSAGE.invoke(null,
                     new ParseErrorMessage(0, MSG_JAVADOC_PARSE_RULE_ERROR,
                             9, "no viable alternative at input '<<'", "HTML_ELEMENT"));
-            assertEquals("Generated and expected parse error messages don't match",
-                    expected, ex.getMessage());
+            assertEquals(expected, ex.getMessage(),
+                    "Generated and expected parse error messages don't match");
         }
     }
 
     @Test
     public void testHtmlTagCloseBeforeTagOpen() throws Exception {
+        final File file = new File(
+                getPath("InputDetailNodeTreeStringPrinterHtmlTagCloseBeforeTagOpen.javadoc"));
         try {
-            DetailNodeTreeStringPrinter.printFileAst(new File(getPath(
-                    "InputDetailNodeTreeStringPrinterHtmlTagCloseBeforeTagOpen.javadoc"
-            )));
-            Assert.fail("Exception is expected");
+            DetailNodeTreeStringPrinter.printFileAst(file);
+            fail("Exception is expected");
         }
         catch (IllegalArgumentException ex) {
             final String expected = (String) GET_PARSE_ERROR_MESSAGE.invoke(null,
                     new ParseErrorMessage(0, MSG_JAVADOC_PARSE_RULE_ERROR,
                             4, "no viable alternative at input '</tag'", "HTML_ELEMENT"));
-            assertEquals("Generated and expected parse error messages don't match",
-                    expected, ex.getMessage());
+            assertEquals(expected, ex.getMessage(),
+                    "Generated and expected parse error messages don't match");
         }
     }
 
     @Test
     public void testWrongHtmlTagOrder() throws Exception {
+        final File file = new File(
+                getPath("InputDetailNodeTreeStringPrinterWrongHtmlTagOrder.javadoc"));
         try {
-            DetailNodeTreeStringPrinter.printFileAst(new File(getPath(
-                    "InputDetailNodeTreeStringPrinterWrongHtmlTagOrder.javadoc"
-            )));
-            Assert.fail("Exception is expected");
+            DetailNodeTreeStringPrinter.printFileAst(file);
+            fail("Exception is expected");
         }
         catch (IllegalArgumentException ex) {
             final String expected = (String) GET_PARSE_ERROR_MESSAGE.invoke(null,
                     new ParseErrorMessage(0, MSG_JAVADOC_MISSED_HTML_CLOSE, 10, "tag2"));
-            assertEquals("Generated and expected parse error messages don't match",
-                    expected, ex.getMessage());
+            assertEquals(expected, ex.getMessage(),
+                    "Generated and expected parse error messages don't match");
         }
     }
 
     @Test
     public void testOmittedStartTagForHtmlElement() throws Exception {
+        final File file = new File(
+                getPath("InputDetailNodeTreeStringPrinterOmittedStartTagForHtmlElement.javadoc"));
         try {
-            DetailNodeTreeStringPrinter.printFileAst(new File(getPath(
-                    "InputDetailNodeTreeStringPrinterOmittedStartTagForHtmlElement.javadoc"
-            )));
-            Assert.fail("Exception is expected");
+            DetailNodeTreeStringPrinter.printFileAst(file);
+            fail("Exception is expected");
         }
         catch (IllegalArgumentException ex) {
             final String expected = (String) GET_PARSE_ERROR_MESSAGE.invoke(null,
                     new ParseErrorMessage(0, MSG_JAVADOC_MISSED_HTML_CLOSE, 3, "a"));
-            assertEquals("Generated and expected parse error messages don't match",
-                    expected, ex.getMessage());
+            assertEquals(expected, ex.getMessage(),
+                    "Generated and expected parse error messages don't match");
         }
     }
 

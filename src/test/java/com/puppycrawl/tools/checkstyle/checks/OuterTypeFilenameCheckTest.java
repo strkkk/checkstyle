@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,9 @@
 package com.puppycrawl.tools.checkstyle.checks;
 
 import static com.puppycrawl.tools.checkstyle.checks.OuterTypeFilenameCheck.MSG_KEY;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
@@ -45,8 +45,8 @@ public class OuterTypeFilenameCheckTest extends AbstractModuleTestSupport {
             TokenTypes.ENUM_DEF,
             TokenTypes.ANNOTATION_DEF,
         };
-        assertArrayEquals("Required tokens array differs from expected",
-                expected, checkObj.getRequiredTokens());
+        assertArrayEquals(expected, checkObj.getRequiredTokens(),
+                "Required tokens array differs from expected");
     }
 
     @Test
@@ -75,8 +75,7 @@ public class OuterTypeFilenameCheckTest extends AbstractModuleTestSupport {
             TokenTypes.ENUM_DEF,
             TokenTypes.ANNOTATION_DEF,
         };
-        assertArrayEquals("Acceptable tokens array differs from expected",
-                expected, actual);
+        assertArrayEquals(expected, actual, "Acceptable tokens array differs from expected");
     }
 
     @Test
@@ -90,7 +89,7 @@ public class OuterTypeFilenameCheckTest extends AbstractModuleTestSupport {
     public void testNestedClass2() throws Exception {
         final DefaultConfiguration checkConfig = createModuleConfig(OuterTypeFilenameCheck.class);
         final String[] expected = {
-            "3: " + getCheckMessage(MSG_KEY),
+            "3:1: " + getCheckMessage(MSG_KEY),
         };
         verify(checkConfig, getPath("InputOuterTypeFilename1a.java"), expected);
     }
@@ -113,7 +112,7 @@ public class OuterTypeFilenameCheckTest extends AbstractModuleTestSupport {
     public void testNoPublicClasses() throws Exception {
         final DefaultConfiguration checkConfig = createModuleConfig(OuterTypeFilenameCheck.class);
         final String[] expected = {
-            "3: " + getCheckMessage(MSG_KEY),
+            "3:1: " + getCheckMessage(MSG_KEY),
         };
         verify(checkConfig, getPath("InputOuterTypeFilenameNoPublic.java"), expected);
     }
@@ -129,7 +128,7 @@ public class OuterTypeFilenameCheckTest extends AbstractModuleTestSupport {
     public void testWrongDefault() throws Exception {
         final DefaultConfiguration checkConfig = createModuleConfig(OuterTypeFilenameCheck.class);
         final String[] expected = {
-            "4: " + getCheckMessage(MSG_KEY),
+            "4:2: " + getCheckMessage(MSG_KEY),
         };
         verify(checkConfig, getPath("InputOuterTypeFilename5.java"), expected);
     }

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -23,10 +23,10 @@ import static com.puppycrawl.tools.checkstyle.checks.TranslationCheck.MSG_KEY;
 import static com.puppycrawl.tools.checkstyle.checks.TranslationCheck.MSG_KEY_MISSING_TRANSLATION_FILE;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.endsWith;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -41,9 +41,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.powermock.reflect.Whitebox;
 
 import com.google.common.collect.ImmutableMap;
@@ -62,8 +61,8 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
 
 public class TranslationCheckTest extends AbstractXmlTestSupport {
 
-    @Rule
-    public final TemporaryFolder temporaryFolder = new TemporaryFolder();
+    @TempDir
+    public File temporaryFolder;
 
     @Override
     protected String getPackageLocation() {
@@ -108,7 +107,7 @@ public class TranslationCheckTest extends AbstractXmlTestSupport {
 
     @Test
     public void testDifferentPaths() throws Exception {
-        final File file = temporaryFolder.newFile("messages_test_de.properties");
+        final File file = new File(temporaryFolder, "messages_test_de.properties");
         try (Writer writer = Files.newBufferedWriter(file.toPath(), StandardCharsets.UTF_8)) {
             final String content = "hello=Hello\ncancel=Cancel";
             writer.write(content);
@@ -151,8 +150,8 @@ public class TranslationCheckTest extends AbstractXmlTestSupport {
         final Field field = check.getClass().getDeclaredField("filesToProcess");
         field.setAccessible(true);
 
-        assertTrue("Stateful field is not cleared on beginProcessing",
-            ((Collection<File>) field.get(check)).isEmpty());
+        assertTrue(((Collection<File>) field.get(check)).isEmpty(),
+                "Stateful field is not cleared on beginProcessing");
     }
 
     @Test
@@ -204,8 +203,8 @@ public class TranslationCheckTest extends AbstractXmlTestSupport {
             // This ensures we pick up the correct file based on its name and the
             // number of children it has.
             return !"file".equals(expected.getNodeName())
-                    || expected.getAttributes().getNamedItem("name").getNodeValue()
-                            .equals(actual.getAttributes().getNamedItem("name").getNodeValue())
+                    || XmlUtil.getNameAttributeOfNode(expected)
+                        .equals(XmlUtil.getNameAttributeOfNode(actual))
                     && XmlUtil.getChildrenElements(expected).size() == XmlUtil
                             .getChildrenElements(actual).size();
         }, firstErrorMessage, secondErrorMessage);
@@ -227,9 +226,9 @@ public class TranslationCheckTest extends AbstractXmlTestSupport {
 
     @Test
     public void testLogIoExceptionFileNotFound() throws Exception {
-        //I can't put wrong file here. Checkstyle fails before check started.
-        //I saw some usage of file or handling of wrong file in Checker, or somewhere
-        //in checks running part. So I had to do it with reflection to improve coverage.
+        // I can't put wrong file here. Checkstyle fails before check started.
+        // I saw some usage of file or handling of wrong file in Checker, or somewhere
+        // in checks running part. So I had to do it with reflection to improve coverage.
         final TranslationCheck check = new TranslationCheck();
         final DefaultConfiguration checkConfig = createModuleConfig(TranslationCheck.class);
         final TestMessageDispatcher dispatcher = new TestMessageDispatcher();
@@ -238,21 +237,21 @@ public class TranslationCheckTest extends AbstractXmlTestSupport {
 
         final Set<String> keys = Whitebox.invokeMethod(check, "getTranslationKeys",
                 new File(".no.such.file"));
-        assertTrue("Translation keys should be empty when File is not found", keys.isEmpty());
+        assertTrue(keys.isEmpty(), "Translation keys should be empty when File is not found");
 
-        assertEquals("expected number of errors to fire", 1, dispatcher.savedErrors.size());
+        assertEquals(1, dispatcher.savedErrors.size(), "expected number of errors to fire");
         final LocalizedMessage localizedMessage = new LocalizedMessage(1,
                 Definitions.CHECKSTYLE_BUNDLE, "general.fileNotFound",
                 null, null, getClass(), null);
-        assertEquals("Invalid message", localizedMessage.getMessage(),
-                dispatcher.savedErrors.iterator().next().getMessage());
+        assertEquals(localizedMessage.getMessage(),
+                dispatcher.savedErrors.iterator().next().getMessage(), "Invalid message");
     }
 
     @Test
     public void testLogIoException() throws Exception {
-        //I can't put wrong file here. Checkstyle fails before check started.
-        //I saw some usage of file or handling of wrong file in Checker, or somewhere
-        //in checks running part. So I had to do it with reflection to improve coverage.
+        // I can't put wrong file here. Checkstyle fails before check started.
+        // I saw some usage of file or handling of wrong file in Checker, or somewhere
+        // in checks running part. So I had to do it with reflection to improve coverage.
         final TranslationCheck check = new TranslationCheck();
         final DefaultConfiguration checkConfig = createModuleConfig(TranslationCheck.class);
         final TestMessageDispatcher dispatcher = new TestMessageDispatcher();
@@ -262,12 +261,12 @@ public class TranslationCheckTest extends AbstractXmlTestSupport {
         final Exception exception = new IOException("test exception");
         Whitebox.invokeMethod(check, "logException", exception, new File(""));
 
-        assertEquals("expected number of errors to fire", 1, dispatcher.savedErrors.size());
+        assertEquals(1, dispatcher.savedErrors.size(), "expected number of errors to fire");
         final LocalizedMessage localizedMessage = new LocalizedMessage(1,
                 Definitions.CHECKSTYLE_BUNDLE, "general.exception",
                 new String[] {exception.getMessage()}, null, getClass(), null);
-        assertEquals("Invalid message", localizedMessage.getMessage(),
-                dispatcher.savedErrors.iterator().next().getMessage());
+        assertEquals(localizedMessage.getMessage(),
+                dispatcher.savedErrors.iterator().next().getMessage(), "Invalid message");
     }
 
     @Test

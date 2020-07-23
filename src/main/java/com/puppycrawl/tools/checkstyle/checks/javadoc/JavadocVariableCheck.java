@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -31,8 +31,79 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 import com.puppycrawl.tools.checkstyle.utils.ScopeUtil;
 
 /**
- * Checks that a variable has Javadoc comment. Ignores {@code serialVersionUID} fields.
+ * <p>
+ * Checks that a variable has a Javadoc comment. Ignores {@code serialVersionUID} fields.
+ * </p>
+ * <ul>
+ * <li>
+ * Property {@code scope} - Specify the visibility scope where Javadoc comments are checked.
+ * Type is {@code com.puppycrawl.tools.checkstyle.api.Scope}.
+ * Default value is {@code private}.
+ * </li>
+ * <li>
+ * Property {@code excludeScope} - Specify the visibility scope where Javadoc
+ * comments are not checked.
+ * Type is {@code com.puppycrawl.tools.checkstyle.api.Scope}.
+ * Default value is {@code null}.
+ * </li>
+ * <li>
+ * Property {@code ignoreNamePattern} - Specify the regexp to define variable names to ignore.
+ * Type is {@code java.util.regex.Pattern}.
+ * Default value is {@code null}.
+ * </li>
+ * <li>
+ * Property {@code tokens} - tokens to check
+ * Type is {@code int[]}.
+ * Default value is:
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#ENUM_CONSTANT_DEF">
+ * ENUM_CONSTANT_DEF</a>.
+ * </li>
+ * </ul>
+ * <p>
+ * To configure the default check:
+ * </p>
+ * <pre>
+ * &lt;module name="JavadocVariable"/&gt;
+ * </pre>
+ * <p>
+ * To configure the check for {@code public} scope:
+ * </p>
+ * <pre>
+ * &lt;module name="JavadocVariable"&gt;
+ *   &lt;property name="scope" value="public"/&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>
+ * To configure the check for members which are in {@code private},
+ * but not in {@code protected} scope:
+ * </p>
+ * <pre>
+ * &lt;module name="JavadocVariable"&gt;
+ *   &lt;property name="scope" value="private"/&gt;
+ *   &lt;property name="excludeScope" value="protected"/&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>
+ * To ignore absence of Javadoc comments for variables with names {@code log} or {@code logger}:
+ * </p>
+ * <pre>
+ * &lt;module name="JavadocVariable"&gt;
+ *   &lt;property name="ignoreNamePattern" value="log|logger"/&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code javadoc.missing}
+ * </li>
+ * </ul>
  *
+ * @since 3.0
  */
 @StatelessCheck
 public class JavadocVariableCheck
@@ -44,17 +115,18 @@ public class JavadocVariableCheck
      */
     public static final String MSG_JAVADOC_MISSING = "javadoc.missing";
 
-    /** The scope to check. */
+    /** Specify the visibility scope where Javadoc comments are checked. */
     private Scope scope = Scope.PRIVATE;
 
-    /** The visibility scope where Javadoc comments shouldn't be checked. **/
+    /** Specify the visibility scope where Javadoc comments are not checked. */
     private Scope excludeScope;
 
-    /** The pattern to ignore variable name. */
+    /** Specify the regexp to define variable names to ignore. */
     private Pattern ignoreNamePattern;
 
     /**
-     * Sets the scope to check.
+     * Setter to specify the visibility scope where Javadoc comments are checked.
+     *
      * @param scope a scope.
      */
     public void setScope(Scope scope) {
@@ -62,7 +134,8 @@ public class JavadocVariableCheck
     }
 
     /**
-     * Set the excludeScope.
+     * Setter to specify the visibility scope where Javadoc comments are not checked.
+     *
      * @param excludeScope a scope.
      */
     public void setExcludeScope(Scope excludeScope) {
@@ -70,7 +143,8 @@ public class JavadocVariableCheck
     }
 
     /**
-     * Sets the variable names to ignore in the check.
+     * Setter to specify the regexp to define variable names to ignore.
+     *
      * @param pattern a pattern.
      */
     public void setIgnoreNamePattern(Pattern pattern) {
@@ -116,6 +190,7 @@ public class JavadocVariableCheck
 
     /**
      * Decides whether the variable name of an AST is in the ignore list.
+     *
      * @param ast the AST to check
      * @return true if the variable name of ast is in the ignore list.
      */
@@ -127,6 +202,7 @@ public class JavadocVariableCheck
 
     /**
      * Whether we should check this node.
+     *
      * @param ast a given node.
      * @return whether we should check a given node.
      */

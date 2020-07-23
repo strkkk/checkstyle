@@ -9,36 +9,36 @@ jobs:
           key: m2-cache
       - checkout
       - run:
-          name: skip_ci creation
+          name: run_job creation
           command: |
             mkdir -p .ci-temp
-            echo -n ".github|appveyor.yml|.travis.yml|\.ci/" >> .ci-temp/skip_ci_files
-            echo -n "|distelli-manifest.yml|fast-forward-merge.sh" >> .ci-temp/skip_ci_files
-            echo -n "|LICENSE|LICENSE.apache20|README.md|release.sh" >> .ci-temp/skip_ci_files
-            echo -n "|RIGHTS.antlr|shippable.yml|codeship" >> .ci-temp/skip_ci_files
-            echo -n "|shippable.sh|wercker.yml|wercker.sh" >> .ci-temp/skip_ci_files
-            echo -n "|intellij-idea-inspections.xml" >> .ci-temp/skip_ci_files
-            echo -n "|org.eclipse.jdt.core.prefs" >> .ci-temp/skip_ci_files
-            echo -n "|Jenkinsfile" >> .ci-temp/skip_ci_files
-            SKIP_CI=false;
-            if [ $(git diff --name-only HEAD HEAD~1 \
-                   | grep -vE $(cat .ci-temp/skip_ci_files) | wc -c) -gt 0 ] ; then
-                SKIP_CI=false;
-              else
-                SKIP_CI=true;
-            fi
-            echo $SKIP_CI > .ci-temp/skip_ci
+            SKIP_FILES1=".github|appveyor.yml|.travis.yml|\.ci/"
+            SKIP_FILES2="|fast-forward-merge.sh"
+            SKIP_FILES3="|LICENSE|LICENSE.apache20|README.md|release.sh"
+            SKIP_FILES4="|RIGHTS.antlr|shippable.yml|codeship"
+            SKIP_FILES5="|shippable.sh|wercker.yml|wercker.sh"
+            SKIP_FILES6="|intellij-idea-inspections.xml"
+            SKIP_FILES7="|org.eclipse.jdt.core.prefs"
+            SKIP_FILES8="|Jenkinsfile"
+            FULL_SKIP1=$SKIP_FILES1$SKIP_FILES2$SKIP_FILES3$SKIP_FILES4
+            FULL_SKIP2=$SKIP_FILES5$SKIP_FILES6$SKIP_FILES7$SKIP_FILES8
+            SKIP_FILES=$FULL_SKIP1$FULL_SKIP2
+            export RUN_JOB=1
+            # source ./.ci/common.sh
+            # should_run_job will change RUN_JOB variable
+            # should_run_job "recheck" $SKIP_FILES
+            echo $RUN_JOB > .ci-temp/run_job
       - run:
           name: download all maven dependencies and groovy
           command: |
-            SKIP_CI=`cat .ci-temp/skip_ci`
-            echo "SKIP_CI="$SKIP_CI
-            if [[ $SKIP_CI == 'false' ]]; then
+            RUN_JOB=`cat .ci-temp/run_job`
+            echo "RUN_JOB="$RUN_JOB
+            if [[ $RUN_JOB == 1 ]]; then
               pwd
               ls -la
               java -version
               mvn --version
-              mvn -Ppitest-metrics dependency:go-offline
+              mvn -e -Ppitest-metrics dependency:go-offline
             else
               echo "build is skipped ..."
             fi
@@ -57,9 +57,9 @@ jobs:
           at: /home/circleci/
       - run:
           command: |
-            SKIP_CI=`cat .ci-temp/skip_ci`
-            echo "SKIP_CI="$SKIP_CI
-            if [[ $SKIP_CI == 'false' ]]; then
+            RUN_JOB=`cat .ci-temp/run_job`
+            echo "RUN_JOB="$RUN_JOB
+            if [[ $RUN_JOB == 1 ]]; then
               echo "./.ci/pitest.sh pitest-coding"  >> commands.txt
               echo "./.ci/pitest.sh pitest-common"  >> commands.txt
               echo "./.ci/pitest.sh pitest-imports" >> commands.txt
@@ -70,6 +70,8 @@ jobs:
             else
               echo "build is skipped ..."
             fi
+      - store_artifacts:
+          path: ./target/pit-reports
 
   pitest2:
     machine: true
@@ -79,9 +81,9 @@ jobs:
           at: /home/circleci/
       - run:
           command: |
-            SKIP_CI=`cat .ci-temp/skip_ci`
-            echo "SKIP_CI="$SKIP_CI
-            if [[ $SKIP_CI == 'false' ]]; then
+            RUN_JOB=`cat .ci-temp/run_job`
+            echo "RUN_JOB="$RUN_JOB
+            if [[ $RUN_JOB == 1 ]]; then
               echo "./.ci/pitest.sh pitest-main"        >> commands.txt
               echo "./.ci/pitest.sh pitest-javadoc"     >> commands.txt
               echo "./.ci/pitest.sh pitest-indentation" >> commands.txt
@@ -92,6 +94,8 @@ jobs:
             else
               echo "build is skipped ..."
             fi
+      - store_artifacts:
+          path: ./target/pit-reports
 
   pitest3:
     machine: true
@@ -101,9 +105,9 @@ jobs:
           at: /home/circleci/
       - run:
           command: |
-            SKIP_CI=`cat .ci-temp/skip_ci`
-            echo "SKIP_CI="$SKIP_CI
-            if [[ $SKIP_CI == 'false' ]]; then
+            RUN_JOB=`cat .ci-temp/run_job`
+            echo "RUN_JOB="$RUN_JOB
+            if [[ $RUN_JOB == 1 ]]; then
               echo "./.ci/pitest.sh pitest-misc"    >> commands.txt
               echo "./.ci/pitest.sh pitest-design"  >> commands.txt
               echo "./.ci/pitest.sh pitest-api"     >> commands.txt
@@ -114,6 +118,8 @@ jobs:
             else
               echo "build is skipped ..."
             fi
+      - store_artifacts:
+          path: ./target/pit-reports
 
   pitest4:
     machine: true
@@ -123,9 +129,9 @@ jobs:
           at: /home/circleci/
       - run:
           command: |
-            SKIP_CI=`cat .ci-temp/skip_ci`
-            echo "SKIP_CI="$SKIP_CI
-            if [[ $SKIP_CI == 'false' ]]; then
+            RUN_JOB=`cat .ci-temp/run_job`
+            echo "RUN_JOB="$RUN_JOB
+            if [[ $RUN_JOB == 1 ]]; then
               echo "./.ci/pitest.sh pitest-whitespace" >> commands.txt
               echo "./.ci/pitest.sh pitest-filters"    >> commands.txt
               echo "./.ci/pitest.sh pitest-header"     >> commands.txt
@@ -136,6 +142,8 @@ jobs:
             else
               echo "build is skipped ..."
             fi
+      - store_artifacts:
+          path: ./target/pit-reports
 
   pitest5:
     machine: true
@@ -145,9 +153,9 @@ jobs:
           at: /home/circleci/
       - run:
           command: |
-            SKIP_CI=`cat .ci-temp/skip_ci`
-            echo "SKIP_CI="$SKIP_CI
-            if [[ $SKIP_CI == 'false' ]]; then
+            RUN_JOB=`cat .ci-temp/run_job`
+            echo "RUN_JOB="$RUN_JOB
+            if [[ $RUN_JOB == 1 ]]; then
               echo "./.ci/pitest.sh pitest-packagenamesloader" >> commands.txt
               echo "./.ci/pitest.sh pitest-tree-walker"        >> commands.txt
               echo "./.ci/pitest.sh pitest-naming"             >> commands.txt
@@ -158,6 +166,8 @@ jobs:
             else
               echo "build is skipped ..."
             fi
+      - store_artifacts:
+          path: ./target/pit-reports
 
   pitest6:
     machine: true
@@ -167,9 +177,9 @@ jobs:
           at: /home/circleci/
       - run:
           command: |
-            SKIP_CI=`cat .ci-temp/skip_ci`
-            echo "SKIP_CI="$SKIP_CI
-            if [[ $SKIP_CI == 'false' ]]; then
+            RUN_JOB=`cat .ci-temp/run_job`
+            echo "RUN_JOB="$RUN_JOB
+            if [[ $RUN_JOB == 1 ]]; then
               echo "./.ci/pitest.sh pitest-blocks"   >> commands.txt
               echo "./.ci/pitest.sh pitest-sizes"    >> commands.txt
               echo "./.ci/pitest.sh pitest-modifier" >> commands.txt
@@ -180,6 +190,8 @@ jobs:
             else
               echo "build is skipped ..."
             fi
+      - store_artifacts:
+          path: ./target/pit-reports
 
   pitest7:
     machine: true
@@ -189,9 +201,9 @@ jobs:
           at: /home/circleci/
       - run:
           command: |
-            SKIP_CI=`cat .ci-temp/skip_ci`
-            echo "SKIP_CI="$SKIP_CI
-            if [[ $SKIP_CI == 'false' ]]; then
+            RUN_JOB=`cat .ci-temp/run_job`
+            echo "RUN_JOB="$RUN_JOB
+            if [[ $RUN_JOB == 1 ]]; then
               echo "./.ci/pitest.sh pitest-gui"   >> commands.txt
               CMD="$(circleci tests split commands.txt)"
               echo "Command: $CMD"
@@ -199,6 +211,8 @@ jobs:
             else
               echo "build is skipped ..."
             fi
+      - store_artifacts:
+          path: ./target/pit-reports
 
   pitest8:
     machine: true
@@ -208,9 +222,9 @@ jobs:
           at: /home/circleci/
       - run:
           command: |
-            SKIP_CI=`cat .ci-temp/skip_ci`
-            echo "SKIP_CI="$SKIP_CI
-            if [[ $SKIP_CI == 'false' ]]; then
+            RUN_JOB=`cat .ci-temp/run_job`
+            echo "RUN_JOB="$RUN_JOB
+            if [[ $RUN_JOB == 1 ]]; then
               echo "./.ci/pitest.sh pitest-common-2"   >> commands.txt
               CMD="$(circleci tests split commands.txt)"
               echo "Command: $CMD"
@@ -218,6 +232,8 @@ jobs:
             else
               echo "build is skipped ..."
             fi
+      - store_artifacts:
+          path: ./target/pit-reports
 
 workflows:
   version: 2

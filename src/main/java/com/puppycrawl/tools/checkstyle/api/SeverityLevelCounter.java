@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -36,7 +36,9 @@ public final class SeverityLevelCounter implements AuditListener {
 
     /**
      * Creates a new counter.
+     *
      * @param level the severity level events need to have, must be non-null.
+     * @throws IllegalArgumentException when level is null
      */
     public SeverityLevelCounter(SeverityLevel level) {
         if (level == null) {
@@ -81,6 +83,7 @@ public final class SeverityLevelCounter implements AuditListener {
 
     /**
      * Returns the number of counted events since audit started.
+     *
      * @return the number of counted events since audit started.
      */
     public int getCount() {

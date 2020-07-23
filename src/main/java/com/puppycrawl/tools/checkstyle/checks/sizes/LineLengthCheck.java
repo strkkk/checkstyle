@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,61 +19,107 @@
 
 package com.puppycrawl.tools.checkstyle.checks.sizes;
 
+import java.io.File;
 import java.util.regex.Pattern;
 
 import com.puppycrawl.tools.checkstyle.StatelessCheck;
-import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
-import com.puppycrawl.tools.checkstyle.api.DetailAST;
+import com.puppycrawl.tools.checkstyle.api.AbstractFileSetCheck;
+import com.puppycrawl.tools.checkstyle.api.FileText;
 import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
 
 /**
+ * <p>
  * Checks for long lines.
- *
+ * </p>
  * <p>
  * Rationale: Long lines are hard to read in printouts or if developers
  * have limited screen space for the source code, e.g. if the IDE displays
  * additional information like project tree, class hierarchy, etc.
  * </p>
- *
+ * <ul>
+ * <li>
+ * The calculation of the length of a line takes into account the number of
+ * expanded spaces for a tab character ({@code '\t'}). The default number of spaces is {@code 8}.
+ * To specify a different number of spaces, the user can set
+ * <a href="https://checkstyle.org/config.html#TreeWalker">{@code TreeWalker}</a>
+ * property {@code tabWidth} which applies to all Checks, including {@code LineLength};
+ * or can set property {@code tabWidth} for {@code LineLength} alone.
+ * </li>
+ * <li>
+ * Package and import statements (lines matching pattern {@code ^(package|import) .*})
+ * are not verified by this check.
+ * </li>
+ * </ul>
+ * <ul>
+ * <li>
+ * Property {@code fileExtensions} - Specify file extensions that are accepted.
+ * Type is {@code java.lang.String[]}.
+ * Default value is {@code all files}.
+ * </li>
+ * <li>
+ * Property {@code ignorePattern} - Specify pattern for lines to ignore.
+ * Type is {@code java.util.regex.Pattern}.
+ * Default value is {@code "^$" (empty)}.
+ * </li>
+ * <li>
+ * Property {@code max} - Specify the maximum line length allowed.
+ * Type is {@code int}.
+ * Default value is {@code 80}.
+ * </li>
+ * </ul>
  * <p>
- * Package statements and import statements (lines matching pattern
- * {@code ^(package|import) .*}), and are not verified by this check.
- * </p>
- * <p>
- * The default maximum allowable line length is 80 characters. To change the
- * maximum, set property max.
- * </p>
- * <p>
- * To ignore lines in the check, set property ignorePattern to a regular
- * expression for the lines to ignore.
- * </p>
- * <p>
- * An example of how to configure the check is:
+ * To configure the check to accept lines up to 80 characters long:
  * </p>
  * <pre>
  * &lt;module name="LineLength"/&gt;
  * </pre>
- * <p> An example of how to configure the check to accept lines up to 120
- * characters long is:
- *</p>
- * <pre>
- * &lt;module name="LineLength"&gt;
- *    &lt;property name="max" value="120"/&gt;
- * &lt;/module&gt;
- * </pre>
- * <p> An example of how to configure the check to ignore lines that begin with
- * &quot; * &quot;, followed by just one word, such as within a Javadoc comment,
- * is:
+ * <p>
+ * To configure the check to accept lines up to 120 characters long:
  * </p>
  * <pre>
  * &lt;module name="LineLength"&gt;
- *    &lt;property name="ignorePattern" value="^ *\* *[^ ]+$"/&gt;
+ *   &lt;property name="max" value="120"/&gt;
  * &lt;/module&gt;
  * </pre>
+ * <p>
+ * To configure the check to ignore lines that begin with {@code " * "} code,
+ * followed by just one word, such as within a Javadoc comment:
+ * </p>
+ * <pre>
+ * &lt;module name="LineLength"&gt;
+ *   &lt;property name="ignorePattern" value="^ *\* *[^ ]+$"/&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>To configure the check to only validate java files and ignore other extensions:
+ * </p>
+ * <pre>
+ * &lt;module name="LineLength"&gt;
+ *   &lt;property name="fileExtensions" value="java"/&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>To configure the check to only validate xml and property files and ignore other extensions:
+ * </p>
+ * <pre>
+ * &lt;module name="LineLength"&gt;
+ *   &lt;property name="fileExtensions" value="xml, properties"/&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.Checker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code maxLineLen}
+ * </li>
+ * </ul>
  *
+ * @since 3.0
  */
 @StatelessCheck
-public class LineLengthCheck extends AbstractCheck {
+public class LineLengthCheck extends AbstractFileSetCheck {
 
     /**
      * A key is pointing to the warning message text in "messages.properties"
@@ -87,34 +133,18 @@ public class LineLengthCheck extends AbstractCheck {
     /** Patterns matching package, import, and import static statements. */
     private static final Pattern IGNORE_PATTERN = Pattern.compile("^(package|import) .*");
 
-    /** The maximum number of columns in a line. */
+    /** Specify the maximum line length allowed. */
     private int max = DEFAULT_MAX_COLUMNS;
 
-    /** The regexp when long lines are ignored. */
+    /** Specify pattern for lines to ignore. */
     private Pattern ignorePattern = Pattern.compile("^$");
 
     @Override
-    public int[] getDefaultTokens() {
-        return getRequiredTokens();
-    }
-
-    @Override
-    public int[] getAcceptableTokens() {
-        return getRequiredTokens();
-    }
-
-    @Override
-    public int[] getRequiredTokens() {
-        return CommonUtil.EMPTY_INT_ARRAY;
-    }
-
-    @Override
-    public void beginTree(DetailAST rootAST) {
-        final String[] lines = getLines();
-        for (int i = 0; i < lines.length; i++) {
-            final String line = lines[i];
+    protected void processFiltered(File file, FileText fileText) {
+        for (int i = 0; i < fileText.size(); i++) {
+            final String line = fileText.get(i);
             final int realLength = CommonUtil.lengthExpandedTabs(
-                line, line.length(), getTabWidth());
+                line, line.codePointCount(0, line.length()), getTabWidth());
 
             if (realLength > max && !IGNORE_PATTERN.matcher(line).find()
                 && !ignorePattern.matcher(line).find()) {
@@ -124,7 +154,8 @@ public class LineLengthCheck extends AbstractCheck {
     }
 
     /**
-     * Sets the maximum length of a line.
+     * Setter to specify the maximum line length allowed.
+     *
      * @param length the maximum length of a line
      */
     public void setMax(int length) {
@@ -132,7 +163,8 @@ public class LineLengthCheck extends AbstractCheck {
     }
 
     /**
-     * Set the ignore pattern.
+     * Setter to specify pattern for lines to ignore.
+     *
      * @param pattern a pattern.
      */
     public final void setIgnorePattern(Pattern pattern) {

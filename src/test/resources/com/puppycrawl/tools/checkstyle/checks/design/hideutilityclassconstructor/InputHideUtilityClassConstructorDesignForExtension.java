@@ -47,15 +47,15 @@ public abstract class InputHideUtilityClassConstructorDesignForExtension
     {
         System.identityHashCode("nonempty and overriding possible");
     }
-    
+
     public final void aFinalMethod()
     {
-    	System.identityHashCode("no way to override");
+    System.identityHashCode("no way to override");
     }
-    
+
     public static void aStaticMethod()
     {
-    	System.identityHashCode("no way to override");
+    System.identityHashCode("no way to override");
     }
 
     // tries to trigger bug #884035
@@ -65,7 +65,7 @@ public abstract class InputHideUtilityClassConstructorDesignForExtension
     {
         public int compare(Object o1, Object o2)
         {
-            // some complex stuff that would normally trigger an error report
+            // some complex stuff that would normally trigger a violation report
             if (o1.hashCode() > o2.hashCode()) {
                 return -1;
             }
@@ -74,35 +74,35 @@ public abstract class InputHideUtilityClassConstructorDesignForExtension
             }
         }
     }
-    
+
     public final class aFinalClass
     {
         public void someMethod()
         {
-        	System.identityHashCode("nonempty and overriding is possible");
+        System.identityHashCode("nonempty and overriding is possible");
         }
     }
-    
+
     public class nonFinalClass
     {
-    	//private ctor
-    	private nonFinalClass(){}    	
+    //private ctor
+    private nonFinalClass(){}
         public void someMethod()
         {
-        	System.identityHashCode("nonempty and overriding is possible");
+        System.identityHashCode("nonempty and overriding is possible");
         }
     }
-    
+
     public class anotherNonFinalClass
     {
-    	//nonPrivate ctor
-    	public anotherNonFinalClass(){}    	
+    //nonPrivate ctor
+    public anotherNonFinalClass(){}
         public void someMethod()
         {
-        	System.identityHashCode("nonempty and overriding is possible");
+        System.identityHashCode("nonempty and overriding is possible");
         }
     }
-    
+
     // enums should be skipped
     public enum TEnum
     {

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -44,23 +44,33 @@ import com.puppycrawl.tools.checkstyle.utils.ScopeUtil;
  * <ul>
  * <li>
  * Property {@code scope} - specify the visibility scope where Javadoc comments are checked.
+ * Type is {@code com.puppycrawl.tools.checkstyle.api.Scope}.
  * Default value is {@code public}.
  * </li>
  * <li>
  * Property {@code excludeScope} - specify the visibility scope where Javadoc comments are not
- * checked. Default value is {@code null}.
+ * checked.
+ * Type is {@code com.puppycrawl.tools.checkstyle.api.Scope}.
+ * Default value is {@code null}.
  * </li>
  * <li>
  * Property {@code skipAnnotations} - specify the list of annotations that allow missed
- * documentation. Only short names are allowed, e.g.{@code Generated}. Default value is
- * {@code Generated}.
+ * documentation. Only short names are allowed, e.g. {@code Generated}.
+ * Type is {@code java.lang.String[]}.
+ * Default value is {@code Generated}.
  * </li>
  * <li>
- * Property {@code tokens} - tokens to check Default value is:
- * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#INTERFACE_DEF">INTERFACE_DEF</a>,
- * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#CLASS_DEF">CLASS_DEF</a>,
- * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#ENUM_DEF">ENUM_DEF</a>,
- * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#ANNOTATION_DEF">ANNOTATION_DEF</a>.
+ * Property {@code tokens} - tokens to check
+ * Type is {@code int[]}.
+ * Default value is:
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#INTERFACE_DEF">
+ * INTERFACE_DEF</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#CLASS_DEF">
+ * CLASS_DEF</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#ENUM_DEF">
+ * ENUM_DEF</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#ANNOTATION_DEF">
+ * ANNOTATION_DEF</a>.
  * </li>
  * </ul>
  * <p>
@@ -133,6 +143,18 @@ import com.puppycrawl.tools.checkstyle.utils.ScopeUtil;
  *   &lt;property name="skipAnnotations" value="SpringBootApplication,Configuration"/&gt;
  * &lt;/module&gt;
  * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code javadoc.missing}
+ * </li>
+ * </ul>
+ *
  * @since 8.20
  */
 @StatelessCheck
@@ -151,12 +173,13 @@ public class MissingJavadocTypeCheck extends AbstractCheck {
 
     /**
      * Specify the list of annotations that allow missed documentation.
-     * Only short names are allowed, e.g.{@code Generated}.
+     * Only short names are allowed, e.g. {@code Generated}.
      */
     private List<String> skipAnnotations = Collections.singletonList("Generated");
 
     /**
      * Setter to specify the visibility scope where Javadoc comments are checked.
+     *
      * @param scope a scope.
      */
     public void setScope(Scope scope) {
@@ -165,6 +188,7 @@ public class MissingJavadocTypeCheck extends AbstractCheck {
 
     /**
      * Setter to specify the visibility scope where Javadoc comments are not checked.
+     *
      * @param excludeScope a scope.
      */
     public void setExcludeScope(Scope excludeScope) {
@@ -173,7 +197,8 @@ public class MissingJavadocTypeCheck extends AbstractCheck {
 
     /**
      * Setter to specify the list of annotations that allow missed documentation.
-     * Only short names are allowed, e.g.{@code Generated}.
+     * Only short names are allowed, e.g. {@code Generated}.
+     *
      * @param userAnnotations user's value.
      */
     public void setSkipAnnotations(String... userAnnotations) {
@@ -207,13 +232,14 @@ public class MissingJavadocTypeCheck extends AbstractCheck {
             final int lineNo = ast.getLineNo();
             final TextBlock textBlock = contents.getJavadocBefore(lineNo);
             if (textBlock == null) {
-                log(lineNo, MSG_JAVADOC_MISSING);
+                log(ast, MSG_JAVADOC_MISSING);
             }
         }
     }
 
     /**
      * Whether we should check this node.
+     *
      * @param ast a given node.
      * @return whether we should check a given node.
      */

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,12 +20,13 @@
 package com.puppycrawl.tools.checkstyle.checks.coding;
 
 import static com.puppycrawl.tools.checkstyle.checks.coding.OneStatementPerLineCheck.MSG_KEY;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
+import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
 
 public class OneStatementPerLineCheckTest extends AbstractModuleTestSupport {
 
@@ -55,14 +56,15 @@ public class OneStatementPerLineCheckTest extends AbstractModuleTestSupport {
     @Test
     public void testTokensNotNull() {
         final OneStatementPerLineCheck check = new OneStatementPerLineCheck();
-        Assert.assertNotNull("Acceptable tokens should not be null", check.getAcceptableTokens());
-        Assert.assertNotNull("Default tokens should not be null", check.getDefaultTokens());
-        Assert.assertNotNull("Required tokens should not be null", check.getRequiredTokens());
+        assertNotNull(check.getAcceptableTokens(), "Acceptable tokens should not be null");
+        assertNotNull(check.getDefaultTokens(), "Default tokens should not be null");
+        assertNotNull(check.getRequiredTokens(), "Required tokens should not be null");
     }
 
     @Test
     public void testWithMultilineStatements() throws Exception {
         final DefaultConfiguration checkConfig = createModuleConfig(OneStatementPerLineCheck.class);
+        checkConfig.addAttribute("treatTryResourcesAsStatement", "true");
         final String[] expected = {
             "44:21: " + getCheckMessage(MSG_KEY),
             "61:17: " + getCheckMessage(MSG_KEY),
@@ -70,8 +72,8 @@ public class OneStatementPerLineCheckTest extends AbstractModuleTestSupport {
             "81:10: " + getCheckMessage(MSG_KEY),
             "90:28: " + getCheckMessage(MSG_KEY),
             "135:39: " + getCheckMessage(MSG_KEY),
-            "168:100: " + getCheckMessage(MSG_KEY),
-            "179:91: " + getCheckMessage(MSG_KEY),
+            "168:46: " + getCheckMessage(MSG_KEY),
+            "179:47: " + getCheckMessage(MSG_KEY),
         };
 
         verify(checkConfig,
@@ -92,6 +94,31 @@ public class OneStatementPerLineCheckTest extends AbstractModuleTestSupport {
         };
 
         verify(checkConfig, getNonCompilablePath("InputOneStatementPerLine.java"), expected);
+    }
+
+    @Test
+    public void testResourceReferenceVariableIgnored() throws Exception {
+        final DefaultConfiguration checkConfig = createModuleConfig(OneStatementPerLineCheck.class);
+        checkConfig.addAttribute("treatTryResourcesAsStatement", "true");
+        final String[] expected = {
+            "25:42: " + getCheckMessage(MSG_KEY),
+            "29:43: " + getCheckMessage(MSG_KEY),
+            "35:46: " + getCheckMessage(MSG_KEY),
+            "39:46: " + getCheckMessage(MSG_KEY),
+        };
+
+        verify(checkConfig,
+                getNonCompilablePath("InputOneStatementPerLineTryWithResources.java"),
+                expected);
+    }
+
+    @Test
+    public void testResourcesIgnored() throws Exception {
+        final DefaultConfiguration checkConfig = createModuleConfig(OneStatementPerLineCheck.class);
+        final String[] expected = CommonUtil.EMPTY_STRING_ARRAY;
+        verify(checkConfig,
+                getNonCompilablePath("InputOneStatementPerLineTryWithResourcesIgnore.java"),
+                expected);
     }
 
 }

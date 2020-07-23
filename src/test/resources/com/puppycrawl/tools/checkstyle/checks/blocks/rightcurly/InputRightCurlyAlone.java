@@ -58,14 +58,6 @@ public class InputRightCurlyAlone {
                 .collect(java.util.stream.Collectors.toList());
     }
 
-    class TestClass { private int field; }  //violation
-
-    class TestClass2 { private int field; };  //violation
-
-    class TestClass3 {
-        private int field;
-    };  //violation
-
     void method6(int a) {
         java.util.Map<String, String> map3 = new java.util.LinkedHashMap<String, String>() {{
             put("Hello", "World");
@@ -74,4 +66,32 @@ public class InputRightCurlyAlone {
         }{}; // violation
         };
     }
+
+    public @interface TestAnnotation {} //violation
+
+    public @interface TestAnnotation1{ String value(); } //violation
+
+    public @interface TestAnnotation2 {
+        String value();} //violation
+
+    public @interface TestAnnotation3 {
+        String value();
+    }
+
+    public @interface TestAnnottation4 { String value();
+    }
+
+    interface Interface1
+    {
+        int i = 1;
+        public void meth1(); } // violation
+
+    interface Interface2
+    { int i = 1; public void meth1(); } // violation
+
+    interface Interface3 {
+        void display();
+        interface Interface4 {
+            void myMethod();
+        }} // violation - for both of the right curly braces
 }

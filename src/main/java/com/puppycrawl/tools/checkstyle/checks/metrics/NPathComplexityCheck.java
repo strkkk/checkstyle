@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -29,12 +29,206 @@ import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 
 /**
- * Checks the npath complexity against a specified limit (default = 200).
- * The npath metric computes the number of possible execution paths
- * through a function. Similar to the cyclomatic complexity but also
- * takes into account the nesting of conditional statements and
- * multi-part boolean expressions.
+ * <p>
+ * Checks the NPATH complexity against a specified limit.
+ * </p>
+ * <p>
+ * The NPATH metric computes the number of possible execution paths through a
+ * function(method). It takes into account the nesting of conditional statements
+ * and multi-part boolean expressions (A &amp;&amp; B, C || D, E ? F :G and
+ * their combinations).
+ * </p>
+ * <p>
+ * The NPATH metric was designed base on Cyclomatic complexity to avoid problem
+ * of Cyclomatic complexity metric like nesting level within a function(method).
+ * </p>
+ * <p>
+ * Metric was described at <a href="http://dl.acm.org/citation.cfm?id=42379">
+ * "NPATH: a measure of execution pathcomplexity and its applications"</a>.
+ * If you need detailed description of algorithm, please read that article,
+ * it is well written and have number of examples and details.
+ * </p>
+ * <p>
+ * Here is some quotes:
+ * </p>
+ * <blockquote>
+ * An NPATH threshold value of 200 has been established for a function.
+ * The value 200 is based on studies done at AT&amp;T Bell Laboratories [1988 year].
+ * </blockquote>
+ * <blockquote>
+ * Some of the most effective methods of reducing the NPATH value include:
+ * <ul>
+ * <li>
+ * distributing functionality;
+ * </li>
+ * <li>
+ * implementing multiple if statements as a switch statement;
+ * </li>
+ * <li>
+ * creating a separate function for logical expressions with a high count of
+ * variables and (&amp;&amp;) and or (||) operators.
+ * </li>
+ * </ul>
+ * </blockquote>
+ * <blockquote>
+ * Although strategies to reduce the NPATH complexity of functions are important,
+ * care must be taken not to distort the logical clarity of the software by
+ * applying a strategy to reduce the complexity of functions. That is, there is
+ * a point of diminishing return beyond which a further attempt at reduction of
+ * complexity distorts the logical clarity of the system structure.
+ * </blockquote>
+ * <table>
+ * <caption>Examples</caption>
+ * <thead><tr><th>Structure</th><th>Complexity expression</th></tr></thead>
+ * <tr><td>if ([expr]) { [if-range] }</td><td>NP(if-range) + 1 + NP(expr)</td></tr>
+ * <tr><td>if ([expr]) { [if-range] } else { [else-range] }</td>
+ * <td>NP(if-range)+ NP(else-range) + NP(expr)</td></tr>
+ * <tr><td>while ([expr]) { [while-range] }</td><td>NP(while-range) + NP(expr) + 1</td></tr>
+ * <tr><td>do { [do-range] } while ([expr])</td><td>NP(do-range) + NP(expr) + 1</td></tr>
+ * <tr><td>for([expr1]; [expr2]; [expr3]) { [for-range] }</td>
+ * <td>NP(for-range) + NP(expr1)+ NP(expr2) + NP(expr3) + 1</td></tr>
+ * <tr><td>switch ([expr]) { case : [case-range] default: [default-range] }</td>
+ * <td>S(i=1:i=n)NP(case-range[i]) + NP(default-range) + NP(expr)</td></tr>
+ * <tr><td>[expr1] ? [expr2] : [expr3]</td><td>NP(expr1) + NP(expr2) + NP(expr3) + 2</td></tr>
+ * <tr><td>goto label</td><td>1</td></tr><tr><td>break</td><td>1</td></tr>
+ * <tr><td>Expressions</td>
+ * <td>Number of &amp;&amp; and || operators in expression. No operators - 0</td></tr>
+ * <tr><td>continue</td><td>1</td></tr><tr><td>return</td><td>1</td></tr>
+ * <tr><td>Statement (even sequential statements)</td><td>1</td></tr>
+ * <tr><td>Empty block {}</td><td>1</td></tr><tr><td>Function call</td><td>1</td>
+ * </tr><tr><td>Function(Method) declaration or Block</td><td>P(i=1:i=N)NP(Statement[i])</td></tr>
+ * </table>
+ * <p>
+ * <b>Rationale:</b> Nejmeh says that his group had an informal NPATH limit of
+ * 200 on individual routines; functions(methods) that exceeded this value were
+ * candidates for further decomposition - or at least a closer look.
+ * <b>Please do not be fanatic with limit 200</b> - choose number that suites
+ * your project style. Limit 200 is empirical number base on some sources of at
+ * AT&amp;T Bell Laboratories of 1988 year.
+ * </p>
+ * <ul>
+ * <li>
+ * Property {@code max} - Specify the maximum threshold allowed.
+ * Type is {@code int}.
+ * Default value is {@code 200}.
+ * </li>
+ * </ul>
+ * <p>
+ * To configure the check:
+ * </p>
+ * <pre>
+ * &lt;module name="NPathComplexity"/&gt;
+ * </pre>
+ * <p>
+ * Example:
+ * </p>
+ * <pre>
+ * public abstract class Test {
  *
+ * final int a = 0;
+ * int b = 0;
+ *
+ * public void foo() { // OK, NPath complexity is less than default threshold
+ *   // function consists of one if-else block with an NPath Complexity of 3
+ *   if (a &gt; 10) {
+ *     if (a &gt; b) { // nested if-else decision tree adds 2 to the complexity count
+ *       buzz();
+ *     } else {
+ *       fizz();
+ *     }
+ *   } else { // last possible outcome of the main if-else block, adds 1 to complexity
+ *     buzz();
+ *   }
+ * }
+ *
+ * public void boo() { // violation, NPath complexity is 217 (max allowed is 200)
+ *   // looping through 3 switch statements produces 6^3 + 1 (217) possible outcomes
+ *   for(int i = 0; i &lt; b; i++) { // for statement adds 1 to final complexity
+ *     switch(i) { // each independent switch statement multiplies complexity by 6
+ *       case a:
+ *         // ternary with &amp;&amp; adds 3 to switch's complexity
+ *         print(f(i) &amp;&amp; g(i) ? fizz() : buzz());
+ *       default:
+ *         // ternary with || adds 3 to switch's complexity
+ *         print(f(i) || g(i) ? fizz() : buzz());
+ *     }
+ *     switch(i - 1) { // multiplies complexity by 6
+ *       case a:
+ *         print(f(i) &amp;&amp; g(i) ? fizz() : buzz());
+ *       default:
+ *         print(f(i) || g(i) ? fizz() : buzz());
+ *     }
+ *     switch(i + 1) { // multiplies complexity by 6
+ *       case a:
+ *         print(f(i) &amp;&amp; g(i) ? fizz() : buzz());
+ *       default:
+ *         print(f(i) || g(i) ? fizz() : buzz());
+ *     }
+ *   }
+ * }
+ *
+ * public abstract boolean f(int x);
+ * public abstract boolean g(int x);
+ * public abstract String fizz();
+ * public abstract String buzz();
+ * public abstract void print(String str);
+ * }
+ * </pre>
+ * <p>
+ * To configure the check with a threshold of 100:
+ * </p>
+ * <pre>
+ * &lt;module name="NPathComplexity"&gt;
+ *   &lt;property name="max" value="100"/&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>
+ * Example:
+ * </p>
+ * <pre>
+ * public abstract class Test1 {
+ * public void foo() { // violation, NPath complexity is 128 (max allowed is 100)
+ *   int a,b,t,m,n;
+ *   a=b=t=m=n = 0;
+ *
+ *   // Complexity is achieved by choosing from 2 options 7 times (2^7 = 128 possible outcomes)
+ *   if (a &gt; b) { // non-nested if-else decision tree multiplies complexity by 2
+ *     bar();
+ *   } else {
+ *     baz();
+ *   }
+ *
+ *   print(t &gt; 1 ? bar() : baz()); // 5 ternary statements multiply complexity by 2^5
+ *   print(t &gt; 2 ? bar() : baz());
+ *   print(t &gt; 3 ? bar() : baz());
+ *   print(t &gt; 4 ? bar() : baz());
+ *   print(t &gt; 5 ? bar() : baz());
+ *
+ *   if (m &gt; n) { // multiplies complexity by 2
+ *     baz();
+ *   } else {
+ *     bar();
+ *   }
+ * }
+ *
+ * public abstract String bar();
+ * public abstract String baz();
+ * public abstract void print(String str);
+ * }
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code npathComplexity}
+ * </li>
+ * </ul>
+ *
+ * @since 3.4
  */
 // -@cs[AbbreviationAsWordInName] Can't change check name
 @FileStatefulCheck
@@ -72,14 +266,15 @@ public final class NPathComplexityCheck extends AbstractCheck {
     /** NP value for current range. */
     private BigInteger currentRangeValue = INITIAL_VALUE;
 
-    /** Threshold to report error for. */
+    /** Specify the maximum threshold allowed. */
     private int max = DEFAULT_MAX;
 
     /** True, when branch is visited, but not leaved. */
     private boolean branchVisited;
 
     /**
-     * Set the maximum threshold allowed.
+     * Setter to specify the maximum threshold allowed.
+     *
      * @param max the maximum threshold
      */
     public void setMax(int max) {
@@ -214,6 +409,7 @@ public final class NPathComplexityCheck extends AbstractCheck {
     /**
      * Visits if, while, do-while, for and switch tokens - all of them have expression in
      * parentheses which is used for calculation.
+     *
      * @param ast visited token.
      * @param basicBranchingFactor default number of branches added.
      */
@@ -232,6 +428,7 @@ public final class NPathComplexityCheck extends AbstractCheck {
     /**
      * Visits ternary operator (?:) and return tokens. They differ from those processed by
      * visitConditional method in that their expression isn't bracketed.
+     *
      * @param ast visited token.
      * @param basicBranchingFactor number of branches inherently added by this token.
      */
@@ -249,7 +446,7 @@ public final class NPathComplexityCheck extends AbstractCheck {
      * Leaves ternary operator (?:) and return tokens.
      */
     private void leaveUnitaryOperator() {
-        if (!afterValues.pop()) {
+        if (Boolean.FALSE.equals(afterValues.pop())) {
             final Values valuePair = popValue();
             BigInteger basicRangeValue = valuePair.getRangeValue();
             BigInteger expressionValue = valuePair.getExpressionValue();
@@ -292,6 +489,7 @@ public final class NPathComplexityCheck extends AbstractCheck {
 
     /**
      * Process the end of a method definition.
+     *
      * @param ast the token type representing the method definition
      */
     private void leaveMethodDef(DetailAST ast) {
@@ -311,6 +509,7 @@ public final class NPathComplexityCheck extends AbstractCheck {
     /**
      * Pushes the current range value on the range value stack. Pushes this token expression value
      * on the expression value stack.
+     *
      * @param expressionValue value of expression calculated for current token.
      */
     private void pushValue(Integer expressionValue) {
@@ -321,6 +520,7 @@ public final class NPathComplexityCheck extends AbstractCheck {
 
     /**
      * Pops values from both stack of expression values and stack of range values.
+     *
      * @return pair of head values from both of the stacks.
      */
     private Values popValue() {
@@ -336,6 +536,7 @@ public final class NPathComplexityCheck extends AbstractCheck {
 
     /**
      * Calculates number of conditional operators, including inline ternary operator, for a token.
+     *
      * @param ast inspected token.
      * @return number of conditional operators.
      * @see <a href="https://docs.oracle.com/javase/specs/jls/se8/html/jls-15.html#jls-15.23">
@@ -363,6 +564,7 @@ public final class NPathComplexityCheck extends AbstractCheck {
 
     /**
      * Finds a leaf, which is the most distant from the root.
+     *
      * @param ast the root of tree.
      * @return the leaf.
      */
@@ -380,6 +582,7 @@ public final class NPathComplexityCheck extends AbstractCheck {
 
     /**
      * Counts number of case tokens subject to a case group token.
+     *
      * @param ast case group token.
      * @return number of case tokens.
      */
@@ -408,6 +611,7 @@ public final class NPathComplexityCheck extends AbstractCheck {
 
         /**
          * Sets end coordinates from given token.
+         *
          * @param endToken token.
          */
         public void setToken(DetailAST endToken) {
@@ -425,6 +629,7 @@ public final class NPathComplexityCheck extends AbstractCheck {
 
         /**
          * Checks if saved coordinates located after given token.
+         *
          * @param ast given token.
          * @return true, if saved coordinates located after given token.
          */
@@ -455,6 +660,7 @@ public final class NPathComplexityCheck extends AbstractCheck {
 
         /**
          * Constructor that assigns all of class fields.
+         *
          * @param valueOfRange NP value for range
          * @param valueOfExpression NP value for expression
          */
@@ -465,6 +671,7 @@ public final class NPathComplexityCheck extends AbstractCheck {
 
         /**
          * Returns NP value for range.
+         *
          * @return NP value for range
          */
         public BigInteger getRangeValue() {
@@ -473,6 +680,7 @@ public final class NPathComplexityCheck extends AbstractCheck {
 
         /**
          * Returns NP value for expression.
+         *
          * @return NP value for expression
          */
         public BigInteger getExpressionValue() {

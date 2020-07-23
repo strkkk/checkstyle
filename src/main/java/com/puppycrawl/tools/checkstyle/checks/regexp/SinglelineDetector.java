@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -47,6 +47,7 @@ class SinglelineDetector {
 
     /**
      * Creates an instance.
+     *
      * @param options the options to use.
      */
     /* package */ SinglelineDetector(DetectorOptions options) {
@@ -55,6 +56,7 @@ class SinglelineDetector {
 
     /**
      * Processes a set of lines looking for matches.
+     *
      * @param fileText {@link FileText} object contains the lines to process.
      */
     public void processLines(FileText fileText) {
@@ -90,6 +92,7 @@ class SinglelineDetector {
 
     /**
      * Check a line for matches.
+     *
      * @param lineNo the line number of the line to check
      * @param line the line to check
      * @param matcher the matcher to use

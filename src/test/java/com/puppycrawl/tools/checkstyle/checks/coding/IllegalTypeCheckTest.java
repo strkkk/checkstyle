@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,15 +20,16 @@
 package com.puppycrawl.tools.checkstyle.checks.coding;
 
 import static com.puppycrawl.tools.checkstyle.checks.coding.IllegalTypeCheck.MSG_KEY;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
-import com.puppycrawl.tools.checkstyle.api.DetailAST;
+import com.puppycrawl.tools.checkstyle.DetailAstImpl;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
 
@@ -66,8 +67,10 @@ public class IllegalTypeCheckTest extends AbstractModuleTestSupport {
     public void testDefaults() throws Exception {
         final DefaultConfiguration checkConfig = createModuleConfig(IllegalTypeCheck.class);
         final String[] expected = {
-            "16:13: " + getCheckMessage(MSG_KEY, "java.util.TreeSet"),
-            "17:13: " + getCheckMessage(MSG_KEY, "TreeSet"),
+            "17:13: " + getCheckMessage(MSG_KEY, "java.util.TreeSet"),
+            "18:13: " + getCheckMessage(MSG_KEY, "TreeSet"),
+            "43:14: " + getCheckMessage(MSG_KEY, "HashMap"),
+            "45:5: " + getCheckMessage(MSG_KEY, "HashMap"),
         };
 
         verify(checkConfig, getPath("InputIllegalType.java"), expected);
@@ -83,8 +86,10 @@ public class IllegalTypeCheckTest extends AbstractModuleTestSupport {
             "9:13: " + getCheckMessage(MSG_KEY,
                 "com.puppycrawl.tools.checkstyle.checks.coding.illegaltype."
                     + "InputIllegalType.AbstractClass"),
-            "16:13: " + getCheckMessage(MSG_KEY, "java.util.TreeSet"),
-            "25:36: " + getCheckMessage(MSG_KEY, "java.util.TreeSet"),
+            "17:13: " + getCheckMessage(MSG_KEY, "java.util.TreeSet"),
+            "26:36: " + getCheckMessage(MSG_KEY, "java.util.TreeSet"),
+            "43:14: " + getCheckMessage(MSG_KEY, "HashMap"),
+            "45:5: " + getCheckMessage(MSG_KEY, "HashMap"),
         };
 
         verify(checkConfig, getPath("InputIllegalType.java"), expected);
@@ -96,8 +101,10 @@ public class IllegalTypeCheckTest extends AbstractModuleTestSupport {
         checkConfig.addAttribute("illegalAbstractClassNameFormat", "^$");
 
         final String[] expected = {
-            "16:13: " + getCheckMessage(MSG_KEY, "java.util.TreeSet"),
-            "17:13: " + getCheckMessage(MSG_KEY, "TreeSet"),
+            "17:13: " + getCheckMessage(MSG_KEY, "java.util.TreeSet"),
+            "18:13: " + getCheckMessage(MSG_KEY, "TreeSet"),
+            "43:14: " + getCheckMessage(MSG_KEY, "HashMap"),
+            "45:5: " + getCheckMessage(MSG_KEY, "HashMap"),
         };
 
         verify(checkConfig, getPath("InputIllegalType.java"), expected);
@@ -113,8 +120,10 @@ public class IllegalTypeCheckTest extends AbstractModuleTestSupport {
             "9:13: " + getCheckMessage(MSG_KEY,
                 "com.puppycrawl.tools.checkstyle.checks.coding.illegaltype."
                     + "InputIllegalType.AbstractClass"),
-            "16:13: " + getCheckMessage(MSG_KEY, "java.util.TreeSet"),
-            "17:13: " + getCheckMessage(MSG_KEY, "TreeSet"),
+            "17:13: " + getCheckMessage(MSG_KEY, "java.util.TreeSet"),
+            "18:13: " + getCheckMessage(MSG_KEY, "TreeSet"),
+            "43:14: " + getCheckMessage(MSG_KEY, "HashMap"),
+            "45:5: " + getCheckMessage(MSG_KEY, "HashMap"),
         };
 
         verify(checkConfig, getPath("InputIllegalType.java"), expected);
@@ -123,8 +132,8 @@ public class IllegalTypeCheckTest extends AbstractModuleTestSupport {
     @Test
     public void testSameFileNameFalsePositive() throws Exception {
         final DefaultConfiguration checkConfig = createModuleConfig(IllegalTypeCheck.class);
-        checkConfig.addAttribute("illegalClassNames", "java.util.GregorianCalendar, SubCalendar, "
-                + "java.util.List");
+        checkConfig.addAttribute("illegalClassNames",
+                "java.util.GregorianCalendar, SubCalendar, java.util.List");
 
         final String[] expected = {
             "12:5: " + getCheckMessage(MSG_KEY, "SubCalendar"),
@@ -262,17 +271,13 @@ public class IllegalTypeCheckTest extends AbstractModuleTestSupport {
         checkConfig.addAttribute("memberModifiers", "LITERAL_PRIVATE, LITERAL_PROTECTED,"
                 + " LITERAL_STATIC");
         final String[] expected = {
-            "6:13: " + getCheckMessage(MSG_KEY, "AbstractClass"),
-            "9:13: " + getCheckMessage(MSG_KEY,
-                "com.puppycrawl.tools.checkstyle.checks.coding.illegaltype."
-                    + "InputIllegalTypeMemberModifiers.AbstractClass"),
-            "16:13: " + getCheckMessage(MSG_KEY, "java.util.TreeSet"),
-            "17:13: " + getCheckMessage(MSG_KEY, "TreeSet"),
-            "23:15: " + getCheckMessage(MSG_KEY,
-                "com.puppycrawl.tools.checkstyle.checks.coding.illegaltype."
-                    + "InputIllegalTypeMemberModifiers.AbstractClass"),
-            "25:25: " + getCheckMessage(MSG_KEY, "java.util.TreeSet"),
-            "33:15: " + getCheckMessage(MSG_KEY, "AbstractClass"),
+            "5:13: " + getCheckMessage(MSG_KEY, "AbstractClass"),
+            "8:13: " + getCheckMessage(MSG_KEY, "java.util.AbstractList"),
+            "15:13: " + getCheckMessage(MSG_KEY, "java.util.TreeSet"),
+            "16:13: " + getCheckMessage(MSG_KEY, "TreeSet"),
+            "22:15: " + getCheckMessage(MSG_KEY, "java.util.AbstractList"),
+            "24:25: " + getCheckMessage(MSG_KEY, "java.util.TreeSet"),
+            "32:15: " + getCheckMessage(MSG_KEY, "AbstractClass"),
         };
 
         verify(checkConfig, getPath("InputIllegalTypeMemberModifiers.java"), expected);
@@ -294,8 +299,8 @@ public class IllegalTypeCheckTest extends AbstractModuleTestSupport {
         final String violationFile = getPath("InputIllegalType.java");
         checkConfig.addAttribute("illegalClassNames", "java.util.TreeSet");
         final String[] expected = {
-            "16:13: " + getCheckMessage(MSG_KEY, "java.util.TreeSet"),
-            "17:13: " + getCheckMessage(MSG_KEY, "TreeSet"),
+            "17:13: " + getCheckMessage(MSG_KEY, "java.util.TreeSet"),
+            "18:13: " + getCheckMessage(MSG_KEY, "TreeSet"),
         };
 
         verify(createChecker(checkConfig), new File[] {
@@ -305,23 +310,38 @@ public class IllegalTypeCheckTest extends AbstractModuleTestSupport {
     }
 
     @Test
+    public void testIllegalTypeEnhancedInstanceof() throws Exception {
+        final DefaultConfiguration checkConfig = createModuleConfig(IllegalTypeCheck.class);
+        final String[] expected = {
+            "23:9: " + getCheckMessage(MSG_KEY, "LinkedHashMap"),
+            "26:28: " + getCheckMessage(MSG_KEY, "LinkedHashMap"),
+            "30:35: " + getCheckMessage(MSG_KEY, "HashMap"),
+            "36:32: " + getCheckMessage(MSG_KEY, "TreeSet"),
+        };
+
+        verify(checkConfig,
+                getNonCompilablePath("InputIllegalTypeEnhancedInstanceof.java"),
+                expected);
+    }
+
+    @Test
     public void testTokensNotNull() {
         final IllegalTypeCheck check = new IllegalTypeCheck();
-        Assert.assertNotNull("Acceptable tokens should not be null", check.getAcceptableTokens());
-        Assert.assertNotNull("Default tokens should not be null", check.getDefaultTokens());
-        Assert.assertNotNull("Required tokens should not be null", check.getRequiredTokens());
+        assertNotNull(check.getAcceptableTokens(), "Acceptable tokens should not be null");
+        assertNotNull(check.getDefaultTokens(), "Default tokens should not be null");
+        assertNotNull(check.getRequiredTokens(), "Required tokens should not be null");
     }
 
     @Test
     public void testImproperToken() {
         final IllegalTypeCheck check = new IllegalTypeCheck();
 
-        final DetailAST classDefAst = new DetailAST();
+        final DetailAstImpl classDefAst = new DetailAstImpl();
         classDefAst.setType(TokenTypes.DOT);
 
         try {
             check.visitToken(classDefAst);
-            Assert.fail("IllegalStateException is expected");
+            fail("IllegalStateException is expected");
         }
         catch (IllegalStateException ex) {
             // it is OK

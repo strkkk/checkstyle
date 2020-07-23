@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -53,23 +53,34 @@ import com.puppycrawl.tools.checkstyle.utils.TokenUtil;
  * <ul>
  * <li>
  * Property {@code ignoreNumbers} - Specify non-magic numbers.
+ * Type is {@code double[]}.
  * Default value is {@code -1, 0, 1, 2}.
  * </li>
  * <li>
  * Property {@code ignoreHashCodeMethod} - Ignore magic numbers in hashCode methods.
+ * Type is {@code boolean}.
  * Default value is {@code false}.
  * </li>
  * <li>
  * Property {@code ignoreAnnotation} - Ignore magic numbers in annotation declarations.
+ * Type is {@code boolean}.
  * Default value is {@code false}.
  * </li>
  * <li>
  * Property {@code ignoreFieldDeclaration} - Ignore magic numbers in field declarations.
+ * Type is {@code boolean}.
  * Default value is {@code false}.
+ * </li>
+ * <li>
+ * Property {@code ignoreAnnotationElementDefaults} -
+ * Ignore magic numbers in annotation elements defaults.
+ * Type is {@code boolean}.
+ * Default value is {@code true}.
  * </li>
  * <li>
  * Property {@code constantWaiverParentToken} - Specify tokens that are allowed in the AST path
  * from the number literal to the enclosing constant definition.
+ * Type is {@code int[]}.
  * Default value is
  * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#TYPECAST">
  * TYPECAST</a>,
@@ -100,6 +111,7 @@ import com.puppycrawl.tools.checkstyle.utils.TokenUtil;
  * </li>
  * <li>
  * Property {@code tokens} - tokens to check
+ * Type is {@code int[]}.
  * Default value is:
  * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#NUM_DOUBLE">
  * NUM_DOUBLE</a>,
@@ -129,6 +141,13 @@ import com.puppycrawl.tools.checkstyle.utils.TokenUtil;
  *     int i = i + 1; // no violation
  *     int j = j + 8; // violation
  *   }
+ *
+ *   public int hashCode() {
+ *     return 10;    // violation
+ *   }
+ * }
+ * &#64;interface anno {
+ *   int value() default 10; // no violation
  * }
  * </pre>
  * <p>
@@ -155,6 +174,23 @@ import com.puppycrawl.tools.checkstyle.utils.TokenUtil;
  *     int i = i + 1; // no violation
  *     int j = j + 8; // violation
  *   }
+ * }
+ * </pre>
+ * <p>
+ * To configure the check to check annotation element defaults:
+ * </p>
+ * <pre>
+ * &lt;module name=&quot;MagicNumber&quot;&gt;
+ *   &lt;property name=&quot;ignoreAnnotationElementDefaults&quot; value=&quot;false&quot;/&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>
+ * results in following violations:
+ * </p>
+ * <pre>
+ * &#64;interface anno {
+ *   int value() default 10; // violation
+ *   int[] value2() default {10}; // violation
  * }
  * </pre>
  * <p>
@@ -186,6 +222,36 @@ import com.puppycrawl.tools.checkstyle.utils.TokenUtil;
  *   }
  * }
  * </pre>
+ *
+ * <p>
+ * Config example of ignoreHashCodeMethod option:
+ * </p>
+ * <pre>
+ * &lt;module name=&quot;MagicNumber&quot;&gt;
+ *   &lt;property name=&quot;ignoreHashCodeMethod&quot; value=&quot;true&quot;/&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>
+ * result is no violation:
+ * </p>
+ * <pre>
+ * class TestHashCode {
+ *     public int hashCode() {
+ *         return 10;       // OK
+ *     }
+ * }
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code magic.number}
+ * </li>
+ * </ul>
  *
  * @since 3.1
  */
@@ -230,6 +296,9 @@ public class MagicNumberCheck extends AbstractCheck {
     /** Ignore magic numbers in field declarations. */
     private boolean ignoreFieldDeclaration;
 
+    /** Ignore magic numbers in annotation elements defaults. */
+    private boolean ignoreAnnotationElementDefaults = true;
+
     /**
      * Constructor for MagicNumber Check.
      * Sort the allowedTokensBetweenMagicNumberAndConstDef array for binary search.
@@ -260,7 +329,8 @@ public class MagicNumberCheck extends AbstractCheck {
 
     @Override
     public void visitToken(DetailAST ast) {
-        if ((!ignoreAnnotation || !isChildOf(ast, TokenTypes.ANNOTATION))
+        if (shouldTestAnnotationArgs(ast)
+                && shouldTestAnnotationDefaults(ast)
                 && !isInIgnoreList(ast)
                 && (!ignoreHashCodeMethod || !isInHashCodeMethod(ast))) {
             final DetailAST constantDefAST = findContainingConstantDef(ast);
@@ -280,7 +350,28 @@ public class MagicNumberCheck extends AbstractCheck {
     }
 
     /**
+     * Checks if ast is annotation argument and should be checked.
+     *
+     * @param ast token to check
+     * @return true if element is skipped, false otherwise
+     */
+    private boolean shouldTestAnnotationArgs(DetailAST ast) {
+        return !ignoreAnnotation || !isChildOf(ast, TokenTypes.ANNOTATION);
+    }
+
+    /**
+     * Checks if ast is annotation element default value and should be checked.
+     *
+     * @param ast token to check
+     * @return true if element is skipped, false otherwise
+     */
+    private boolean shouldTestAnnotationDefaults(DetailAST ast) {
+        return !ignoreAnnotationElementDefaults || !isChildOf(ast, TokenTypes.LITERAL_DEFAULT);
+    }
+
+    /**
      * Is magic number some where at ast tree.
+     *
      * @param ast ast token
      * @param constantDefAST constant ast
      * @return true if magic number is present
@@ -301,6 +392,7 @@ public class MagicNumberCheck extends AbstractCheck {
 
     /**
      * Finds the constant definition that contains aAST.
+     *
      * @param ast the AST
      * @return the constant def or null if ast is not contained in a constant definition.
      */
@@ -334,6 +426,7 @@ public class MagicNumberCheck extends AbstractCheck {
 
     /**
      * Reports aAST as a magic number, includes unary operators as needed.
+     *
      * @param ast the AST node that contains the number to report
      */
     private void reportMagicNumber(DetailAST ast) {
@@ -384,7 +477,7 @@ public class MagicNumberCheck extends AbstractCheck {
                     final DetailAST paramAST = methodDefAST.findFirstToken(TokenTypes.PARAMETERS);
                     // we are in a 'public int hashCode()' method! The compiler will ensure
                     // the method returns an 'int' and is public.
-                    inHashCodeMethod = paramAST.getChildCount() == 0;
+                    inHashCodeMethod = !paramAST.hasChildren();
                 }
             }
         }
@@ -394,6 +487,7 @@ public class MagicNumberCheck extends AbstractCheck {
     /**
      * Decides whether the number of an AST is in the ignore list of this
      * check.
+     *
      * @param ast the AST to check
      * @return true if the number of ast is in the ignore list of this check.
      */
@@ -429,6 +523,7 @@ public class MagicNumberCheck extends AbstractCheck {
     /**
      * Setter to specify tokens that are allowed in the AST path from the
      * number literal to the enclosing constant definition.
+     *
      * @param tokens The string representation of the tokens interested in
      */
     public void setConstantWaiverParentToken(String... tokens) {
@@ -441,6 +536,7 @@ public class MagicNumberCheck extends AbstractCheck {
 
     /**
      * Setter to specify non-magic numbers.
+     *
      * @param list list of numbers to ignore.
      */
     public void setIgnoreNumbers(double... list) {
@@ -456,6 +552,7 @@ public class MagicNumberCheck extends AbstractCheck {
 
     /**
      * Setter to ignore magic numbers in hashCode methods.
+     *
      * @param ignoreHashCodeMethod decide whether to ignore
      *     hash code methods
      */
@@ -465,6 +562,7 @@ public class MagicNumberCheck extends AbstractCheck {
 
     /**
      * Setter to ignore magic numbers in annotation declarations.
+     *
      * @param ignoreAnnotation decide whether to ignore annotations
      */
     public void setIgnoreAnnotation(boolean ignoreAnnotation) {
@@ -473,11 +571,21 @@ public class MagicNumberCheck extends AbstractCheck {
 
     /**
      * Setter to ignore magic numbers in field declarations.
+     *
      * @param ignoreFieldDeclaration decide whether to ignore magic numbers
      *     in field declaration
      */
     public void setIgnoreFieldDeclaration(boolean ignoreFieldDeclaration) {
         this.ignoreFieldDeclaration = ignoreFieldDeclaration;
+    }
+
+    /**
+     * Setter to ignore magic numbers in annotation elements defaults.
+     *
+     * @param ignoreAnnotationElementDefaults decide whether to ignore annotation elements defaults
+     */
+    public void setIgnoreAnnotationElementDefaults(boolean ignoreAnnotationElementDefaults) {
+        this.ignoreAnnotationElementDefaults = ignoreAnnotationElementDefaults;
     }
 
     /**

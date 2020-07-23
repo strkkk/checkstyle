@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,12 +21,18 @@ package com.puppycrawl.tools.checkstyle.checks.indentation;
 
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+import com.puppycrawl.tools.checkstyle.utils.TokenUtil;
 
 /**
  * Handler for method calls.
  *
  */
 public class MethodCallHandler extends AbstractExpressionHandler {
+
+    /**
+     * The instance of {@code IndentationCheck} used by this class.
+     */
+    private final IndentationCheck indentCheck;
 
     /**
      * Construct an instance of this handler with the given indentation check,
@@ -39,6 +45,7 @@ public class MethodCallHandler extends AbstractExpressionHandler {
     public MethodCallHandler(IndentationCheck indentCheck,
         DetailAST ast, AbstractExpressionHandler parent) {
         super(indentCheck, "method call", ast, parent);
+        this.indentCheck = indentCheck;
     }
 
     @Override
@@ -49,7 +56,7 @@ public class MethodCallHandler extends AbstractExpressionHandler {
         if (getParent() instanceof MethodCallHandler) {
             final MethodCallHandler container =
                     (MethodCallHandler) getParent();
-            if (areOnSameLine(container.getMainAst(), getMainAst())
+            if (TokenUtil.areOnSameLine(container.getMainAst(), getMainAst())
                     || isChainedMethodCallWrapped()
                     || areMethodsChained(container.getMainAst(), getMainAst())) {
                 indentLevel = container.getIndent();
@@ -57,7 +64,8 @@ public class MethodCallHandler extends AbstractExpressionHandler {
             // we should increase indentation only if this is the first
             // chained method call which was moved to the next line
             else {
-                indentLevel = new IndentLevel(container.getIndent(), getBasicOffset());
+                indentLevel = new IndentLevel(container.getIndent(),
+                    getIndentCheck().getLineWrappingIndentation());
             }
         }
         else if (getMainAst().getFirstChild().getType() == TokenTypes.LITERAL_NEW) {
@@ -66,9 +74,9 @@ public class MethodCallHandler extends AbstractExpressionHandler {
         else {
             // if our expression isn't first on the line, just use the start
             // of the line
-            final LineSet lines = new LineSet();
-            findSubtreeLines(lines, getMainAst().getFirstChild(), true);
-            final int firstCol = lines.firstLineCol();
+            final DetailAstSet astSet = new DetailAstSet(indentCheck);
+            findSubtreeAst(astSet, getMainAst().getFirstChild(), true);
+            final int firstCol = expandedTabsColumnNo(astSet.firstLine());
             final int lineStart = getLineStart(getFirstAst(getMainAst()));
             if (lineStart == firstCol) {
                 indentLevel = super.getIndentImpl();
@@ -98,11 +106,12 @@ public class MethodCallHandler extends AbstractExpressionHandler {
      */
     private static boolean areMethodsChained(DetailAST ast1, DetailAST ast2) {
         final DetailAST rparen = ast1.findFirstToken(TokenTypes.RPAREN);
-        return rparen.getLineNo() == ast2.getLineNo();
+        return TokenUtil.areOnSameLine(rparen, ast2);
     }
 
     /**
      * If this is the first chained method call which was moved to the next line.
+     *
      * @return true if chained class are wrapped
      */
     private boolean isChainedMethodCallWrapped() {
@@ -168,7 +177,7 @@ public class MethodCallHandler extends AbstractExpressionHandler {
         final DetailAST ident = getMethodIdentAst();
         final DetailAST rparen = getMainAst().findFirstToken(TokenTypes.RPAREN);
         IndentLevel suggestedLevel = new IndentLevel(getLineStart(ident));
-        if (!areOnSameLine(child.getMainAst().getFirstChild(), ident)) {
+        if (!TokenUtil.areOnSameLine(child.getMainAst().getFirstChild(), ident)) {
             suggestedLevel = new IndentLevel(suggestedLevel,
                     getBasicOffset(),
                     getIndentCheck().getLineWrappingIndentation());
@@ -205,7 +214,7 @@ public class MethodCallHandler extends AbstractExpressionHandler {
             final DetailAST rparen = getMainAst().findFirstToken(TokenTypes.RPAREN);
             checkLeftParen(lparen);
 
-            if (rparen.getLineNo() != lparen.getLineNo()) {
+            if (!TokenUtil.areOnSameLine(rparen, lparen)) {
                 checkExpressionSubtree(
                     getMainAst().findFirstToken(TokenTypes.ELIST),
                     new IndentLevel(getIndent(), getBasicOffset()),
@@ -224,6 +233,7 @@ public class MethodCallHandler extends AbstractExpressionHandler {
 
     /**
      * Returns method or constructor call right paren.
+     *
      * @param firstNode
      *          call ast(TokenTypes.METHOD_CALL|TokenTypes.CTOR_CALL|TokenTypes.SUPER_CTOR_CALL)
      * @return ast node containing right paren for specified method or constructor call. If

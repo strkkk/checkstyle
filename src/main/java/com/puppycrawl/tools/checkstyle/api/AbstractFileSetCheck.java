@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -37,6 +37,7 @@ public abstract class AbstractFileSetCheck
 
     /**
      * The check context.
+     *
      * @noinspection ThreadLocalNotStaticFinal
      */
     private final ThreadLocal<FileContext> context = ThreadLocal.withInitial(FileContext::new);
@@ -44,7 +45,7 @@ public abstract class AbstractFileSetCheck
     /** The dispatcher errors are fired to. */
     private MessageDispatcher messageDispatcher;
 
-    /** The file extensions that are accepted by this filter. */
+    /** Specify the file type extension of files to process. */
     private String[] fileExtensions = CommonUtil.EMPTY_STRING_ARRAY;
 
     /** The tab width for column reporting. */
@@ -52,6 +53,7 @@ public abstract class AbstractFileSetCheck
 
     /**
      * Called to process a file that matches the specified file extensions.
+     *
      * @param file the file to be processed
      * @param fileText the contents of the file.
      * @throws CheckstyleException if error condition within Checkstyle occurs.
@@ -66,7 +68,7 @@ public abstract class AbstractFileSetCheck
 
     @Override
     public void destroy() {
-        // No code by default, should be overridden only by demand at subclasses
+        context.remove();
     }
 
     @Override
@@ -111,6 +113,7 @@ public abstract class AbstractFileSetCheck
 
     /**
      * Returns the sorted set of {@link LocalizedMessage}.
+     *
      * @return the sorted set of {@link LocalizedMessage}.
      */
     public SortedSet<LocalizedMessage> getMessages() {
@@ -119,6 +122,7 @@ public abstract class AbstractFileSetCheck
 
     /**
      * Set the file contents associated with the tree.
+     *
      * @param contents the manager
      */
     public final void setFileContents(FileContents contents) {
@@ -127,6 +131,7 @@ public abstract class AbstractFileSetCheck
 
     /**
      * Returns the file contents associated with the file.
+     *
      * @return the file contents
      */
     protected final FileContents getFileContents() {
@@ -135,6 +140,7 @@ public abstract class AbstractFileSetCheck
 
     /**
      * Makes copy of file extensions and returns them.
+     *
      * @return file extensions that identify the files that pass the
      *     filter of this FileSetCheck.
      */
@@ -143,8 +149,8 @@ public abstract class AbstractFileSetCheck
     }
 
     /**
-     * Sets the file extensions that identify the files that pass the
-     * filter of this FileSetCheck.
+     * Setter to specify the file type extension of files to process.
+     *
      * @param extensions the set of file extensions. A missing
      *         initial '.' character of an extension is automatically added.
      * @throws IllegalArgumentException is argument is null
@@ -167,15 +173,17 @@ public abstract class AbstractFileSetCheck
     }
 
     /**
-     * Get tab width to report errors with.
-     * @return the tab width to report errors with
+     * Get tab width to report audit events with.
+     *
+     * @return the tab width to report audit events with
      */
     protected final int getTabWidth() {
         return tabWidth;
     }
 
     /**
-     * Set the tab width to report errors with.
+     * Set the tab width to report audit events with.
+     *
      * @param tabWidth an {@code int} value
      */
     public final void setTabWidth(int tabWidth) {
@@ -184,6 +192,7 @@ public abstract class AbstractFileSetCheck
 
     /**
      * Adds the sorted set of {@link LocalizedMessage} to the message collector.
+     *
      * @param messages the sorted set of {@link LocalizedMessage}.
      */
     protected void addMessages(SortedSet<LocalizedMessage> messages) {
@@ -224,6 +233,7 @@ public abstract class AbstractFileSetCheck
      * Notify all listeners about the errors in a file.
      * Calls {@code MessageDispatcher.fireErrors()} with
      * all logged errors and then clears errors' list.
+     *
      * @param fileName the audited file
      */
     protected final void fireErrors(String fileName) {

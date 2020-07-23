@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,8 +21,11 @@ package com.puppycrawl.tools.checkstyle.grammar;
 
 import static com.puppycrawl.tools.checkstyle.checks.naming.AbstractNameCheck.MSG_INVALID_PATTERN;
 
-import org.junit.Assume;
-import org.junit.Test;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
@@ -36,11 +39,10 @@ public class GeneratedJava14LexerTest
     extends AbstractModuleTestSupport {
 
     /**
-     * <p>Is {@code true} if this is Windows.</p>
-     *
-     * <p>Adapted from org.apache.commons.lang3.SystemUtils.</p>
+     * Is {@code true} if current default encoding is UTF-8.
      */
-    private static final boolean IS_WINDOWS = System.getProperty("os.name").startsWith("Windows");
+    private static final boolean IS_UTF8 = Charset.forName(System.getProperty("file.encoding"))
+            .equals(StandardCharsets.UTF_8);
 
     @Override
     protected String getPackageLocation() {
@@ -49,8 +51,8 @@ public class GeneratedJava14LexerTest
 
     @Test
     public void testUnexpectedChar() throws Exception {
-        // Encoding problems can occur in Windows
-        Assume.assumeFalse("Problems with encoding may occur", IS_WINDOWS);
+        // Encoding problems will occur if default encoding is not UTF-8
+        Assumptions.assumeTrue(IS_UTF8, "Problems with encoding may occur");
 
         final DefaultConfiguration checkConfig =
             createModuleConfig(MemberNameCheck.class);

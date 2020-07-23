@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -28,32 +28,74 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
 
 /**
  * <p>
- * Checks for long methods.
+ * Checks for long methods and constructors.
  * </p>
  * <p>
  * Rationale: If a method becomes very long it is hard to understand.
  * Therefore long methods should usually be refactored into several
  * individual methods that focus on a specific task.
  * </p>
- *<p>
- * The default maximum method length is 150 lines. To change the maximum
- * number of lines, set property max.
- * </p>
+ * <ul>
+ * <li>
+ * Property {@code max} - Specify the maximum number of lines allowed.
+ * Type is {@code int}.
+ * Default value is {@code 150}.
+ * </li>
+ * <li>
+ * Property {@code countEmpty} - Control whether to count empty lines and single
+ * line comments of the form {@code //}.
+ * Type is {@code boolean}.
+ * Default value is {@code true}.
+ * </li>
+ * <li>
+ * Property {@code tokens} - tokens to check
+ * Type is {@code int[]}.
+ * Default value is:
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#METHOD_DEF">
+ * METHOD_DEF</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#CTOR_DEF">
+ * CTOR_DEF</a>.
+ * </li>
+ * </ul>
  * <p>
- * An example of how to configure the check is:
+ * To configure the check:
  * </p>
  * <pre>
  * &lt;module name="MethodLength"/&gt;
  * </pre>
  * <p>
- * An example of how to configure the check so that it accepts methods with at
- * most 60 lines is:
+ * To configure the check so that it accepts methods with at most 60 lines:
  * </p>
  * <pre>
  * &lt;module name="MethodLength"&gt;
- *    &lt;property name="max" value="60"/&gt;
+ *   &lt;property name="tokens" value="METHOD_DEF"/&gt;
+ *   &lt;property name="max" value="60"/&gt;
  * &lt;/module&gt;
  * </pre>
+ * <p>
+ * To configure the check so that it accepts methods with at most 60 lines,
+ * not counting empty lines and single line comments:
+ * </p>
+ * <pre>
+ * &lt;module name="MethodLength"&gt;
+ *   &lt;property name="tokens" value="METHOD_DEF"/&gt;
+ *   &lt;property name="max" value="60"/&gt;
+ *   &lt;property name="countEmpty" value="false"/&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code maxLen.method}
+ * </li>
+ * </ul>
+ *
+ * @since 3.0
  */
 @StatelessCheck
 public class MethodLengthCheck extends AbstractCheck {
@@ -67,10 +109,10 @@ public class MethodLengthCheck extends AbstractCheck {
     /** Default maximum number of lines. */
     private static final int DEFAULT_MAX_LINES = 150;
 
-    /** Whether to ignore empty lines and single line comments. */
+    /** Control whether to count empty lines and single line comments of the form {@code //}. */
     private boolean countEmpty = true;
 
-    /** The maximum number of lines. */
+    /** Specify the maximum number of lines allowed. */
     private int max = DEFAULT_MAX_LINES;
 
     @Override
@@ -103,6 +145,7 @@ public class MethodLengthCheck extends AbstractCheck {
 
     /**
      * Returns length of code only without comments and blank lines.
+     *
      * @param openingBrace block opening brace
      * @param closingBrace block closing brace
      * @return number of lines with code for current block
@@ -126,7 +169,8 @@ public class MethodLengthCheck extends AbstractCheck {
     }
 
     /**
-     * Sets maximum length of a method.
+     * Setter to specify the maximum number of lines allowed.
+     *
      * @param length the maximum length of a method.
      */
     public void setMax(int length) {
@@ -134,7 +178,9 @@ public class MethodLengthCheck extends AbstractCheck {
     }
 
     /**
-     * Sets countEmpty.
+     * Setter to control whether to count empty lines and single line comments
+     * of the form {@code //}.
+     *
      * @param countEmpty whether to count empty and single line comments
      *     of the form //.
      */

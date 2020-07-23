@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,7 @@ package com.puppycrawl.tools.checkstyle.checks.indentation;
 
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+import com.puppycrawl.tools.checkstyle.utils.TokenUtil;
 
 /**
  * Handler for if statements.
@@ -75,7 +76,7 @@ public class IfHandler extends BlockParentHandler {
         // check if there is an 'else' and an 'if' on the same line
         final DetailAST parent = getMainAst().getParent();
         return parent.getType() == TokenTypes.LITERAL_ELSE
-            && parent.getLineNo() == getMainAst().getLineNo();
+            && TokenUtil.areOnSameLine(parent, getMainAst());
     }
 
     @Override
@@ -105,6 +106,7 @@ public class IfHandler extends BlockParentHandler {
 
     /**
      * Returns right parenthesis of if statement.
+     *
      * @param literalIfAst
      *          literal-if ast node(TokenTypes.LITERAL_IF)
      * @return right parenthesis of if statement.

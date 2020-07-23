@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.puppycrawl.tools.checkstyle.JavadocDetailNodeParser;
 import com.puppycrawl.tools.checkstyle.JavadocDetailNodeParser.ParseErrorMessage;
@@ -39,6 +40,7 @@ import com.puppycrawl.tools.checkstyle.utils.JavadocUtil;
 
 /**
  * Base class for Checks that process Javadoc comments.
+ *
  * @noinspection NoopMethodInAbstractClass
  */
 public abstract class AbstractJavadocCheck extends AbstractCheck {
@@ -74,6 +76,7 @@ public abstract class AbstractJavadocCheck extends AbstractCheck {
 
     /**
      * The file context.
+     *
      * @noinspection ThreadLocalNotStaticFinal
      */
     private final ThreadLocal<FileContext> context = ThreadLocal.withInitial(FileContext::new);
@@ -95,6 +98,7 @@ public abstract class AbstractJavadocCheck extends AbstractCheck {
 
     /**
      * Returns the default javadoc token types a check is interested in.
+     *
      * @return the default javadoc token types
      * @see JavadocTokenTypes
      */
@@ -102,6 +106,7 @@ public abstract class AbstractJavadocCheck extends AbstractCheck {
 
     /**
      * Called to process a Javadoc token.
+     *
      * @param ast
      *        the token to process
      */
@@ -112,6 +117,7 @@ public abstract class AbstractJavadocCheck extends AbstractCheck {
      * Used to protect Checks against malicious users who specify an
      * unacceptable javadoc token set in the configuration file.
      * The default implementation returns the check's default javadoc tokens.
+     *
      * @return the javadoc token set this check is designed for.
      * @see JavadocTokenTypes
      */
@@ -124,6 +130,7 @@ public abstract class AbstractJavadocCheck extends AbstractCheck {
 
     /**
      * The javadoc tokens that this check must be registered for.
+     *
      * @return the javadoc token set this must be registered for.
      * @see JavadocTokenTypes
      */
@@ -147,10 +154,12 @@ public abstract class AbstractJavadocCheck extends AbstractCheck {
     }
 
     /**
-     * Setter for {@link #violateExecutionOnNonTightHtml}.
+     * Setter to control when to print violations if the Javadoc being examined by this check
+     * violates the tight html rules defined at
+     * <a href="https://checkstyle.org/writingjavadocchecks.html#Tight-HTML_rules">
+     *     Tight-HTML Rules</a>.
+     *
      * @param shouldReportViolation value to which the field shall be set to
-     * @see <a href="https://checkstyle.org/writingjavadocchecks.html#Tight-HTML_rules">
-     *     Tight HTML rules</a>
      */
     public final void setViolateExecutionOnNonTightHtml(boolean shouldReportViolation) {
         violateExecutionOnNonTightHtml = shouldReportViolation;
@@ -158,6 +167,7 @@ public abstract class AbstractJavadocCheck extends AbstractCheck {
 
     /**
      * Adds a set of tokens the check is interested in.
+     *
      * @param strRep the string representation of the tokens interested in
      */
     public final void setJavadocTokens(String... strRep) {
@@ -171,9 +181,8 @@ public abstract class AbstractJavadocCheck extends AbstractCheck {
     public void init() {
         validateDefaultJavadocTokens();
         if (javadocTokens.isEmpty()) {
-            for (int id : getDefaultJavadocTokens()) {
-                javadocTokens.add(id);
-            }
+            javadocTokens.addAll(
+                    Arrays.stream(getDefaultJavadocTokens()).boxed().collect(Collectors.toList()));
         }
         else {
             final int[] acceptableJavadocTokens = getAcceptableJavadocTokens();
@@ -191,6 +200,7 @@ public abstract class AbstractJavadocCheck extends AbstractCheck {
 
     /**
      * Validates that check's required javadoc tokens are subset of default javadoc tokens.
+     *
      * @throws IllegalStateException when validation of default javadoc tokens fails
      */
     private void validateDefaultJavadocTokens() {
@@ -212,6 +222,7 @@ public abstract class AbstractJavadocCheck extends AbstractCheck {
 
     /**
      * Called before the starting to process a tree.
+     *
      * @param rootAst
      *        the root of the tree
      * @noinspection WeakerAccess
@@ -222,6 +233,7 @@ public abstract class AbstractJavadocCheck extends AbstractCheck {
 
     /**
      * Called after finished processing a tree.
+     *
      * @param rootAst
      *        the root of the tree
      * @noinspection WeakerAccess
@@ -232,6 +244,7 @@ public abstract class AbstractJavadocCheck extends AbstractCheck {
 
     /**
      * Called after all the child nodes have been process.
+     *
      * @param ast
      *        the token leaving
      */
@@ -241,6 +254,7 @@ public abstract class AbstractJavadocCheck extends AbstractCheck {
 
     /**
      * Defined final to not allow JavadocChecks to change default tokens.
+     *
      * @return default tokens
      */
     @Override
@@ -260,6 +274,7 @@ public abstract class AbstractJavadocCheck extends AbstractCheck {
 
     /**
      * Defined final because all JavadocChecks require comment nodes.
+     *
      * @return true
      */
     @Override
@@ -274,7 +289,7 @@ public abstract class AbstractJavadocCheck extends AbstractCheck {
 
     @Override
     public final void finishTree(DetailAST rootAST) {
-        // No code by default
+        // No code, prevent override in subclasses
     }
 
     @Override
@@ -319,6 +334,7 @@ public abstract class AbstractJavadocCheck extends AbstractCheck {
 
     /**
      * Getter for block comment in Java language syntax tree.
+     *
      * @return A block comment in the syntax tree.
      */
     protected DetailAST getBlockCommentAst() {
@@ -327,6 +343,7 @@ public abstract class AbstractJavadocCheck extends AbstractCheck {
 
     /**
      * Processes JavadocAST tree notifying Check.
+     *
      * @param root
      *        root of JavadocAST tree.
      */
@@ -338,6 +355,7 @@ public abstract class AbstractJavadocCheck extends AbstractCheck {
 
     /**
      * Processes a node calling Check at interested nodes.
+     *
      * @param root
      *        the root of tree for process
      */
@@ -369,11 +387,19 @@ public abstract class AbstractJavadocCheck extends AbstractCheck {
 
     /**
      * Checks whether the current node should be processed by the check.
+     *
      * @param curNode current node.
      * @return true if the current node should be processed by the check.
      */
     private boolean shouldBeProcessed(DetailNode curNode) {
         return javadocTokens.contains(curNode.getType());
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        context.remove();
+        TREE_CACHE.remove();
     }
 
     /**

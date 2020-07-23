@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,9 @@
 package com.puppycrawl.tools.checkstyle.checks.imports;
 
 import static com.puppycrawl.tools.checkstyle.checks.imports.AvoidStarImportCheck.MSG_KEY;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
@@ -42,12 +42,12 @@ public class AvoidStarImportCheckTest
         final DefaultConfiguration checkConfig =
             createModuleConfig(AvoidStarImportCheck.class);
         final String[] expected = {
-            "7: " + getCheckMessage(MSG_KEY, "com.puppycrawl.tools.checkstyle.checks.imports.*"),
-            "9: " + getCheckMessage(MSG_KEY, "java.io.*"),
-            "10: " + getCheckMessage(MSG_KEY, "java.lang.*"),
-            "25: " + getCheckMessage(MSG_KEY, "javax.swing.WindowConstants.*"),
-            "26: " + getCheckMessage(MSG_KEY, "javax.swing.WindowConstants.*"),
-            "28: " + getCheckMessage(MSG_KEY, "java.io.File.*"),
+            "7:54: " + getCheckMessage(MSG_KEY, "com.puppycrawl.tools.checkstyle.checks.imports.*"),
+            "9:15: " + getCheckMessage(MSG_KEY, "java.io.*"),
+            "10:17: " + getCheckMessage(MSG_KEY, "java.lang.*"),
+            "25:42: " + getCheckMessage(MSG_KEY, "javax.swing.WindowConstants.*"),
+            "26:42: " + getCheckMessage(MSG_KEY, "javax.swing.WindowConstants.*"),
+            "28:27: " + getCheckMessage(MSG_KEY, "java.io.File.*"),
         };
 
         verify(checkConfig, getPath("InputAvoidStarImportDefault.java"),
@@ -60,11 +60,11 @@ public class AvoidStarImportCheckTest
         final DefaultConfiguration checkConfig =
             createModuleConfig(AvoidStarImportCheck.class);
         checkConfig.addAttribute("excludes",
-            "java.io,java.lang,javax.swing.WindowConstants.*, javax.swing.WindowConstants");
+            "java.io,java.lang,javax.swing.WindowConstants.*");
         // allow the java.io/java.lang,javax.swing.WindowConstants star imports
         final String[] expected2 = {
-            "7: " + getCheckMessage(MSG_KEY, "com.puppycrawl.tools.checkstyle.checks.imports.*"),
-            "28: " + getCheckMessage(MSG_KEY, "java.io.File.*"),
+            "7:54: " + getCheckMessage(MSG_KEY, "com.puppycrawl.tools.checkstyle.checks.imports.*"),
+            "28:27: " + getCheckMessage(MSG_KEY, "java.io.File.*"),
         };
         verify(checkConfig, getPath("InputAvoidStarImportDefault.java"),
                 expected2);
@@ -76,9 +76,9 @@ public class AvoidStarImportCheckTest
         checkConfig.addAttribute("allowClassImports", "true");
         // allow all class star imports
         final String[] expected2 = {
-            "25: " + getCheckMessage(MSG_KEY, "javax.swing.WindowConstants.*"),
-            "26: " + getCheckMessage(MSG_KEY, "javax.swing.WindowConstants.*"),
-            "28: " + getCheckMessage(MSG_KEY, "java.io.File.*"), };
+            "25:42: " + getCheckMessage(MSG_KEY, "javax.swing.WindowConstants.*"),
+            "26:42: " + getCheckMessage(MSG_KEY, "javax.swing.WindowConstants.*"),
+            "28:27: " + getCheckMessage(MSG_KEY, "java.io.File.*"), };
         verify(checkConfig, getPath("InputAvoidStarImportDefault.java"), expected2);
     }
 
@@ -88,9 +88,9 @@ public class AvoidStarImportCheckTest
         checkConfig.addAttribute("allowStaticMemberImports", "true");
         // allow all static star imports
         final String[] expected2 = {
-            "7: " + getCheckMessage(MSG_KEY, "com.puppycrawl.tools.checkstyle.checks.imports.*"),
-            "9: " + getCheckMessage(MSG_KEY, "java.io.*"),
-            "10: " + getCheckMessage(MSG_KEY, "java.lang.*"),
+            "7:54: " + getCheckMessage(MSG_KEY, "com.puppycrawl.tools.checkstyle.checks.imports.*"),
+            "9:15: " + getCheckMessage(MSG_KEY, "java.io.*"),
+            "10:17: " + getCheckMessage(MSG_KEY, "java.lang.*"),
         };
         verify(checkConfig, getPath("InputAvoidStarImportDefault.java"), expected2);
     }
@@ -101,7 +101,7 @@ public class AvoidStarImportCheckTest
                 new AvoidStarImportCheck();
         final int[] actual = testCheckObject.getAcceptableTokens();
         final int[] expected = {TokenTypes.IMPORT, TokenTypes.STATIC_IMPORT};
-        assertArrayEquals("Default acceptable tokens are invalid", expected, actual);
+        assertArrayEquals(expected, actual, "Default acceptable tokens are invalid");
     }
 
     @Test
@@ -111,7 +111,7 @@ public class AvoidStarImportCheckTest
         final int[] actual = testCheckObject.getRequiredTokens();
         final int[] expected = {TokenTypes.IMPORT, TokenTypes.STATIC_IMPORT};
 
-        assertArrayEquals("Default required tokens are invalid", expected, actual);
+        assertArrayEquals(expected, actual, "Default required tokens are invalid");
     }
 
 }

@@ -1,7 +1,7 @@
 package com.puppycrawl.tools.checkstyle.checks.javadoc.singlelinejavadoc;
 class InputSingleLineJavadoc {
 
-	/** As of JDK 1.1, replaced by {@link #setBounds(int,int,int,int)} */
+        /** As of JDK 1.1, replaced by {@link #setBounds(int,int,int,int)} */
     void foo() {}
 
     /**
@@ -9,11 +9,11 @@ class InputSingleLineJavadoc {
      */
     void foo1() {}
 
-    /** @throws CheckstyleException if an error occurs */
+    /** @throws CheckstyleException if an problem occurs */
     void foo2() {}
 
     /**
-     * @throws CheckstyleException if an error occurs
+     * @throws CheckstyleException if an problem occurs
      */
     void foo3() {}
 
@@ -24,7 +24,7 @@ class InputSingleLineJavadoc {
      * An especially short bit of Javadoc.
      */
     void foo5() {}
-    
+
     /** @inheritDoc */
     void foo6() {}
 
@@ -33,7 +33,7 @@ class InputSingleLineJavadoc {
 
     /** {@inheritDoc}  {@code bar} */
     void foo8() {}
-    
+
     /** {@inheritDoc}  {@link #bar} */
     void foo9() {}
 

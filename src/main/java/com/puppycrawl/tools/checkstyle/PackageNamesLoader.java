@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -59,7 +59,8 @@ public final class PackageNamesLoader
     private static final String DTD_RESOURCE_NAME =
         "com/puppycrawl/tools/checkstyle/packages_1_0.dtd";
 
-    /** Name of default checkstyle package names resource file.
+    /**
+     * Name of default checkstyle package names resource file.
      * The file must be in the classpath.
      */
     private static final String CHECKSTYLE_PACKAGES =
@@ -76,6 +77,7 @@ public final class PackageNamesLoader
 
     /**
      * Creates a new {@code PackageNamesLoader} instance.
+     *
      * @throws ParserConfigurationException if an error occurs
      * @throws SAXException if an error occurs
      */
@@ -90,7 +92,7 @@ public final class PackageNamesLoader
                              String qName,
                              Attributes attributes) {
         if (PACKAGE_ELEMENT_NAME.equals(qName)) {
-            //push package name, name is mandatory attribute with not empty value by DTD
+            // push package name, name is mandatory attribute with not empty value by DTD
             final String name = attributes.getValue("name");
             packageStack.push(name);
         }
@@ -98,6 +100,7 @@ public final class PackageNamesLoader
 
     /**
      * Creates a full package name from the package names on the stack.
+     *
      * @return the full name of the current package.
      */
     private String getPackageName() {
@@ -127,6 +130,7 @@ public final class PackageNamesLoader
      * Returns the set of package names, compiled from all
      * checkstyle_packages.xml files found on the given class loaders
      * classpath.
+     *
      * @param classLoader the class loader for loading the
      *          checkstyle_packages.xml files.
      * @return the set of package names.
@@ -136,8 +140,8 @@ public final class PackageNamesLoader
             throws CheckstyleException {
         final Set<String> result;
         try {
-            //create the loader outside the loop to prevent PackageObjectFactory
-            //being created anew for each file
+            // create the loader outside the loop to prevent PackageObjectFactory
+            // being created anew for each file
             final PackageNamesLoader namesLoader = new PackageNamesLoader();
 
             final Enumeration<URL> packageFiles = classLoader.getResources(CHECKSTYLE_PACKAGES);
@@ -160,6 +164,7 @@ public final class PackageNamesLoader
 
     /**
      * Reads the file provided and parses it with package names loader.
+     *
      * @param packageFile file from package
      * @param namesLoader package names loader
      * @throws SAXException if an error while parsing occurs
@@ -178,6 +183,7 @@ public final class PackageNamesLoader
 
     /**
      * Creates mapping between local resources and dtd ids.
+     *
      * @return map between local resources and dtd ids.
      */
     private static Map<String, String> createIdToResourceNameMap() {

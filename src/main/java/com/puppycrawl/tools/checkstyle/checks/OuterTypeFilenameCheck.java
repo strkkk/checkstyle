@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -28,7 +28,53 @@ import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 
 /**
+ * <p>
  * Checks that the outer type name and the file name match.
+ * For example, the class {@code Foo} must be in a file named {@code Foo.java}.
+ * </p>
+ * <p>
+ * To configure the check:
+ * </p>
+ * <pre>
+ * &lt;module name=&quot;OuterTypeFilename&quot;/&gt;
+ * </pre>
+ * <p>Example of class Test in a file named Test.java</p>
+ * <pre>
+ * public class Test { // OK
+ *
+ * }
+ * </pre>
+ * <p>Example of class Foo in a file named Test.java</p>
+ * <pre>
+ * class Foo { // violation
+ *
+ * }
+ * </pre>
+ * <p>Example of interface Foo in a file named Test.java</p>
+ * <pre>
+ * interface Foo { // violation
+ *
+ * }
+ * </pre>
+ * <p>Example of enum Foo in a file named Test.java</p>
+ * <pre>
+ * enum Foo { // violation
+ *
+ * }
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code type.file.mismatch}
+ * </li>
+ * </ul>
+ *
+ * @since 5.3
  */
 @FileStatefulCheck
 public class OuterTypeFilenameCheck extends AbstractCheck {
@@ -104,12 +150,13 @@ public class OuterTypeFilenameCheck extends AbstractCheck {
     @Override
     public void finishTree(DetailAST rootAST) {
         if (!hasPublic && wrongType != null) {
-            log(wrongType.getLineNo(), MSG_KEY);
+            log(wrongType, MSG_KEY);
         }
     }
 
     /**
      * Get source file name.
+     *
      * @return source file name.
      */
     private String getFileName() {

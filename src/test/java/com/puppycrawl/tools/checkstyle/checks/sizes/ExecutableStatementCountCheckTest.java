@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,19 +20,19 @@
 package com.puppycrawl.tools.checkstyle.checks.sizes;
 
 import static com.puppycrawl.tools.checkstyle.checks.sizes.ExecutableStatementCountCheck.MSG_KEY;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Collection;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import antlr.CommonHiddenStreamToken;
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
+import com.puppycrawl.tools.checkstyle.DetailAstImpl;
 import com.puppycrawl.tools.checkstyle.api.Context;
-import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 import com.puppycrawl.tools.checkstyle.internal.utils.TestUtil;
 import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
@@ -48,12 +48,13 @@ public class ExecutableStatementCountCheckTest
     @Test
     @SuppressWarnings("unchecked")
     public void testStatefulFieldsClearedOnBeginTree() throws Exception {
-        final DetailAST ast = new DetailAST();
+        final DetailAstImpl ast = new DetailAstImpl();
         ast.setType(TokenTypes.STATIC_INIT);
         final ExecutableStatementCountCheck check = new ExecutableStatementCountCheck();
-        Assert.assertTrue("Stateful field is not cleared after beginTree",
+        assertTrue(
                 TestUtil.isStatefulFieldClearedDuringBeginTree(check, ast, "contextStack",
-                    contextStack -> ((Collection<Context>) contextStack).isEmpty()));
+                    contextStack -> ((Collection<Context>) contextStack).isEmpty()),
+                "Stateful field is not cleared after beginTree");
     }
 
     @Test
@@ -149,7 +150,7 @@ public class ExecutableStatementCountCheckTest
     public void testVisitTokenWithWrongTokenType() {
         final ExecutableStatementCountCheck checkObj =
             new ExecutableStatementCountCheck();
-        final DetailAST ast = new DetailAST();
+        final DetailAstImpl ast = new DetailAstImpl();
         ast.initialize(
             new CommonHiddenStreamToken(TokenTypes.ENUM, "ENUM"));
         try {
@@ -157,7 +158,7 @@ public class ExecutableStatementCountCheckTest
             fail("exception expected");
         }
         catch (IllegalStateException ex) {
-            assertEquals("Invalid exception message", "ENUM[0x-1]", ex.getMessage());
+            assertEquals("ENUM[0x-1]", ex.getMessage(), "Invalid exception message");
         }
     }
 
@@ -165,7 +166,7 @@ public class ExecutableStatementCountCheckTest
     public void testLeaveTokenWithWrongTokenType() {
         final ExecutableStatementCountCheck checkObj =
             new ExecutableStatementCountCheck();
-        final DetailAST ast = new DetailAST();
+        final DetailAstImpl ast = new DetailAstImpl();
         ast.initialize(
             new CommonHiddenStreamToken(TokenTypes.ENUM, "ENUM"));
         try {
@@ -173,7 +174,7 @@ public class ExecutableStatementCountCheckTest
             fail("exception expected");
         }
         catch (IllegalStateException ex) {
-            assertEquals("Invalid exception message", "ENUM[0x-1]", ex.getMessage());
+            assertEquals("ENUM[0x-1]", ex.getMessage(), "Invalid exception message");
         }
     }
 

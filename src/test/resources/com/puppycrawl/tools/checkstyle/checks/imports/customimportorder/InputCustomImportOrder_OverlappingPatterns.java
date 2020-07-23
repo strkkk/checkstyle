@@ -20,7 +20,7 @@ import com.puppycrawl.tools.checkstyle.checks.javadoc.InvalidJavadocTag; // (J_T
 //import com.puppycrawl.tools.checkstyle.checks.javadoc.TagParser; // (__T)
 import com.puppycrawl.tools.checkstyle.checks.javadoc.WriteTagCheck; //warn, should be on STANDARD (_CT)
 
-import com.puppycrawl.tools.*;
+import com.puppycrawl.tools.checkstyle.*;
 //import com.puppycrawl.tools.checkstyle.checks.javadoc.HtmlTag; //warn, should be on SPECIAL (__T)
 import com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTag; //warn, should be on SPECIAL (J_T)
 import com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck; //warn, should be on STANDARD  (JC_)
@@ -29,9 +29,14 @@ import com.puppycrawl.tools.checkstyle.checks.javadoc.NonEmptyAtclauseDescriptio
 public class InputCustomImportOrder_OverlappingPatterns {
 }
 /*
-test: testRulesOrder_ThirdBeforeSame()
-configuration:
-        checkConfig.addAttribute("customImportOrderRules",
-                "THIRD_PARTY_PACKAGE###SAME_PACKAGE(3)###SPECIAL_IMPORTS");
-        checkConfig.addAttribute("sortImportsInGroupAlphabetically", "true");
-*/
+ * test: testRulesWithOverlappingPatterns()
+ *
+ * Config = default
+ * customImportOrderRules = THIRD_PARTY_PACKAGE###SAME_PACKAGE(6)###STANDARD_JAVA_PACKAGE###SPECIAL_IMPORTS
+ * standardPackageRegExp = com.puppycrawl.tools.*Check$
+ * thirdPartyPackageRegExp = com.puppycrawl.tools.checkstyle.checks.javadoc.*Javadoc*
+ * specialImportsRegExp = com.puppycrawl.tools.*Tag*
+ * sortImportsInGroupAlphabetically = false
+ * separateLineBetweenGroups = true
+ *
+ */

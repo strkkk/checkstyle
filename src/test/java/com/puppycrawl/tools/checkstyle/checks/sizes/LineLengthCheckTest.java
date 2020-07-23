@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,35 +20,19 @@
 package com.puppycrawl.tools.checkstyle.checks.sizes;
 
 import static com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck.MSG_KEY;
-import static org.junit.Assert.assertArrayEquals;
 
-import org.junit.Test;
+import java.nio.charset.StandardCharsets;
+
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
-import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
 
 public class LineLengthCheckTest extends AbstractModuleTestSupport {
 
     @Override
     protected String getPackageLocation() {
         return "com/puppycrawl/tools/checkstyle/checks/sizes/linelength";
-    }
-
-    @Test
-    public void testGetRequiredTokens() {
-        final LineLengthCheck checkObj = new LineLengthCheck();
-        assertArrayEquals(
-            "LineLengthCheck#getRequiredTokens should return empty array by default",
-            CommonUtil.EMPTY_INT_ARRAY, checkObj.getRequiredTokens());
-    }
-
-    @Test
-    public void testGetAcceptableTokens() {
-        final LineLengthCheck checkObj = new LineLengthCheck();
-        assertArrayEquals(
-            "LineLengthCheck#getAcceptabletokens should return empty array by default",
-            CommonUtil.EMPTY_INT_ARRAY, checkObj.getAcceptableTokens());
     }
 
     @Test
@@ -101,6 +85,37 @@ public class LineLengthCheckTest extends AbstractModuleTestSupport {
         };
         verify(checkConfig, getNonCompilablePath("InputLineLengthLongPackageStatement.java"),
                 expected);
+    }
+
+    @Test
+    public void shouldNotLogLongLinks() throws Exception {
+        final DefaultConfiguration checkConfig =
+            createModuleConfig(LineLengthCheck.class);
+        checkConfig.addAttribute("max", "80");
+        checkConfig.addAttribute("ignorePattern",
+            "^ *\\* *([^ ]+|\\{@code .*|<a href=\"[^\"]+\">)$");
+        final String[] expected = {
+            "4: " + getCheckMessage(MSG_KEY, 80, 98),
+        };
+        verify(checkConfig, getPath("InputLineLengthLongLink.java"), expected);
+    }
+
+    @Test
+    public void countUnicodePointsOnce() throws Exception {
+        final DefaultConfiguration checkConfig =
+                createModuleConfig(LineLengthCheck.class);
+        checkConfig.addAttribute("max", "100");
+        // we need to set charset to let test pass when default charset is not UTF-8
+        final DefaultConfiguration checkerConfig = createRootConfig(checkConfig);
+        checkerConfig.addAttribute("charset", StandardCharsets.UTF_8.name());
+
+        final String[] expected = {
+            "6: " + getCheckMessage(MSG_KEY, 100, 136),
+            "7: " + getCheckMessage(MSG_KEY, 100, 136),
+        };
+
+        verify(checkerConfig, getPath("InputLineLengthUnicodeChars.java"), expected);
+
     }
 
 }

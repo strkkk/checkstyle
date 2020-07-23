@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -26,8 +26,43 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 import com.puppycrawl.tools.checkstyle.utils.CheckUtil;
 
 /**
- * Restricts nested if-else blocks to a specified depth (default = 1).
+ * <p>
+ * Restricts nested if-else blocks to a specified depth.
+ * </p>
+ * <ul>
+ * <li>
+ * Property {@code max} - Specify maximum allowed nesting depth.
+ * Type is {@code int}.
+ * Default value is {@code 1}.
+ * </li>
+ * </ul>
+ * <p>
+ * To configure the check:
+ * </p>
+ * <pre>
+ * &lt;module name=&quot;NestedIfDepth&quot;/&gt;
+ * </pre>
+ * <p>
+ * To configure the check to allow nesting depth 3:
+ * </p>
+ * <pre>
+ * &lt;module name=&quot;NestedIfDepth&quot;&gt;
+ *   &lt;property name=&quot;max&quot; value=&quot;3&quot;/&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code nested.if.depth}
+ * </li>
+ * </ul>
  *
+ * @since 3.2
  */
 @FileStatefulCheck
 public final class NestedIfDepthCheck extends AbstractCheck {
@@ -38,13 +73,14 @@ public final class NestedIfDepthCheck extends AbstractCheck {
      */
     public static final String MSG_KEY = "nested.if.depth";
 
-    /** Maximum allowed nesting depth. */
+    /** Specify maximum allowed nesting depth. */
     private int max = 1;
     /** Current nesting depth. */
     private int depth;
 
     /**
-     * Setter for maximum allowed nesting depth.
+     * Setter to specify maximum allowed nesting depth.
+     *
      * @param max maximum allowed nesting depth.
      */
     public void setMax(int max) {

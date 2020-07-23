@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,9 @@ package com.puppycrawl.tools.checkstyle.checks.coding;
 
 import static com.puppycrawl.tools.checkstyle.checks.coding.RequireThisCheck.MSG_METHOD;
 import static com.puppycrawl.tools.checkstyle.checks.coding.RequireThisCheck.MSG_VARIABLE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -28,12 +31,12 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.SortedSet;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import antlr.CommonHiddenStreamToken;
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
+import com.puppycrawl.tools.checkstyle.DetailAstImpl;
 import com.puppycrawl.tools.checkstyle.JavaParser;
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.LocalizedMessage;
@@ -68,8 +71,10 @@ public class RequireThisCheckTest extends AbstractModuleTestSupport {
             "142:9: " + getCheckMessage(MSG_VARIABLE, "s", ""),
             "168:16: " + getCheckMessage(MSG_VARIABLE, "a", ""),
             "168:20: " + getCheckMessage(MSG_VARIABLE, "a", ""),
+            "168:24: " + getCheckMessage(MSG_VARIABLE, "a", ""),
             "174:16: " + getCheckMessage(MSG_VARIABLE, "b", ""),
             "174:20: " + getCheckMessage(MSG_VARIABLE, "b", ""),
+            "174:24: " + getCheckMessage(MSG_VARIABLE, "b", ""),
         };
         verify(checkConfig,
                getPath("InputRequireThisEnumInnerClassesAndBugs.java"),
@@ -110,11 +115,45 @@ public class RequireThisCheckTest extends AbstractModuleTestSupport {
             "142:9: " + getCheckMessage(MSG_VARIABLE, "s", ""),
             "168:16: " + getCheckMessage(MSG_VARIABLE, "a", ""),
             "168:20: " + getCheckMessage(MSG_VARIABLE, "a", ""),
+            "168:24: " + getCheckMessage(MSG_VARIABLE, "a", ""),
             "174:16: " + getCheckMessage(MSG_VARIABLE, "b", ""),
             "174:20: " + getCheckMessage(MSG_VARIABLE, "b", ""),
+            "174:24: " + getCheckMessage(MSG_VARIABLE, "b", ""),
         };
         verify(checkConfig,
                getPath("InputRequireThisEnumInnerClassesAndBugs.java"),
+               expected);
+    }
+
+    @Test
+    public void testFieldsInExpressions() throws Exception {
+        final DefaultConfiguration checkConfig =
+            createModuleConfig(RequireThisCheck.class);
+        checkConfig.addAttribute("checkMethods", "false");
+        checkConfig.addAttribute("validateOnlyOverlapping", "false");
+        final String[] expected = {
+            "15:28: " + getCheckMessage(MSG_VARIABLE, "id", ""),
+            "16:28: " + getCheckMessage(MSG_VARIABLE, "length", ""),
+            "17:28: " + getCheckMessage(MSG_VARIABLE, "length", ""),
+            "18:26: " + getCheckMessage(MSG_VARIABLE, "length", ""),
+            "19:26: " + getCheckMessage(MSG_VARIABLE, "length", ""),
+            "20:25: " + getCheckMessage(MSG_VARIABLE, "length", ""),
+            "21:25: " + getCheckMessage(MSG_VARIABLE, "length", ""),
+            "22:26: " + getCheckMessage(MSG_VARIABLE, "length", ""),
+            "23:26: " + getCheckMessage(MSG_VARIABLE, "length", ""),
+            "24:33: " + getCheckMessage(MSG_VARIABLE, "b", ""),
+            "25:36: " + getCheckMessage(MSG_VARIABLE, "b", ""),
+            "26:26: " + getCheckMessage(MSG_VARIABLE, "length", ""),
+            "27:26: " + getCheckMessage(MSG_VARIABLE, "length", ""),
+            "28:28: " + getCheckMessage(MSG_VARIABLE, "length", ""),
+            "29:26: " + getCheckMessage(MSG_VARIABLE, "length", ""),
+            "30:26: " + getCheckMessage(MSG_VARIABLE, "length", ""),
+            "31:26: " + getCheckMessage(MSG_VARIABLE, "length", ""),
+            "32:31: " + getCheckMessage(MSG_VARIABLE, "b", ""),
+            "33:32: " + getCheckMessage(MSG_VARIABLE, "b", ""),
+        };
+        verify(checkConfig,
+               getPath("InputRequireThisExpressions.java"),
                expected);
     }
 
@@ -144,9 +183,9 @@ public class RequireThisCheckTest extends AbstractModuleTestSupport {
     @Test
     public void testTokensNotNull() {
         final RequireThisCheck check = new RequireThisCheck();
-        Assert.assertNotNull("Acceptable tokens should not be null", check.getAcceptableTokens());
-        Assert.assertNotNull("Acceptable tokens should not be null", check.getDefaultTokens());
-        Assert.assertNotNull("Acceptable tokens should not be null", check.getRequiredTokens());
+        assertNotNull(check.getAcceptableTokens(), "Acceptable tokens should not be null");
+        assertNotNull(check.getDefaultTokens(), "Acceptable tokens should not be null");
+        assertNotNull(check.getRequiredTokens(), "Acceptable tokens should not be null");
     }
 
     @Test
@@ -167,13 +206,13 @@ public class RequireThisCheckTest extends AbstractModuleTestSupport {
     public void testDefaultSwitch() {
         final RequireThisCheck check = new RequireThisCheck();
 
-        final DetailAST ast = new DetailAST();
+        final DetailAstImpl ast = new DetailAstImpl();
         ast.initialize(new CommonHiddenStreamToken(TokenTypes.ENUM, "ENUM"));
 
         check.visitToken(ast);
         final SortedSet<LocalizedMessage> messages = check.getMessages();
 
-        Assert.assertEquals("No exception messages expected", 0, messages.size());
+        assertEquals(0, messages.size(), "No exception messages expected");
     }
 
     @Test
@@ -212,6 +251,7 @@ public class RequireThisCheckTest extends AbstractModuleTestSupport {
             "185:9: " + getCheckMessage(MSG_VARIABLE, "field1", ""),
             "189:9: " + getCheckMessage(MSG_VARIABLE, "field1", ""),
             "210:9: " + getCheckMessage(MSG_VARIABLE, "field1", ""),
+            "217:29: " + getCheckMessage(MSG_VARIABLE, "booleanField", ""),
             "228:21: " + getCheckMessage(MSG_VARIABLE, "field1", ""),
             "238:9: " + getCheckMessage(MSG_VARIABLE, "field1", ""),
             "253:9: " + getCheckMessage(MSG_VARIABLE, "booleanField", ""),
@@ -224,6 +264,7 @@ public class RequireThisCheckTest extends AbstractModuleTestSupport {
             "374:25: " + getCheckMessage(MSG_METHOD, "getAction", ""),
             "376:20: " + getCheckMessage(MSG_METHOD, "processAction", ""),
             "384:16: " + getCheckMessage(MSG_METHOD, "processAction", ""),
+            "490:22: " + getCheckMessage(MSG_VARIABLE, "add", ""),
         };
         verify(checkConfig, getPath("InputRequireThisValidateOnlyOverlappingFalse.java"), expected);
     }
@@ -364,7 +405,7 @@ public class RequireThisCheckTest extends AbstractModuleTestSupport {
 
     @Test
     public void testUnusedMethod() throws Exception {
-        final DetailAST ident = new DetailAST();
+        final DetailAstImpl ident = new DetailAstImpl();
         ident.setText("testName");
 
         final Class<?> cls = Class.forName(RequireThisCheck.class.getName() + "$CatchFrame");
@@ -372,10 +413,11 @@ public class RequireThisCheckTest extends AbstractModuleTestSupport {
         constructor.setAccessible(true);
         final Object o = constructor.newInstance(null, ident);
 
-        Assert.assertEquals("expected ident token", ident,
-                TestUtil.getClassDeclaredMethod(cls, "getFrameNameIdent").invoke(o));
-        Assert.assertEquals("expected catch frame type", "CATCH_FRAME",
-                TestUtil.getClassDeclaredMethod(cls, "getType").invoke(o).toString());
+        final Object actual = TestUtil.getClassDeclaredMethod(cls, "getFrameNameIdent").invoke(o);
+        assertEquals(ident, actual, "expected ident token");
+        assertEquals("CATCH_FRAME",
+            TestUtil.getClassDeclaredMethod(cls, "getType").invoke(o).toString(),
+                "expected catch frame type");
     }
 
     /**
@@ -394,10 +436,11 @@ public class RequireThisCheckTest extends AbstractModuleTestSupport {
         final Optional<DetailAST> classDef = TestUtil.findTokenInAstByPredicate(root,
             ast -> ast.getType() == TokenTypes.CLASS_DEF);
 
-        Assert.assertTrue("Ast should contain CLASS_DEF", classDef.isPresent());
-        Assert.assertTrue("State is not cleared on beginTree",
-                TestUtil.isStatefulFieldClearedDuringBeginTree(check, classDef.get(), "current",
-                    current -> ((Collection<?>) current).isEmpty()));
+        assertTrue(classDef.isPresent(), "Ast should contain CLASS_DEF");
+        assertTrue(
+            TestUtil.isStatefulFieldClearedDuringBeginTree(check, classDef.get(),
+                "current", current -> ((Collection<?>) current).isEmpty()),
+                "State is not cleared on beginTree");
     }
 
 }

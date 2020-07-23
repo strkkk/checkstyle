@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -29,14 +29,87 @@ import com.puppycrawl.tools.checkstyle.api.FullIdent;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 
 /**
- * Detects uncommented main methods. Basically detects
- * any main method, since if it is detectable
- * that means it is uncommented.
- *
- * <pre class="body">
+ * <p>
+ * Detects uncommented {@code main} methods.
+ * </p>
+ * <p>
+ * Rationale: A {@code main} method is often used for debugging purposes.
+ * When debugging is finished, developers often forget to remove the method,
+ * which changes the API and increases the size of the resulting class or JAR file.
+ * With the exception of the real program entry points, all {@code main} methods
+ * should be removed or commented out of the sources.
+ * </p>
+ * <ul>
+ * <li>
+ * Property {@code excludedClasses} - Specify pattern for qualified names of
+ * classes which are allowed to have a {@code main} method.
+ * Type is {@code java.util.regex.Pattern}.
+ * Default value is {@code "^$" (empty)}.
+ * </li>
+ * </ul>
+ * <p>
+ * To configure the check:
+ * </p>
+ * <pre>
  * &lt;module name=&quot;UncommentedMain&quot;/&gt;
  * </pre>
+ * <p>Example:</p>
+ * <pre>
+ * public class Game {
+ *    public static void main(String... args){}   // violation
+ * }
  *
+ * public class Main {
+ *    public static void main(String[] args){}   // violation
+ * }
+ *
+ * public class Launch {
+ *    //public static void main(String[] args){} // OK
+ * }
+ *
+ * public class Start {
+ *    public void main(){}                       // OK
+ * }
+ * </pre>
+ * <p>
+ * To configure the check to allow the {@code main} method for all classes with "Main" name:
+ * </p>
+ * <pre>
+ * &lt;module name=&quot;UncommentedMain&quot;&gt;
+ *   &lt;property name=&quot;excludedClasses&quot; value=&quot;\.Main$&quot;/&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>Example:</p>
+ * <pre>
+ * public class Game {
+ *    public static void main(String... args){}   // violation
+ * }
+ *
+ * public class Main {
+ *    public static void main(String[] args){}   // OK
+ * }
+ *
+ * public class Launch {
+ *    //public static void main(String[] args){} // OK
+ * }
+ *
+ * public class Start {
+ *    public void main(){}                       // OK
+ * }
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code uncommented.main}
+ * </li>
+ * </ul>
+ *
+ * @since 3.2
  */
 @FileStatefulCheck
 public class UncommentedMainCheck
@@ -48,7 +121,10 @@ public class UncommentedMainCheck
      */
     public static final String MSG_KEY = "uncommented.main";
 
-    /** Compiled regexp to exclude classes from check. */
+    /**
+     * Specify pattern for qualified names of classes which are allowed to
+     * have a {@code main} method.
+     */
     private Pattern excludedClasses = Pattern.compile("^$");
     /** Current class name. */
     private String currentClass;
@@ -58,7 +134,9 @@ public class UncommentedMainCheck
     private int classDepth;
 
     /**
-     * Set the excluded classes pattern.
+     * Setter to specify pattern for qualified names of classes which are allowed
+     * to have a {@code main} method.
+     *
      * @param excludedClasses a pattern
      */
     public void setExcludedClasses(Pattern excludedClasses) {
@@ -117,6 +195,7 @@ public class UncommentedMainCheck
 
     /**
      * Sets current package.
+     *
      * @param packageDef node for package definition
      */
     private void visitPackageDef(DetailAST packageDef) {
@@ -126,6 +205,7 @@ public class UncommentedMainCheck
 
     /**
      * If not inner class then change current class name.
+     *
      * @param classDef node for class definition
      */
     private void visitClassDef(DetailAST classDef) {
@@ -141,6 +221,7 @@ public class UncommentedMainCheck
     /**
      * Checks method definition if this is
      * {@code public static void main(String[])}.
+     *
      * @param method method definition node
      */
     private void visitMethodDef(DetailAST method) {
@@ -151,12 +232,13 @@ public class UncommentedMainCheck
                 && checkModifiers(method)
                 && checkType(method)
                 && checkParams(method)) {
-            log(method.getLineNo(), MSG_KEY);
+            log(method, MSG_KEY);
         }
     }
 
     /**
      * Checks that current class is not excluded.
+     *
      * @return true if check passed, false otherwise
      */
     private boolean checkClassName() {
@@ -165,6 +247,7 @@ public class UncommentedMainCheck
 
     /**
      * Checks that method name is @quot;main@quot;.
+     *
      * @param method the METHOD_DEF node
      * @return true if check passed, false otherwise
      */
@@ -175,6 +258,7 @@ public class UncommentedMainCheck
 
     /**
      * Checks that method has final and static modifiers.
+     *
      * @param method the METHOD_DEF node
      * @return true if check passed, false otherwise
      */
@@ -188,6 +272,7 @@ public class UncommentedMainCheck
 
     /**
      * Checks that return type is {@code void}.
+     *
      * @param method the METHOD_DEF node
      * @return true if check passed, false otherwise
      */
@@ -199,6 +284,7 @@ public class UncommentedMainCheck
 
     /**
      * Checks that method has only {@code String[]} or only {@code String...} param.
+     *
      * @param method the METHOD_DEF node
      * @return true if check passed, false otherwise
      */
@@ -225,6 +311,7 @@ public class UncommentedMainCheck
 
     /**
      * Whether the type is java.lang.String.
+     *
      * @param typeAst the type to check.
      * @return true, if the type is java.lang.String.
      */

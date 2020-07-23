@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,9 @@
 package com.puppycrawl.tools.checkstyle.checks.coding;
 
 import static com.puppycrawl.tools.checkstyle.checks.coding.NoFinalizerCheck.MSG_KEY;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
@@ -47,8 +47,8 @@ public class NoFinalizerCheckTest
                 new NoFinalizerCheck();
         final int[] expected = {TokenTypes.METHOD_DEF};
 
-        assertArrayEquals("Default acceptable tokens are invalid",
-                expected, noFinalizerCheck.getAcceptableTokens());
+        assertArrayEquals(expected, noFinalizerCheck.getAcceptableTokens(),
+                "Default acceptable tokens are invalid");
     }
 
     @Test
@@ -57,7 +57,7 @@ public class NoFinalizerCheckTest
         final DefaultConfiguration checkConfig =
             createModuleConfig(NoFinalizerCheck.class);
         final String[] expected = {
-            "5: " + getCheckMessage(MSG_KEY),
+            "5:5: " + getCheckMessage(MSG_KEY),
         };
         verify(checkConfig, getPath("InputNoFinalizerHasFinalizer.java"), expected);
     }

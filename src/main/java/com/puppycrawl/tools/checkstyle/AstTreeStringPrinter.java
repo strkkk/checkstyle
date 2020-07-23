@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -44,7 +44,7 @@ public final class AstTreeStringPrinter {
     private static final Pattern TAB = Pattern.compile("\t");
 
     /** OS specific line separator. */
-    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+    private static final String LINE_SEPARATOR = System.lineSeparator();
 
     /** Prevent instances. */
     private AstTreeStringPrinter() {
@@ -53,6 +53,7 @@ public final class AstTreeStringPrinter {
 
     /**
      * Parse a file and print the parse tree.
+     *
      * @param file the file to print.
      * @param options {@link JavaParser.Options} to control the inclusion of comment nodes.
      * @return the AST of the file in String form.
@@ -66,6 +67,7 @@ public final class AstTreeStringPrinter {
 
     /**
      * Prints full AST (java + comments + javadoc) of the java file.
+     *
      * @param file java file
      * @return Full tree
      * @throws IOException Failed to open a file
@@ -79,6 +81,7 @@ public final class AstTreeStringPrinter {
 
     /**
      * Prints full tree (java + comments + javadoc) of the DetailAST.
+     *
      * @param ast root DetailAST
      * @return Full tree
      */
@@ -104,6 +107,7 @@ public final class AstTreeStringPrinter {
 
     /**
      * Parses block comment as javadoc and prints its tree.
+     *
      * @param node block comment begin
      * @return string javadoc tree
      */
@@ -120,6 +124,7 @@ public final class AstTreeStringPrinter {
 
     /**
      * Parse a file and print the parse tree.
+     *
      * @param text the text to parse.
      * @param options {@link JavaParser.Options} to control the inclusion of comment nodes.
      * @return the AST of the file in String form.
@@ -132,7 +137,28 @@ public final class AstTreeStringPrinter {
     }
 
     /**
+     * Print branch info from root down to given {@code node}.
+     *
+     * @param node last item of the branch
+     * @return branch as string
+     */
+    public static String printBranch(DetailAST node) {
+        final String result;
+        if (node == null) {
+            result = "";
+        }
+        else {
+            result = printBranch(node.getParent())
+                + getIndentation(node)
+                + getNodeInfo(node)
+                + LINE_SEPARATOR;
+        }
+        return result;
+    }
+
+    /**
      * Print AST.
+     *
      * @param ast the root AST node.
      * @return string AST.
      */
@@ -152,6 +178,7 @@ public final class AstTreeStringPrinter {
     /**
      * Get string representation of the node as token name,
      * node text, line number and column number.
+     *
      * @param node DetailAST
      * @return node info
      */
@@ -163,6 +190,7 @@ public final class AstTreeStringPrinter {
 
     /**
      * Get indentation for an AST node.
+     *
      * @param ast the AST to get the indentation for.
      * @return the indentation in String format.
      */
@@ -196,6 +224,7 @@ public final class AstTreeStringPrinter {
 
     /**
      * Replace all control chars with escaped symbols.
+     *
      * @param text the String to process.
      * @return the processed String with all control chars escaped.
      */

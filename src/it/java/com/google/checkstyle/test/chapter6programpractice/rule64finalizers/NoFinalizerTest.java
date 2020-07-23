@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,13 +19,13 @@
 
 package com.google.checkstyle.test.chapter6programpractice.rule64finalizers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import com.google.checkstyle.test.base.AbstractModuleTestSupport;
+import com.google.checkstyle.test.base.AbstractGoogleModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.api.Configuration;
 import com.puppycrawl.tools.checkstyle.checks.coding.NoFinalizerCheck;
 
-public class NoFinalizerTest extends AbstractModuleTestSupport {
+public class NoFinalizerTest extends AbstractGoogleModuleTestSupport {
 
     @Override
     protected String getPackageLocation() {
@@ -37,7 +37,7 @@ public class NoFinalizerTest extends AbstractModuleTestSupport {
         final String msg = getCheckMessage(NoFinalizerCheck.class, "avoid.finalizer.method");
 
         final String[] expected = {
-            "5: " + msg,
+            "5:5: " + msg,
         };
 
         final Configuration checkConfig = getModuleConfig("NoFinalizer");
@@ -52,15 +52,15 @@ public class NoFinalizerTest extends AbstractModuleTestSupport {
         final String msg = getCheckMessage(NoFinalizerCheck.class, "avoid.finalizer.method");
 
         final String[] expected = {
-            "9: " + msg,
-            "21: " + msg,
-            "33: " + msg,
-            "45: " + msg,
-            "57: " + msg,
-            "69: " + msg,
-            "79: " + msg,
-            "119: " + msg,
-            "136: " + msg,
+            "9:5: " + msg,
+            "21:5: " + msg,
+            "33:5: " + msg,
+            "45:5: " + msg,
+            "57:5: " + msg,
+            "69:5: " + msg,
+            "79:9: " + msg,
+            "119:13: " + msg,
+            "136:5: " + msg,
         };
 
         final Configuration checkConfig = getModuleConfig("NoFinalizer");

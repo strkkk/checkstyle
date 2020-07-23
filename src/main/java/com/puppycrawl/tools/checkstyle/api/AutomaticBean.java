@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -45,7 +45,7 @@ import org.apache.commons.beanutils.converters.IntegerConverter;
 import org.apache.commons.beanutils.converters.LongConverter;
 import org.apache.commons.beanutils.converters.ShortConverter;
 
-import com.puppycrawl.tools.checkstyle.checks.naming.AccessModifier;
+import com.puppycrawl.tools.checkstyle.checks.naming.AccessModifierOption;
 import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
 
 /**
@@ -85,6 +85,7 @@ public abstract class AutomaticBean
      * <p>
      * The default implementation does nothing.
      * </p>
+     *
      * @throws CheckstyleException if there is a configuration error.
      */
     protected abstract void finishLocalSetup() throws CheckstyleException;
@@ -109,6 +110,7 @@ public abstract class AutomaticBean
     /**
      * Register basic types of JDK like boolean, int, and String to use with BeanUtils. All these
      * types are found in the {@code java.lang} package.
+     *
      * @param cub
      *            Instance of {@link ConvertUtilsBean} to register types with.
      */
@@ -154,6 +156,7 @@ public abstract class AutomaticBean
     /**
      * Register custom types of JDK like URI and Checkstyle specific classes to use with BeanUtils.
      * None of these types should be found in the {@code java.lang} package.
+     *
      * @param cub
      *            Instance of {@link ConvertUtilsBean} to register types with.
      */
@@ -162,7 +165,7 @@ public abstract class AutomaticBean
         cub.register(new SeverityLevelConverter(), SeverityLevel.class);
         cub.register(new ScopeConverter(), Scope.class);
         cub.register(new UriConverter(), URI.class);
-        cub.register(new RelaxedAccessModifierArrayConverter(), AccessModifier[].class);
+        cub.register(new RelaxedAccessModifierArrayConverter(), AccessModifierOption[].class);
     }
 
     /**
@@ -201,6 +204,7 @@ public abstract class AutomaticBean
 
     /**
      * Recheck property and try to copy it.
+     *
      * @param key key of value
      * @param value value
      * @param recheck whether to check for property existence before copy
@@ -245,6 +249,7 @@ public abstract class AutomaticBean
 
     /**
      * Implements the Contextualizable interface using bean introspection.
+     *
      * @see Contextualizable
      */
     @Override
@@ -261,6 +266,7 @@ public abstract class AutomaticBean
 
     /**
      * Returns the configuration that was used to configure this component.
+     *
      * @return the configuration that was used to configure this component.
      */
     protected final Configuration getConfiguration() {
@@ -291,7 +297,7 @@ public abstract class AutomaticBean
     /** A converter that converts strings to patterns. */
     private static class PatternConverter implements Converter {
 
-        @SuppressWarnings({"unchecked", "rawtypes"})
+        @SuppressWarnings("unchecked")
         @Override
         public Object convert(Class type, Object value) {
             return CommonUtil.createPattern(value.toString());
@@ -302,7 +308,7 @@ public abstract class AutomaticBean
     /** A converter that converts strings to severity level. */
     private static class SeverityLevelConverter implements Converter {
 
-        @SuppressWarnings({"unchecked", "rawtypes"})
+        @SuppressWarnings("unchecked")
         @Override
         public Object convert(Class type, Object value) {
             return SeverityLevel.getInstance(value.toString());
@@ -313,7 +319,7 @@ public abstract class AutomaticBean
     /** A converter that converts strings to scope. */
     private static class ScopeConverter implements Converter {
 
-        @SuppressWarnings({"unchecked", "rawtypes"})
+        @SuppressWarnings("unchecked")
         @Override
         public Object convert(Class type, Object value) {
             return Scope.getInstance(value.toString());
@@ -324,7 +330,7 @@ public abstract class AutomaticBean
     /** A converter that converts strings to uri. */
     private static class UriConverter implements Converter {
 
-        @SuppressWarnings({"unchecked", "rawtypes"})
+        @SuppressWarnings("unchecked")
         @Override
         public Object convert(Class type, Object value) {
             final String url = value.toString();
@@ -351,7 +357,7 @@ public abstract class AutomaticBean
      */
     private static class RelaxedStringArrayConverter implements Converter {
 
-        @SuppressWarnings({"unchecked", "rawtypes"})
+        @SuppressWarnings("unchecked")
         @Override
         public Object convert(Class type, Object value) {
             // Convert to a String and trim it for the tokenizer.
@@ -370,26 +376,27 @@ public abstract class AutomaticBean
     }
 
     /**
-     * A converter that converts strings to {@link AccessModifier}.
+     * A converter that converts strings to {@link AccessModifierOption}.
      * This implementation does not care whether the array elements contain characters like '_'.
      * The normal {@link ArrayConverter} class has problems with this character.
      */
     private static class RelaxedAccessModifierArrayConverter implements Converter {
 
         /** Constant for optimization. */
-        private static final AccessModifier[] EMPTY_MODIFIER_ARRAY = new AccessModifier[0];
+        private static final AccessModifierOption[] EMPTY_MODIFIER_ARRAY =
+                new AccessModifierOption[0];
 
-        @SuppressWarnings({"unchecked", "rawtypes"})
+        @SuppressWarnings("unchecked")
         @Override
         public Object convert(Class type, Object value) {
             // Converts to a String and trims it for the tokenizer.
             final StringTokenizer tokenizer = new StringTokenizer(
                 value.toString().trim(), COMMA_SEPARATOR);
-            final List<AccessModifier> result = new ArrayList<>();
+            final List<AccessModifierOption> result = new ArrayList<>();
 
             while (tokenizer.hasMoreTokens()) {
                 final String token = tokenizer.nextToken();
-                result.add(AccessModifier.getInstance(token.trim()));
+                result.add(AccessModifierOption.getInstance(token.trim()));
             }
 
             return result.toArray(EMPTY_MODIFIER_ARRAY);

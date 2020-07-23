@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -40,6 +40,7 @@ class ListToTreeSelectionModelWrapper extends DefaultTreeSelectionModel {
 
     /**
      * Constructor to initialise treeTable.
+     *
      * @param jTreeTable TreeTable to perform updates on.
      */
     /* package */ ListToTreeSelectionModelWrapper(TreeTable jTreeTable) {
@@ -112,6 +113,7 @@ class ListToTreeSelectionModelWrapper extends DefaultTreeSelectionModel {
 
     /**
      * If the row at given index is selected, selected paths are updated.
+     *
      * @param counter number of row.
      */
     private void updateSelectedPathIfRowIsSelected(int counter) {

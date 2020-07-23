@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,9 @@
 package com.puppycrawl.tools.checkstyle.checks.modifier;
 
 import static com.puppycrawl.tools.checkstyle.checks.modifier.RedundantModifierCheck.MSG_KEY;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
@@ -60,7 +60,7 @@ public class RedundantModifierCheckTest
             "57:9: " + getCheckMessage(MSG_KEY, "public"),
             "63:9: " + getCheckMessage(MSG_KEY, "abstract"),
             "66:9: " + getCheckMessage(MSG_KEY, "public"),
-            //"69:9: Redundant 'abstract' modifier.",
+            // "69:9: Redundant 'abstract' modifier.",
             "72:9: " + getCheckMessage(MSG_KEY, "final"),
             "79:13: " + getCheckMessage(MSG_KEY, "final"),
             "88:12: " + getCheckMessage(MSG_KEY, "final"),
@@ -160,7 +160,7 @@ public class RedundantModifierCheckTest
             TokenTypes.ENUM_DEF,
             TokenTypes.RESOURCE,
         };
-        Assert.assertArrayEquals("Invalid acceptable tokens", expected, actual);
+        assertArrayEquals(expected, actual, "Invalid acceptable tokens");
     }
 
     @Test
@@ -168,7 +168,7 @@ public class RedundantModifierCheckTest
         final RedundantModifierCheck redundantModifierCheckObj = new RedundantModifierCheck();
         final int[] actual = redundantModifierCheckObj.getRequiredTokens();
         final int[] expected = CommonUtil.EMPTY_INT_ARRAY;
-        Assert.assertArrayEquals("Invalid required tokens", expected, actual);
+        assertArrayEquals(expected, actual, "Invalid required tokens");
     }
 
     @Test
@@ -259,6 +259,16 @@ public class RedundantModifierCheckTest
             "5:17: " + getCheckMessage(MSG_KEY, "final"),
         };
         verify(checkConfig, getPath("InputRedundantModifierPrivateMethodInPrivateClass.java"),
+                expected);
+    }
+
+    @Test
+    public void testTryWithResourcesBlock() throws Exception {
+        final DefaultConfiguration checkConfig = createModuleConfig(RedundantModifierCheck.class);
+        final String[] expected = {
+            "10:19: " + getCheckMessage(MSG_KEY, "final"),
+        };
+        verify(checkConfig, getNonCompilablePath("InputRedundantModifierTryWithResources.java"),
                 expected);
     }
 

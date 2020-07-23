@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -35,7 +35,7 @@ import com.puppycrawl.tools.checkstyle.utils.CheckUtil;
  * also override method {@code equals(Object)}.
  * </p>
  * <p>
- * Covariant {@code equals()}- method that is similar to {@code equals(Object)},
+ * Covariant {@code equals()} - method that is similar to {@code equals(Object)},
  * but with a covariant parameter type (any subtype of Object).
  * </p>
  * <p>
@@ -46,8 +46,8 @@ import com.puppycrawl.tools.checkstyle.utils.CheckUtil;
  * that are equal using covariant enum method, and not equal when compared normally.
  * </p>
  * <p>
- * Inspired by <a href="https://cs.nyu.edu/~lharris/papers/findbugsPaper.pdf">
- * Finding Bugs is Easy, chapter '2.3.1 Bad Covariant Definition of Equals (Eq)'</a>:
+ * Inspired by <a href="https://www.cs.jhu.edu/~daveho/pubs/oopsla2004.pdf">
+ * Finding Bugs is Easy, chapter '4.5 Bad Covariant Definition of Equals (Eq)'</a>:
  * </p>
  * <p>
  * Java classes may override the {@code equals(Object)} method to define
@@ -104,6 +104,17 @@ import com.puppycrawl.tools.checkstyle.utils.CheckUtil;
  *   }
  * }
  * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code covariant.equals}
+ * </li>
+ * </ul>
  *
  * @since 3.2
  */
@@ -144,8 +155,7 @@ public class CovariantEqualsCheck extends AbstractCheck {
             DetailAST child = objBlock.getFirstChild();
             boolean hasEqualsObject = false;
             while (child != null) {
-                if (child.getType() == TokenTypes.METHOD_DEF
-                        && CheckUtil.isEqualsMethod(child)) {
+                if (CheckUtil.isEqualsMethod(child)) {
                     if (isFirstParameterObject(child)) {
                         hasEqualsObject = true;
                     }
@@ -169,6 +179,7 @@ public class CovariantEqualsCheck extends AbstractCheck {
 
     /**
      * Tests whether a method's first parameter is an Object.
+     *
      * @param methodDefAst the method definition AST to test.
      *     Precondition: ast is a TokenTypes.METHOD_DEF node.
      * @return true if ast has first parameter of type Object.

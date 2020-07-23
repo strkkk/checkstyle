@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -71,6 +71,7 @@ public abstract class AbstractParenPadCheck
 
     /**
      * Set the option to enforce.
+     *
      * @param optionStr string to decode option from
      * @throws IllegalArgumentException if unable to decode
      */
@@ -80,6 +81,7 @@ public abstract class AbstractParenPadCheck
 
     /**
      * Process a token representing a left parentheses.
+     *
      * @param ast the token representing a left parentheses
      */
     protected void processLeft(DetailAST ast) {
@@ -100,6 +102,7 @@ public abstract class AbstractParenPadCheck
 
     /**
      * Process a token representing a right parentheses.
+     *
      * @param ast the token representing a right parentheses
      */
     protected void processRight(DetailAST ast) {

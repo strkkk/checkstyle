@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -48,10 +48,12 @@ import com.puppycrawl.tools.checkstyle.utils.ScopeUtil;
  * Property {@code validateEnhancedForLoopVariable} - Control whether to check
  * <a href="https://docs.oracle.com/javase/specs/jls/se11/html/jls-14.html#jls-14.14.2">
  * enhanced for-loop</a> variable.
+ * Type is {@code boolean}.
  * Default value is {@code false}.
  * </li>
  * <li>
  * Property {@code tokens} - tokens to check
+ * Type is {@code int[]}.
  * Default value is:
  * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#VARIABLE_DEF">
  * VARIABLE_DEF</a>.
@@ -121,6 +123,17 @@ import com.puppycrawl.tools.checkstyle.utils.ScopeUtil;
  *   }
  * }
  * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code final.variable}
+ * </li>
+ * </ul>
  *
  * @since 3.2
  */
@@ -192,6 +205,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
      * Setter to control whether to check
      * <a href="https://docs.oracle.com/javase/specs/jls/se11/html/jls-14.html#jls-14.14.2">
      * enhanced for-loop</a> variable.
+     *
      * @param validateEnhancedForLoopVariable whether to check for-loop variable
      */
     public final void setValidateEnhancedForLoopVariable(boolean validateEnhancedForLoopVariable) {
@@ -355,6 +369,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
 
     /**
      * Determines identifier assignment conditions (assigned or already assigned).
+     *
      * @param ident identifier.
      * @param candidate final local variable candidate.
      */
@@ -373,6 +388,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
 
     /**
      * Checks whether the scope of a node is restricted to a specific code block.
+     *
      * @param node node.
      * @param blockType block type.
      * @return true if the scope of a node is restricted to a specific code block.
@@ -391,6 +407,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
 
     /**
      * Gets final variable candidate for ast.
+     *
      * @param ast ast.
      * @return Optional of {@link FinalVariableCandidate} for ast from scopeStack.
      */
@@ -417,6 +434,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
 
     /**
      * Update current scope data uninitialized variable according to the whole scope data.
+     *
      * @param prevScopeUninitializedVariableData variable for previous stack of uninitialized
      *     variables
      * @noinspection MethodParameterNamingConvention
@@ -431,6 +449,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
 
     /**
      * Update current scope data uninitialized variable according to the specific scope data.
+     *
      * @param scopeUninitializedVariableData variable for specific stack of uninitialized variables
      */
     private void updateUninitializedVariables(Deque<DetailAST> scopeUninitializedVariableData) {
@@ -463,6 +482,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
     /**
      * If token is LITERAL_IF and there is an {@code else} following or token is CASE_GROUP and
      * there is another {@code case} following, then update the uninitialized variables.
+     *
      * @param ast token to be checked
      * @return true if should be updated, else false
      */
@@ -472,6 +492,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
 
     /**
      * If token is LITERAL_IF and there is an {@code else} following.
+     *
      * @param ast token to be checked
      * @return true if token is LITERAL_IF and there is an {@code else} following, else false
      */
@@ -482,6 +503,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
 
     /**
      * If token is CASE_GROUP and there is another {@code case} following.
+     *
      * @param ast token to be checked
      * @return true if token is CASE_GROUP and there is another {@code case} following, else false
      */
@@ -494,6 +516,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
     /**
      * Returns the last child token that makes a specified type and contains containType in
      * its branch.
+     *
      * @param ast token to be tested
      * @param childType the token type to match
      * @param containType the token type which has to be present in the branch
@@ -514,6 +537,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
 
     /**
      * Determines whether enhanced for-loop variable should be checked or not.
+     *
      * @param ast The ast to compare.
      * @return true if enhanced for-loop variable should be checked.
      */
@@ -524,6 +548,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
 
     /**
      * Insert a parameter at the topmost scope stack.
+     *
      * @param ast the variable to insert.
      */
     private void insertParameter(DetailAST ast) {
@@ -534,6 +559,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
 
     /**
      * Insert a variable at the topmost scope stack.
+     *
      * @param ast the variable to insert.
      */
     private void insertVariable(DetailAST ast) {
@@ -550,6 +576,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
 
     /**
      * Check if VARIABLE_DEF is initialized or not.
+     *
      * @param ast VARIABLE_DEF to be checked
      * @return true if initialized
      */
@@ -559,6 +586,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
 
     /**
      * Whether the ast is the first child of its parent.
+     *
      * @param ast the ast to check.
      * @return true if the ast is the first child of its parent.
      */
@@ -568,6 +596,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
 
     /**
      * Removes the final variable candidate from the Stack.
+     *
      * @param ast variable to remove.
      */
     private void removeFinalVariableCandidateFromStack(DetailAST ast) {
@@ -591,6 +620,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
 
     /**
      * Check if given parameter definition is a multiple type catch.
+     *
      * @param parameterDefAst parameter definition
      * @return true if it is a multiple type catch, false otherwise
      */
@@ -602,6 +632,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
     /**
      * Whether the final variable candidate should be removed from the list of final local variable
      * candidates.
+     *
      * @param scopeData the scope data of the variable.
      * @param ast the variable ast.
      * @return true, if the variable should be removed.
@@ -635,6 +666,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
      * }
      * }
      * </p>
+     *
      * @param variable variable.
      * @return true if a variable which is declared outside loop is used inside loop.
      */
@@ -649,6 +681,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
 
     /**
      * Is Arithmetic operator.
+     *
      * @param parentType token AST
      * @return true is token type is in arithmetic operator
      */
@@ -665,6 +698,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
      * }
      * </p>
      * {@code i, j} are defined in {@link TokenTypes#FOR_INIT for-loop init}
+     *
      * @param variableDef variable definition node.
      * @return true if variable is defined in {@link TokenTypes#FOR_INIT for-loop init}
      */
@@ -674,6 +708,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
 
     /**
      * Determines whether an AST is a descendant of an abstract or native method.
+     *
      * @param ast the AST to check.
      * @return true if ast is a descendant of an abstract or native method.
      */
@@ -694,6 +729,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
 
     /**
      * Check if current param is lambda's param.
+     *
      * @param paramDef {@link TokenTypes#PARAMETER_DEF parameter def}.
      * @return true if current param is lambda's param.
      */
@@ -703,6 +739,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
 
     /**
      * Find the Class, Constructor, Enum, Method, or Field in which it is defined.
+     *
      * @param ast Variable for which we want to find the scope in which it is defined
      * @return ast The Class or Constructor or Method in which it is defined.
      */
@@ -720,6 +757,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
 
     /**
      * Check if both the Variables are same.
+     *
      * @param ast1 Variable to compare
      * @param ast2 Variable to compare
      * @return true if both the variables are same, otherwise false
@@ -734,6 +772,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
 
     /**
      * Check if both the variables are in the same loop.
+     *
      * @param ast1 variable to compare.
      * @param ast2 variable to compare.
      * @return true if both the variables are in the same loop.
@@ -752,6 +791,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
 
     /**
      * Checks whether the ast is a loop.
+     *
      * @param ast the ast to check.
      * @return true if the ast is a loop.
      */
@@ -775,6 +815,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
 
         /**
          * Searches for final local variable candidate for ast in the scope.
+         *
          * @param ast ast.
          * @return Optional of {@link FinalVariableCandidate}.
          */
@@ -794,7 +835,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
 
     }
 
-    /**Represents information about final local variable candidate. */
+    /** Represents information about final local variable candidate. */
     private static class FinalVariableCandidate {
 
         /** Identifier token. */
@@ -806,6 +847,7 @@ public class FinalLocalVariableCheck extends AbstractCheck {
 
         /**
          * Creates new instance.
+         *
          * @param variableIdent variable identifier.
          */
         /* package */ FinalVariableCandidate(DetailAST variableIdent) {

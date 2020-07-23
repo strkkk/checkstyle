@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -26,7 +26,7 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 
 /**
  * <p>
- * Checks that switch statement has a &quot;default&quot; clause.
+ * Checks that switch statement has a {@code default} clause.
  * </p>
  * <p>
  * Rationale: It's usually a good idea to introduce a
@@ -43,6 +43,37 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
  * <pre>
  * &lt;module name=&quot;MissingSwitchDefault&quot;/&gt;
  * </pre>
+ * <p>Example of violation:</p>
+ * <pre>
+ * switch (i) {    // violation
+ *  case 1:
+ *    break;
+ *  case 2:
+ *    break;
+ * }
+ * </pre>
+ * <p>Example of correct code:</p>
+ * <pre>
+ * switch (i) {
+ *  case 1:
+ *    break;
+ *  case 2:
+ *    break;
+ *  default: // OK
+ *    break;
+ * }
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code missing.switch.default}
+ * </li>
+ * </ul>
  *
  * @since 3.1
  */
@@ -75,12 +106,13 @@ public class MissingSwitchDefaultCheck extends AbstractCheck {
         final DetailAST firstCaseGroupAst = ast.findFirstToken(TokenTypes.CASE_GROUP);
 
         if (!containsDefaultSwitch(firstCaseGroupAst)) {
-            log(ast.getLineNo(), MSG_KEY);
+            log(ast, MSG_KEY);
         }
     }
 
     /**
      * Checks if the case group or its sibling contain the 'default' switch.
+     *
      * @param caseGroupAst first case group to check.
      * @return true if 'default' switch found.
      */

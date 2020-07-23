@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -35,6 +35,38 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
  * <pre>
  * &lt;module name=&quot;MissingCtor&quot;/&gt;
  * </pre>
+ * <p>Example:</p>
+ * <pre>
+ * class ExampleOk { // OK
+ *   private int a;
+ *   ExampleOk(int a) {
+ *     this.a = a;
+ *   }
+ * }
+ * class ExampleDefaultCtor { // OK
+ *   private String s;
+ *   ExampleDefaultCtor() {
+ *     s = "foobar";
+ *   }
+ * }
+ * class InvalidExample { // violation, class must have a constructor.
+ *   public void test() {}
+ * }
+ * abstract class AbstractExample { // OK
+ *   public abstract void test() {}
+ * }
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code missing.ctor}
+ * </li>
+ * </ul>
  *
  * @since 3.4
  */
@@ -68,7 +100,7 @@ public class MissingCtorCheck extends AbstractCheck {
         if (modifiers.findFirstToken(TokenTypes.ABSTRACT) == null
                 && ast.findFirstToken(TokenTypes.OBJBLOCK)
                     .findFirstToken(TokenTypes.CTOR_DEF) == null) {
-            log(ast.getLineNo(), MSG_KEY);
+            log(ast, MSG_KEY);
         }
     }
 

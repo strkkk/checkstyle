@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -53,10 +53,10 @@ public abstract class AbstractHeaderCheck extends AbstractFileSetCheck
     /** The lines of the header file. */
     private final List<String> readerLines = new ArrayList<>();
 
-    /** The file that contains the header to check against. */
+    /** Specify the name of the file containing the required header. */
     private URI headerFile;
 
-    /** Name of a charset to use for loading the header from a file. */
+    /** Specify the character encoding to use when reading the headerFile. */
     private String charset = System.getProperty("file.encoding", StandardCharsets.UTF_8.name());
 
     /**
@@ -67,6 +67,7 @@ public abstract class AbstractHeaderCheck extends AbstractFileSetCheck
 
     /**
      * Return the header lines to check against.
+     *
      * @return the header lines to check against.
      */
     protected List<String> getHeaderLines() {
@@ -75,7 +76,8 @@ public abstract class AbstractHeaderCheck extends AbstractFileSetCheck
     }
 
     /**
-     * Set the charset to use for loading the header from a file.
+     * Setter to specify the character encoding to use when reading the headerFile.
+     *
      * @param charset the charset to use for loading the header from a file
      * @throws UnsupportedEncodingException if charset is unsupported
      */
@@ -88,7 +90,8 @@ public abstract class AbstractHeaderCheck extends AbstractFileSetCheck
     }
 
     /**
-     * Set the header file to check against.
+     * Setter to specify the name of the file containing the required header..
+     *
      * @param uri the uri of the header to load.
      * @throws CheckstyleException if fileName is empty.
      */
@@ -104,6 +107,7 @@ public abstract class AbstractHeaderCheck extends AbstractFileSetCheck
 
     /**
      * Load the header from a file.
+     *
      * @throws CheckstyleException if the file cannot be loaded
      */
     private void loadHeaderFile() throws CheckstyleException {
@@ -120,6 +124,7 @@ public abstract class AbstractHeaderCheck extends AbstractFileSetCheck
 
     /**
      * Called before initializing the header.
+     *
      * @throws IllegalArgumentException if header has already been set
      */
     private void checkHeaderNotInitialized() {
@@ -133,6 +138,7 @@ public abstract class AbstractHeaderCheck extends AbstractFileSetCheck
     /**
      * Set the header to check against. Individual lines in the header
      * must be separated by '\n' characters.
+     *
      * @param header header content to check against.
      * @throws IllegalArgumentException if the header cannot be interpreted
      */
@@ -154,6 +160,7 @@ public abstract class AbstractHeaderCheck extends AbstractFileSetCheck
 
     /**
      * Load header to check against from a Reader into readerLines.
+     *
      * @param headerReader delivers the header to check against
      * @throws IOException if
      */

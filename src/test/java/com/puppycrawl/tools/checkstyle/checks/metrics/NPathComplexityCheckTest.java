@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,18 +20,22 @@
 package com.puppycrawl.tools.checkstyle.checks.metrics;
 
 import static com.puppycrawl.tools.checkstyle.checks.metrics.NPathComplexityCheck.MSG_KEY;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.SortedSet;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import antlr.CommonHiddenStreamToken;
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
+import com.puppycrawl.tools.checkstyle.DetailAstImpl;
 import com.puppycrawl.tools.checkstyle.JavaParser;
 import com.puppycrawl.tools.checkstyle.api.Context;
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
@@ -132,32 +136,35 @@ public class NPathComplexityCheckTest extends AbstractModuleTestSupport {
     @Test
     @SuppressWarnings("unchecked")
     public void testStatefulFieldsClearedOnBeginTree1() throws Exception {
-        final DetailAST ast = new DetailAST();
+        final DetailAstImpl ast = new DetailAstImpl();
         ast.setType(TokenTypes.LITERAL_ELSE);
 
         final NPathComplexityCheck check = new NPathComplexityCheck();
-        Assert.assertTrue("Stateful field is not cleared after beginTree",
+        assertTrue(
             TestUtil.isStatefulFieldClearedDuringBeginTree(check, ast, "rangeValues",
-                rangeValues -> ((Collection<Context>) rangeValues).isEmpty()));
-        Assert.assertTrue("Stateful field is not cleared after beginTree",
+                rangeValues -> ((Collection<Context>) rangeValues).isEmpty()),
+                "Stateful field is not cleared after beginTree");
+        assertTrue(
             TestUtil.isStatefulFieldClearedDuringBeginTree(check, ast, "expressionValues",
-                expressionValues -> ((Collection<Context>) expressionValues).isEmpty()));
+                expressionValues -> ((Collection<Context>) expressionValues).isEmpty()),
+                "Stateful field is not cleared after beginTree");
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void testStatefulFieldsClearedOnBeginTree2() throws Exception {
-        final DetailAST ast = new DetailAST();
+        final DetailAstImpl ast = new DetailAstImpl();
         ast.setType(TokenTypes.LITERAL_RETURN);
         ast.setLineNo(5);
-        final DetailAST child = new DetailAST();
+        final DetailAstImpl child = new DetailAstImpl();
         child.setType(TokenTypes.SEMI);
         ast.addChild(child);
 
         final NPathComplexityCheck check = new NPathComplexityCheck();
-        Assert.assertTrue("Stateful field is not cleared after beginTree",
+        assertTrue(
             TestUtil.isStatefulFieldClearedDuringBeginTree(check, ast, "afterValues",
-                isAfterValues -> ((Collection<Context>) isAfterValues).isEmpty()));
+                isAfterValues -> ((Collection<Context>) isAfterValues).isEmpty()),
+                "Stateful field is not cleared after beginTree");
     }
 
     @Test
@@ -168,9 +175,9 @@ public class NPathComplexityCheckTest extends AbstractModuleTestSupport {
                 JavaParser.Options.WITHOUT_COMMENTS),
             ast -> ast.getType() == TokenTypes.QUESTION);
 
-        Assert.assertTrue("Ast should contain QUESTION", question.isPresent());
+        assertTrue(question.isPresent(), "Ast should contain QUESTION");
 
-        Assert.assertTrue("State is not cleared on beginTree",
+        assertTrue(
             TestUtil.isStatefulFieldClearedDuringBeginTree(
                 check,
                 question.get(),
@@ -187,7 +194,7 @@ public class NPathComplexityCheckTest extends AbstractModuleTestSupport {
                     catch (IllegalAccessException | NoSuchFieldException ex) {
                         throw new IllegalStateException(ex);
                     }
-                }));
+                }), "State is not cleared on beginTree");
     }
 
     @Test
@@ -222,8 +229,8 @@ public class NPathComplexityCheckTest extends AbstractModuleTestSupport {
             TokenTypes.LITERAL_RETURN,
             TokenTypes.LITERAL_DEFAULT,
         };
-        Assert.assertNotNull("Acceptable tokens should not be null", actual);
-        Assert.assertArrayEquals("Invalid acceptable tokens", expected, actual);
+        assertNotNull(actual, "Acceptable tokens should not be null");
+        assertArrayEquals(expected, actual, "Invalid acceptable tokens");
     }
 
     @Test
@@ -248,25 +255,25 @@ public class NPathComplexityCheckTest extends AbstractModuleTestSupport {
             TokenTypes.LITERAL_RETURN,
             TokenTypes.LITERAL_DEFAULT,
         };
-        Assert.assertNotNull("Required tokens should not be null", actual);
-        Assert.assertArrayEquals("Invalid required tokens", expected, actual);
+        assertNotNull(actual, "Required tokens should not be null");
+        assertArrayEquals(expected, actual, "Invalid required tokens");
     }
 
     @Test
     public void testDefaultHooks() {
         final NPathComplexityCheck npathComplexityCheckObj = new NPathComplexityCheck();
-        final DetailAST ast = new DetailAST();
+        final DetailAstImpl ast = new DetailAstImpl();
         ast.initialize(new CommonHiddenStreamToken(TokenTypes.INTERFACE_DEF, "interface"));
 
         npathComplexityCheckObj.visitToken(ast);
         final SortedSet<LocalizedMessage> messages1 = npathComplexityCheckObj.getMessages();
 
-        Assert.assertEquals("No exception messages expected", 0, messages1.size());
+        assertEquals(0, messages1.size(), "No exception messages expected");
 
         npathComplexityCheckObj.leaveToken(ast);
         final SortedSet<LocalizedMessage> messages2 = npathComplexityCheckObj.getMessages();
 
-        Assert.assertEquals("No exception messages expected", 0, messages2.size());
+        assertEquals(0, messages2.size(), "No exception messages expected");
     }
 
     /**
@@ -278,6 +285,7 @@ public class NPathComplexityCheckTest extends AbstractModuleTestSupport {
      * visit the same token twice and we are only visiting on very specific tokens.
      * The line can't be removed or reworked as other tests fail, and regression shows us no
      * use cases to create a UT for.
+     *
      * @throws Exception if there is an error.
      */
     @Test
@@ -285,29 +293,29 @@ public class NPathComplexityCheckTest extends AbstractModuleTestSupport {
         final NPathComplexityCheck check = new NPathComplexityCheck();
         final Object tokenEnd = TestUtil.getClassDeclaredField(NPathComplexityCheck.class,
                 "processingTokenEnd").get(check);
-        final DetailAST token = new DetailAST();
+        final DetailAstImpl token = new DetailAstImpl();
         token.setLineNo(0);
         token.setColumnNo(0);
 
-        Assert.assertTrue("isAfter must be true for same line/column",
-                (Boolean) TestUtil.getClassDeclaredMethod(tokenEnd.getClass(), "isAfter")
-                    .invoke(tokenEnd, token));
+        assertTrue(
+            (Boolean) TestUtil.getClassDeclaredMethod(tokenEnd.getClass(), "isAfter")
+                .invoke(tokenEnd, token), "isAfter must be true for same line/column");
     }
 
     @Test
     public void testVisitTokenBeforeExpressionRange() {
         // Create first ast
-        final DetailAST astIf = mockAST(TokenTypes.LITERAL_IF, "if", "mockfile", 2, 2);
-        final DetailAST astIfLeftParen = mockAST(TokenTypes.LPAREN, "(", "mockfile", 3, 3);
+        final DetailAstImpl astIf = mockAST(TokenTypes.LITERAL_IF, "if", "mockfile", 2, 2);
+        final DetailAstImpl astIfLeftParen = mockAST(TokenTypes.LPAREN, "(", "mockfile", 3, 3);
         astIf.addChild(astIfLeftParen);
-        final DetailAST astIfTrue =
+        final DetailAstImpl astIfTrue =
                 mockAST(TokenTypes.LITERAL_TRUE, "true", "mockfile", 3, 3);
         astIf.addChild(astIfTrue);
-        final DetailAST astIfRightParen = mockAST(TokenTypes.RPAREN, ")", "mockfile", 4, 4);
+        final DetailAstImpl astIfRightParen = mockAST(TokenTypes.RPAREN, ")", "mockfile", 4, 4);
         astIf.addChild(astIfRightParen);
         // Create ternary ast
-        final DetailAST astTernary = mockAST(TokenTypes.QUESTION, "?", "mockfile", 1, 1);
-        final DetailAST astTernaryTrue =
+        final DetailAstImpl astTernary = mockAST(TokenTypes.QUESTION, "?", "mockfile", 1, 1);
+        final DetailAstImpl astTernaryTrue =
                 mockAST(TokenTypes.LITERAL_TRUE, "true", "mockfile", 1, 2);
         astTernary.addChild(astTernaryTrue);
 
@@ -317,17 +325,18 @@ public class NPathComplexityCheckTest extends AbstractModuleTestSupport {
         npathComplexityCheckObj.visitToken(astIf);
         final SortedSet<LocalizedMessage> messages1 = npathComplexityCheckObj.getMessages();
 
-        Assert.assertEquals("No exception messages expected", 0, messages1.size());
+        assertEquals(0, messages1.size(), "No exception messages expected");
 
-        //visiting ternary, it lies before expressionSpatialRange
+        // visiting ternary, it lies before expressionSpatialRange
         npathComplexityCheckObj.visitToken(astTernary);
         final SortedSet<LocalizedMessage> messages2 = npathComplexityCheckObj.getMessages();
 
-        Assert.assertEquals("No exception messages expected", 0, messages2.size());
+        assertEquals(0, messages2.size(), "No exception messages expected");
     }
 
     /**
      * Creates MOCK lexical token and returns AST node for this token.
+     *
      * @param tokenType type of token
      * @param tokenText text of token
      * @param tokenFileName file name of token
@@ -335,7 +344,7 @@ public class NPathComplexityCheckTest extends AbstractModuleTestSupport {
      * @param tokenColumn token position in a file (column)
      * @return AST node for the token
      */
-    private static DetailAST mockAST(final int tokenType, final String tokenText,
+    private static DetailAstImpl mockAST(final int tokenType, final String tokenText,
             final String tokenFileName, final int tokenRow, final int tokenColumn) {
         final CommonHiddenStreamToken tokenImportSemi = new CommonHiddenStreamToken();
         tokenImportSemi.setType(tokenType);
@@ -343,7 +352,7 @@ public class NPathComplexityCheckTest extends AbstractModuleTestSupport {
         tokenImportSemi.setLine(tokenRow);
         tokenImportSemi.setColumn(tokenColumn);
         tokenImportSemi.setFilename(tokenFileName);
-        final DetailAST astSemi = new DetailAST();
+        final DetailAstImpl astSemi = new DetailAstImpl();
         astSemi.initialize(tokenImportSemi);
         return astSemi;
     }

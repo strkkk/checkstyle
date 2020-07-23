@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,13 +19,13 @@
 
 package com.google.checkstyle.test.chapter4formatting.rule485annotations;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import com.google.checkstyle.test.base.AbstractModuleTestSupport;
+import com.google.checkstyle.test.base.AbstractGoogleModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.api.Configuration;
 import com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationLocationCheck;
 
-public class AnnotationLocationTest extends AbstractModuleTestSupport {
+public class AnnotationLocationTest extends AbstractGoogleModuleTestSupport {
 
     @Override
     protected String getPackageLocation() {
@@ -42,18 +42,18 @@ public class AnnotationLocationTest extends AbstractModuleTestSupport {
         final String msgLocationAlone = "annotation.location.alone";
         final String msgLocation = "annotation.location";
         final String[] expected = {
-            "3: " + getCheckMessage(clazz, msgLocationAlone, "MyAnnotation1"),
-            "20: " + getCheckMessage(clazz, msgLocation, "MyAnnotation1", "8", "4"),
-            "27: " + getCheckMessage(clazz, msgLocation, "MyAnnotation2", "7", "4"),
-            "31: " + getCheckMessage(clazz, msgLocation, "MyAnnotation2", "8", "4"),
-            "32: " + getCheckMessage(clazz, msgLocation, "MyAnnotation3", "6", "4"),
-            "33: " + getCheckMessage(clazz, msgLocation, "MyAnnotation4", "10", "4"),
-            "54: " + getCheckMessage(clazz, msgLocation, "MyAnnotation2", "12", "8"),
-            "58: " + getCheckMessage(clazz, msgLocation, "MyAnnotation2", "12", "8"),
-            "78: " + getCheckMessage(clazz, msgLocation, "MyAnnotation2", "11", "8"),
-            "81: " + getCheckMessage(clazz, msgLocation, "MyAnnotation2", "10", "8"),
-            "90: " + getCheckMessage(clazz, msgLocation, "MyAnnotation2", "1", "0"),
-            "93: " + getCheckMessage(clazz, msgLocationAlone, "MyAnnotationWithParam"),
+            "3:16: " + getCheckMessage(clazz, msgLocationAlone, "MyAnnotation1"),
+            "20:9: " + getCheckMessage(clazz, msgLocation, "MyAnnotation1", "8", "4"),
+            "27:8: " + getCheckMessage(clazz, msgLocation, "MyAnnotation2", "7", "4"),
+            "31:9: " + getCheckMessage(clazz, msgLocation, "MyAnnotation2", "8", "4"),
+            "32:7: " + getCheckMessage(clazz, msgLocation, "MyAnnotation3", "6", "4"),
+            "33:11: " + getCheckMessage(clazz, msgLocation, "MyAnnotation4", "10", "4"),
+            "54:13: " + getCheckMessage(clazz, msgLocation, "MyAnnotation2", "12", "8"),
+            "58:13: " + getCheckMessage(clazz, msgLocation, "MyAnnotation2", "12", "8"),
+            "78:12: " + getCheckMessage(clazz, msgLocation, "MyAnnotation2", "11", "8"),
+            "81:11: " + getCheckMessage(clazz, msgLocation, "MyAnnotation2", "10", "8"),
+            "90:2: " + getCheckMessage(clazz, msgLocation, "MyAnnotation2", "1", "0"),
+            "93:1: " + getCheckMessage(clazz, msgLocationAlone, "MyAnnotationWithParam"),
         };
 
         final String filePath = getPath("InputAnnotationLocation.java");
@@ -71,7 +71,7 @@ public class AnnotationLocationTest extends AbstractModuleTestSupport {
 
         final String msgLocation = "annotation.location";
         final String[] expected = {
-            "63: " + getCheckMessage(clazz, msgLocation, "MyAnnotation2", "7", "4"),
+            "63:8: " + getCheckMessage(clazz, msgLocation, "MyAnnotation2", "7", "4"),
         };
 
         final String filePath = getPath("InputAnnotationLocationVariables.java");

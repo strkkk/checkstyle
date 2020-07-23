@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -29,36 +29,136 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  * <p>
  * Checks that there is no whitespace before a token.
  * More specifically, it checks that it is not preceded with whitespace,
- * or (if line breaks are allowed) all characters on the line before are
- * whitespace. To allow line breaks before a token, set property
- * allowLineBreaks to true. No check occurs before semi-colons in empty
+ * or (if linebreaks are allowed) all characters on the line before are
+ * whitespace. To allow linebreaks before a token, set property
+ * {@code allowLineBreaks} to {@code true}. No check occurs before semi-colons in empty
  * for loop initializers or conditions.
  * </p>
- * <p> By default the check will check the following operators:
- *  {@link TokenTypes#COMMA COMMA},
- *  {@link TokenTypes#SEMI SEMI},
- *  {@link TokenTypes#POST_DEC POST_DEC},
- *  {@link TokenTypes#POST_INC POST_INC},
- *  {@link TokenTypes#ELLIPSIS ELLIPSIS}.
- * {@link TokenTypes#DOT DOT} is also an acceptable token in a configuration
- * of this check.
- * </p>
- *
+ * <ul>
+ * <li>
+ * Property {@code allowLineBreaks} - Control whether whitespace is allowed
+ * if the token is at a linebreak.
+ * Type is {@code boolean}.
+ * Default value is {@code false}.
+ * </li>
+ * <li>
+ * Property {@code tokens} - tokens to check
+ * Type is {@code int[]}.
+ * Default value is:
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#COMMA">
+ * COMMA</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#SEMI">
+ * SEMI</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#POST_INC">
+ * POST_INC</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#POST_DEC">
+ * POST_DEC</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#ELLIPSIS">
+ * ELLIPSIS</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#LABELED_STAT">
+ * LABELED_STAT</a>.
+ * </li>
+ * </ul>
  * <p>
- * An example of how to configure the check is:
+ * To configure the check:
  * </p>
  * <pre>
- * &lt;module name="NoWhitespaceBefore"/&gt;
+ * &lt;module name=&quot;NoWhitespaceBefore&quot;/&gt;
  * </pre>
- * <p> An example of how to configure the check to allow line breaks before
- * a {@link TokenTypes#DOT DOT} token is:
- * </p>
+ * <p>Example:</p>
  * <pre>
- * &lt;module name="NoWhitespaceBefore"&gt;
- *     &lt;property name="tokens" value="DOT"/&gt;
- *     &lt;property name="allowLineBreaks" value="true"/&gt;
+ * int foo;
+ * foo ++; // violation, whitespace before '++' is not allowed
+ * foo++; // OK
+ * for (int i = 0 ; i &lt; 5; i++) {}  // violation
+ *            // ^ whitespace before ';' is not allowed
+ * for (int i = 0; i &lt; 5; i++) {} // OK
+ * int[][] array = { { 1, 2 }
+ *                 , { 3, 4 } }; // violation, whitespace before ',' is not allowed
+ * int[][] array2 = { { 1, 2 },
+ *                    { 3, 4 } }; // OK
+ * Lists.charactersOf("foo").listIterator()
+ *        .forEachRemaining(System.out::print)
+ *        ; // violation, whitespace before ';' is not allowed
+ *   {
+ *     label1 : // violation, whitespace before ':' is not allowed
+ *     for (int i = 0; i &lt; 10; i++) {}
+ *   }
+ *
+ *   {
+ *     label2: // OK
+ *     while (true) {}
+ *   }
+ * </pre>
+ * <p>To configure the check to allow linebreaks before default tokens:</p>
+ * <pre>
+ * &lt;module name=&quot;NoWhitespaceBefore&quot;&gt;
+ *   &lt;property name=&quot;allowLineBreaks&quot; value=&quot;true&quot;/&gt;
  * &lt;/module&gt;
  * </pre>
+ * <p>Example:</p>
+ * <pre>
+ * int[][] array = { { 1, 2 }
+ *                 , { 3, 4 } }; // OK, linebreak is allowed before ','
+ * int[][] array2 = { { 1, 2 },
+ *                    { 3, 4 } }; // OK, ideal code
+ * void ellipsisExample(String ...params) {}; // violation, whitespace before '...' is not allowed
+ * void ellipsisExample2(String
+ *                         ...params) {}; //OK, linebreak is allowed before '...'
+ * Lists.charactersOf("foo")
+ *        .listIterator()
+ *        .forEachRemaining(System.out::print); // OK
+ * </pre>
+ * <p>
+ *     To Configure the check to restrict the use of whitespace before METHOD_REF and DOT tokens:
+ * </p>
+ * <pre>
+ * &lt;module name=&quot;NoWhitespaceBefore&quot;&gt;
+ *   &lt;property name=&quot;tokens&quot; value=&quot;METHOD_REF&quot;/&gt;
+ *   &lt;property name=&quot;tokens&quot; value=&quot;DOT&quot;/&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>Example:</p>
+ * <pre>
+ * Lists.charactersOf("foo").listIterator()
+ *        .forEachRemaining(System.out::print); // violation, whitespace before '.' is not allowed
+ * Lists.charactersOf("foo").listIterator().forEachRemaining(System.out ::print); // violation,
+ *                           // whitespace before '::' is not allowed  ^
+ * Lists.charactersOf("foo").listIterator().forEachRemaining(System.out::print); // OK
+ * </pre>
+ * <p>
+ *     To configure the check to allow linebreak before METHOD_REF and DOT tokens:
+ * </p>
+ * <pre>
+ * &lt;module name=&quot;NoWhitespaceBefore&quot;&gt;
+ *   &lt;property name=&quot;tokens&quot; value=&quot;METHOD_REF&quot;/&gt;
+ *   &lt;property name=&quot;tokens&quot; value=&quot;DOT&quot;/&gt;
+ *   &lt;property name=&quot;allowLineBreaks&quot; value=&quot;true&quot;/&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>Example:</p>
+ * <pre>
+ * Lists .charactersOf("foo") //violation, whitespace before '.' is not allowed
+ *         .listIterator()
+ *         .forEachRemaining(System.out ::print); // violation,
+ *                                  // ^ whitespace before '::' is not allowed
+ * Lists.charactersOf("foo")
+ *        .listIterator()
+ *        .forEachRemaining(System.out::print); // OK
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code ws.preceded}
+ * </li>
+ * </ul>
+ *
+ * @since 3.0
  */
 @StatelessCheck
 public class NoWhitespaceBeforeCheck
@@ -70,7 +170,7 @@ public class NoWhitespaceBeforeCheck
      */
     public static final String MSG_KEY = "ws.preceded";
 
-    /** Whether whitespace is allowed if the AST is at a linebreak. */
+    /** Control whether whitespace is allowed if the token is at a linebreak. */
     private boolean allowLineBreaks;
 
     @Override
@@ -81,6 +181,7 @@ public class NoWhitespaceBeforeCheck
             TokenTypes.POST_INC,
             TokenTypes.POST_DEC,
             TokenTypes.ELLIPSIS,
+            TokenTypes.LABELED_STAT,
         };
     }
 
@@ -95,6 +196,7 @@ public class NoWhitespaceBeforeCheck
             TokenTypes.GENERIC_START,
             TokenTypes.GENERIC_END,
             TokenTypes.ELLIPSIS,
+            TokenTypes.LABELED_STAT,
             TokenTypes.METHOD_REF,
         };
     }
@@ -127,6 +229,7 @@ public class NoWhitespaceBeforeCheck
 
     /**
      * Checks that semicolon is in empty for initializer or condition.
+     *
      * @param semicolonAst DetailAST of semicolon.
      * @return true if semicolon is in empty for initializer or condition.
      */
@@ -136,14 +239,15 @@ public class NoWhitespaceBeforeCheck
         if (sibling != null
                 && (sibling.getType() == TokenTypes.FOR_INIT
                         || sibling.getType() == TokenTypes.FOR_CONDITION)
-                && sibling.getChildCount() == 0) {
+                && !sibling.hasChildren()) {
             result = true;
         }
         return result;
     }
 
     /**
-     * Control whether whitespace is flagged at line breaks.
+     * Setter to control whether whitespace is allowed if the token is at a linebreak.
+     *
      * @param allowLineBreaks whether whitespace should be
      *     flagged at line breaks.
      */

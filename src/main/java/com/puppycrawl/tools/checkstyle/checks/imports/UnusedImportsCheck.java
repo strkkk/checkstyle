@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -39,16 +39,77 @@ import com.puppycrawl.tools.checkstyle.utils.JavadocUtil;
 
 /**
  * <p>
- * Checks for unused import statements.
+ * Checks for unused import statements. Checkstyle uses a simple but very
+ * reliable algorithm to report on unused import statements. An import statement
+ * is considered unused if:
  * </p>
- *  <p>
- * An example of how to configure the check is:
+ * <ul>
+ * <li>
+ * It is not referenced in the file. The algorithm does not support wild-card
+ * imports like {@code import java.io.*;}. Most IDE's provide very sophisticated
+ * checks for imports that handle wild-card imports.
+ * </li>
+ * <li>
+ * It is a duplicate of another import. This is when a class is imported more
+ * than once.
+ * </li>
+ * <li>
+ * The class imported is from the {@code java.lang} package. For example
+ * importing {@code java.lang.String}.
+ * </li>
+ * <li>
+ * The class imported is from the same package.
+ * </li>
+ * <li>
+ * <b>Optionally:</b> it is referenced in Javadoc comments. This check is on by
+ * default, but it is considered bad practice to introduce a compile time
+ * dependency for documentation purposes only. As an example, the import
+ * {@code java.util.List} would be considered referenced with the Javadoc
+ * comment {@code {@link List}}. The alternative to avoid introducing a compile
+ * time dependency would be to write the Javadoc comment as {@code {&#64;link java.util.List}}.
+ * </li>
+ * </ul>
+ * <p>
+ * The main limitation of this check is handling the case where an imported type
+ * has the same name as a declaration, such as a member variable.
+ * </p>
+ * <p>
+ * For example, in the following case the import {@code java.awt.Component}
+ * will not be flagged as unused:
+ * </p>
+ * <pre>
+ * import java.awt.Component;
+ * class FooBar {
+ *   private Object Component; // a bad practice in my opinion
+ *   ...
+ * }
+ * </pre>
+ * <ul>
+ * <li>
+ * Property {@code processJavadoc} - Control whether to process Javadoc comments.
+ * Type is {@code boolean}.
+ * Default value is {@code true}.
+ * </li>
+ * </ul>
+ * <p>
+ * To configure the check:
  * </p>
  * <pre>
  * &lt;module name="UnusedImports"/&gt;
  * </pre>
- * Compatible with Java 1.5 source.
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code import.unused}
+ * </li>
+ * </ul>
  *
+ * @since 3.0
  */
 @FileStatefulCheck
 public class UnusedImportsCheck extends AbstractCheck {
@@ -84,13 +145,13 @@ public class UnusedImportsCheck extends AbstractCheck {
 
     /** Flag to indicate when time to start collecting references. */
     private boolean collect;
-    /** Flag whether to process Javadoc comments. */
+    /** Control whether to process Javadoc comments. */
     private boolean processJavadoc = true;
 
     /**
-     * Sets whether to process JavaDoc or not.
+     * Setter to control whether to process Javadoc comments.
      *
-     * @param value Flag for processing JavaDoc.
+     * @param value Flag for processing Javadoc comments.
      */
     public void setProcessJavadoc(boolean value) {
         processJavadoc = value;
@@ -108,8 +169,7 @@ public class UnusedImportsCheck extends AbstractCheck {
         // loop over all the imports to see if referenced.
         imports.stream()
             .filter(imprt -> isUnusedImport(imprt.getText()))
-            .forEach(imprt -> log(imprt.getDetailAst(),
-                MSG_KEY, imprt.getText()));
+            .forEach(imprt -> log(imprt.getDetailAst(), MSG_KEY, imprt.getText()));
     }
 
     @Override
@@ -165,6 +225,7 @@ public class UnusedImportsCheck extends AbstractCheck {
 
     /**
      * Checks whether an import is unused.
+     *
      * @param imprt an import.
      * @return true if an import is unused.
      */
@@ -176,6 +237,7 @@ public class UnusedImportsCheck extends AbstractCheck {
 
     /**
      * Collects references made by IDENT.
+     *
      * @param ast the IDENT node to process
      */
     private void processIdent(DetailAST ast) {
@@ -191,6 +253,7 @@ public class UnusedImportsCheck extends AbstractCheck {
 
     /**
      * Collects the details of imports.
+     *
      * @param ast node containing the import details
      */
     private void processImport(DetailAST ast) {
@@ -202,6 +265,7 @@ public class UnusedImportsCheck extends AbstractCheck {
 
     /**
      * Collects the details of static imports.
+     *
      * @param ast node containing the static import details
      */
     private void processStaticImport(DetailAST ast) {
@@ -215,6 +279,7 @@ public class UnusedImportsCheck extends AbstractCheck {
 
     /**
      * Collects references made in Javadoc comments.
+     *
      * @param ast node to inspect for Javadoc
      */
     private void collectReferencesFromJavadoc(DetailAST ast) {
@@ -229,6 +294,7 @@ public class UnusedImportsCheck extends AbstractCheck {
     /**
      * Process a javadoc {@link TextBlock} and return the set of classes
      * referenced within.
+     *
      * @param textBlock The javadoc block to parse
      * @return a set of classes referenced in the javadoc block
      */
@@ -250,6 +316,7 @@ public class UnusedImportsCheck extends AbstractCheck {
 
     /**
      * Returns the list of valid tags found in a javadoc {@link TextBlock}.
+     *
      * @param cmt The javadoc block to parse
      * @param tagType The type of tags we're interested in
      * @return the list of tags
@@ -261,6 +328,7 @@ public class UnusedImportsCheck extends AbstractCheck {
 
     /**
      * Returns a list of references found in a javadoc {@link JavadocTag}.
+     *
      * @param tag The javadoc tag to parse
      * @return A list of references found in this tag
      */
@@ -277,6 +345,7 @@ public class UnusedImportsCheck extends AbstractCheck {
     /**
      * Extracts a list of texts matching a {@link Pattern} from a
      * {@link String}.
+     *
      * @param identifier The String to match the pattern against
      * @param pattern The Pattern used to extract the texts
      * @return A list of texts which matched the pattern
@@ -294,6 +363,7 @@ public class UnusedImportsCheck extends AbstractCheck {
      * If the given type string contains "." (e.g. "Map.Entry"), returns the
      * top level type (e.g. "Map"), as that is what must be imported for the
      * type to resolve. Otherwise, returns the type as-is.
+     *
      * @param type A possibly qualified type name
      * @return The simple name of the top level type
      */

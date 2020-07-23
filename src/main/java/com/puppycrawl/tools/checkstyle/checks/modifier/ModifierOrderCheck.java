@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -31,39 +31,60 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 /**
  * <p>
  * Checks that the order of modifiers conforms to the suggestions in the
- * <a
- * href="https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html">
- * Java Language specification, sections 8.1.1, 8.3.1 and 8.4.3</a>.
- * The correct order is:</p>
-
-<ol>
-  <li><span class="code">public</span></li>
-  <li><span class="code">protected</span></li>
-
-  <li><span class="code">private</span></li>
-  <li><span class="code">abstract</span></li>
-  <li><span class="code">default</span></li>
-  <li><span class="code">static</span></li>
-  <li><span class="code">final</span></li>
-  <li><span class="code">transient</span></li>
-  <li><span class="code">volatile</span></li>
-
-  <li><span class="code">synchronized</span></li>
-  <li><span class="code">native</span></li>
-  <li><span class="code">strictfp</span></li>
-</ol>
+ * <a href="https://docs.oracle.com/javase/specs/jls/se11/html/jls-8.html">
+ * Java Language specification, &#167; 8.1.1, 8.3.1, 8.4.3</a> and
+ * <a href="https://docs.oracle.com/javase/specs/jls/se11/html/jls-9.html">9.4</a>.
+ * The correct order is:
+ * </p>
+ * <ol>
+ * <li> {@code public} </li>
+ * <li> {@code protected} </li>
+ * <li> {@code private} </li>
+ * <li> {@code abstract} </li>
+ * <li> {@code default} </li>
+ * <li> {@code static} </li>
+ * <li> {@code final} </li>
+ * <li> {@code transient} </li>
+ * <li> {@code volatile} </li>
+ * <li> {@code synchronized} </li>
+ * <li> {@code native} </li>
+ * <li> {@code strictfp} </li>
+ * </ol>
+ * <p>
  * In additional, modifiers are checked to ensure all annotations
  * are declared before all other modifiers.
+ * </p>
  * <p>
  * Rationale: Code is easier to read if everybody follows
  * a standard.
  * </p>
  * <p>
- * An example of how to configure the check is:
+ * ATTENTION: We skip
+ * <a href="https://www.oracle.com/technical-resources/articles/java/ma14-architect-annotations.html">
+ * type annotations</a> from validation.
+ * </p>
+ * <p>
+ * To configure the check:
  * </p>
  * <pre>
  * &lt;module name="ModifierOrder"/&gt;
  * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code annotation.order}
+ * </li>
+ * <li>
+ * {@code mod.order}
+ * </li>
+ * </ul>
+ *
+ * @since 3.0
  */
 @StatelessCheck
 public class ModifierOrderCheck
@@ -142,12 +163,12 @@ public class ModifierOrderCheck
     private static DetailAST checkOrderSuggestedByJls(List<DetailAST> modifiers) {
         final Iterator<DetailAST> iterator = modifiers.iterator();
 
-        //Speed past all initial annotations
+        // Speed past all initial annotations
         DetailAST modifier = skipAnnotations(iterator);
 
         DetailAST offendingModifier = null;
 
-        //All modifiers are annotations, no problem
+        // All modifiers are annotations, no problem
         if (modifier.getType() != TokenTypes.ANNOTATION) {
             int index = 0;
 
@@ -155,7 +176,7 @@ public class ModifierOrderCheck
                     && offendingModifier == null) {
                 if (modifier.getType() == TokenTypes.ANNOTATION) {
                     if (!isAnnotationOnType(modifier)) {
-                        //Annotation not at start of modifiers, bad
+                        // Annotation not at start of modifiers, bad
                         offendingModifier = modifier;
                     }
                     break;
@@ -167,14 +188,14 @@ public class ModifierOrderCheck
                 }
 
                 if (index == JLS_ORDER.length) {
-                    //Current modifier is out of JLS order
+                    // Current modifier is out of JLS order
                     offendingModifier = modifier;
                 }
                 else if (iterator.hasNext()) {
                     modifier = iterator.next();
                 }
                 else {
-                    //Reached end of modifiers without problem
+                    // Reached end of modifiers without problem
                     modifier = null;
                 }
             }
@@ -184,6 +205,7 @@ public class ModifierOrderCheck
 
     /**
      * Skip all annotations in modifier block.
+     *
      * @param modifierIterator iterator for collection of modifiers
      * @return modifier next to last annotation
      */
@@ -197,6 +219,7 @@ public class ModifierOrderCheck
 
     /**
      * Checks whether annotation on type takes place.
+     *
      * @param modifier modifier token.
      * @return true if annotation on type takes place.
      */

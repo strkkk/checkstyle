@@ -129,7 +129,7 @@ public class InputParenPadLeftRightAndNoSpace
 enum MyEnum {
     SOME_CONSTANT( ) {
         int i = (int) (2 * (4 / 2)
-                ); 
+                );
     };
 
     public void myMethod() {
@@ -158,7 +158,7 @@ enum MyEnum {
 
     public int something( Object o ) {
         if ( o == null || !( o instanceof Float ) ) {
-        	return -1;
+            return -1;
         }
         return Integer.valueOf( 22 ).compareTo( (Integer) o );
     }
@@ -215,6 +215,6 @@ enum MyEnum {
 enum MyEnum2 {
     SOME_CONSTANT( ) {
         int i = (int) (2 * (4 / 2
-)                   ); 
+)                   );
     };
 }

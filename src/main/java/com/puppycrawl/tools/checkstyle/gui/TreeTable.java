@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -39,6 +39,9 @@ import javax.swing.LookAndFeel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.tree.TreePath;
 
+import com.puppycrawl.tools.checkstyle.api.DetailAST;
+import com.puppycrawl.tools.checkstyle.xpath.XpathQueryGenerator;
+
 /**
  * This example shows how to create a simple TreeTable component,
  * by using a JTree as a renderer (and editor) for the cells in a
@@ -57,11 +60,14 @@ public final class TreeTable extends JTable {
     private final TreeTableCellRenderer tree;
     /** JTextArea editor. */
     private JTextArea editor;
+    /** JTextArea xpathEditor. */
+    private JTextArea xpathEditor;
     /** Line position map. */
     private List<Integer> linePositionMap;
 
     /**
      * Creates TreeTable base on TreeTableModel.
+     *
      * @param treeTableModel Tree table model
      */
     public TreeTable(ParseTreeTableModel treeTableModel) {
@@ -125,6 +131,7 @@ public final class TreeTable extends JTable {
     private void expandSelectedNode() {
         final TreePath selected = tree.getSelectionPath();
         makeCodeSelection();
+        generateXpath();
 
         if (tree.isExpanded(selected)) {
             tree.collapsePath(selected);
@@ -140,6 +147,23 @@ public final class TreeTable extends JTable {
      */
     private void makeCodeSelection() {
         new CodeSelector(tree.getLastSelectedPathComponent(), editor, linePositionMap).select();
+    }
+
+    /**
+     * Generate Xpath.
+     */
+    private void generateXpath() {
+        if (tree.getLastSelectedPathComponent() instanceof DetailAST) {
+            final DetailAST ast = (DetailAST) tree.getLastSelectedPathComponent();
+            final int beginPos = 4;
+            String xpath = XpathQueryGenerator.generateXpathQuery(ast);
+            final int length = xpath.length();
+            xpath = xpath.substring(beginPos, length);
+            xpathEditor.setText(xpath);
+        }
+        else {
+            xpathEditor.setText("Xpath is not supported yet for javadoc nodes");
+        }
     }
 
     /**
@@ -212,6 +236,7 @@ public final class TreeTable extends JTable {
 
     /**
      * Returns tree.
+     *
      * @return the tree that is being shared between the model.
      */
     public JTree getTree() {
@@ -220,6 +245,7 @@ public final class TreeTable extends JTable {
 
     /**
      * Sets text area editor.
+     *
      * @param textArea JTextArea component.
      */
     public void setEditor(JTextArea textArea) {
@@ -227,7 +253,17 @@ public final class TreeTable extends JTable {
     }
 
     /**
+     * Sets text area xpathEditor.
+     *
+     * @param xpathTextArea JTextArea component.
+     */
+    public void setXpathEditor(JTextArea xpathTextArea) {
+        xpathEditor = xpathTextArea;
+    }
+
+    /**
      * Sets line position map.
+     *
      * @param linePositionMap Line position map.
      */
     public void setLinePositionMap(List<Integer> linePositionMap) {

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,10 +21,10 @@ package com.puppycrawl.tools.checkstyle.checks.annotation;
 
 import static com.puppycrawl.tools.checkstyle.checks.annotation.MissingOverrideCheck.MSG_KEY_ANNOTATION_MISSING_OVERRIDE;
 import static com.puppycrawl.tools.checkstyle.checks.annotation.MissingOverrideCheck.MSG_KEY_TAG_NOT_VALID_ON;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
@@ -48,10 +48,10 @@ public class MissingOverrideCheckTest extends AbstractModuleTestSupport {
         checkConfig.addAttribute("javaFiveCompatibility", "false");
 
         final String[] expected = {
-            "8: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
-            "30: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
-            "41: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
-            "50: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
+            "8:5: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
+            "30:9: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
+            "41:5: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
+            "50:5: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
         };
 
         verify(checkConfig, getPath("InputMissingOverrideBadOverrideFromObject.java"), expected);
@@ -67,10 +67,10 @@ public class MissingOverrideCheckTest extends AbstractModuleTestSupport {
         checkConfig.addAttribute("javaFiveCompatibility", "true");
 
         final String[] expected = {
-            "8: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
-            "30: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
-            "41: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
-            "50: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
+            "8:5: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
+            "30:9: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
+            "41:5: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
+            "50:5: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
         };
 
         verify(checkConfig, getPath("InputMissingOverrideBadOverrideFromObject.java"), expected);
@@ -84,13 +84,13 @@ public class MissingOverrideCheckTest extends AbstractModuleTestSupport {
     public void testBadOverrideFromOther() throws Exception {
         final DefaultConfiguration checkConfig = createModuleConfig(MissingOverrideCheck.class);
         final String[] expected = {
-            "10: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
-            "26: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
-            "34: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
-            "40: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
-            "47: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
-            "53: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
-            "63: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
+            "10:5: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
+            "26:5: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
+            "34:5: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
+            "40:5: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
+            "47:9: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
+            "53:9: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
+            "63:5: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
         };
 
         verify(checkConfig, getPath("InputMissingOverrideBadOverrideFromOther.java"), expected);
@@ -118,10 +118,10 @@ public class MissingOverrideCheckTest extends AbstractModuleTestSupport {
     public void testBadAnnotationOverride() throws Exception {
         final DefaultConfiguration checkConfig = createModuleConfig(MissingOverrideCheck.class);
         final String[] expected = {
-            "10: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
-            "16: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
-            "29: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
-            "35: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
+            "10:9: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
+            "16:17: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
+            "29:13: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
+            "35:21: " + getCheckMessage(MSG_KEY_ANNOTATION_MISSING_OVERRIDE),
         };
 
         verify(checkConfig, getPath("InputMissingOverrideBadAnnotation.java"), expected);
@@ -147,8 +147,8 @@ public class MissingOverrideCheckTest extends AbstractModuleTestSupport {
     public void testNotOverride() throws Exception {
         final DefaultConfiguration checkConfig = createModuleConfig(MissingOverrideCheck.class);
         final String[] expected = {
-            "8: " + getCheckMessage(MSG_KEY_TAG_NOT_VALID_ON, "{@inheritDoc}"),
-            "15: " + getCheckMessage(MSG_KEY_TAG_NOT_VALID_ON, "{@inheritDoc}"),
+            "8:5: " + getCheckMessage(MSG_KEY_TAG_NOT_VALID_ON, "{@inheritDoc}"),
+            "15:5: " + getCheckMessage(MSG_KEY_TAG_NOT_VALID_ON, "{@inheritDoc}"),
         };
 
         verify(checkConfig, getPath("InputMissingOverrideNotOverride.java"), expected);
@@ -238,8 +238,8 @@ public class MissingOverrideCheckTest extends AbstractModuleTestSupport {
         final int[] expectedTokens = {TokenTypes.METHOD_DEF };
         final MissingOverrideCheck check = new MissingOverrideCheck();
         final int[] actual = check.getAcceptableTokens();
-        assertEquals("Invalid acceptable token size", 1, actual.length);
-        Assert.assertArrayEquals("Default required tokens are invalid", expectedTokens, actual);
+        assertEquals(1, actual.length, "Invalid acceptable token size");
+        assertArrayEquals(expectedTokens, actual, "Default required tokens are invalid");
     }
 
 }

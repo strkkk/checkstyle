@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -32,6 +32,7 @@ class PkgImportRule extends AbstractImportRule {
 
     /**
      * Constructs an instance.
+     *
      * @param allow whether to allow access.
      * @param localOnly whether the rule is to be applied locally only
      * @param pkgName the package to apply the rule on.
@@ -48,6 +49,7 @@ class PkgImportRule extends AbstractImportRule {
 
     /**
      * Verifies whether a package name is used.
+     *
      * @param forImport the import to check.
      * @return a result {@link AccessResult} indicating whether it can be used.
      */

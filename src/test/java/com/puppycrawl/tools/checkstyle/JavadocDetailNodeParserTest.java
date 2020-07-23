@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,21 +19,18 @@
 
 package com.puppycrawl.tools.checkstyle;
 
-import static java.util.Locale.ENGLISH;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 
 public class JavadocDetailNodeParserTest extends AbstractModuleTestSupport {
-
-    private static final String OS_NAME = System.getProperty("os.name").toLowerCase(ENGLISH);
 
     @Override
     protected String getPackageLocation() {
@@ -48,24 +45,12 @@ public class JavadocDetailNodeParserTest extends AbstractModuleTestSupport {
                 .getNextSibling().getFirstChild().getFirstChild();
         final JavadocDetailNodeParser parser = new JavadocDetailNodeParser();
         final JavadocDetailNodeParser.ParseStatus status = parser.parseJavadocAsDetailNode(ast);
-        final String actual = DetailNodeTreeStringPrinter.printTree(status.getTree(), "", "");
-        final String expected;
-
-        // line separators in the input file while running this test on Windows are different,
-        // so when we try to print tree, output also will have different line separators on windows
-        // and linux.
-        if (OS_NAME.startsWith("windows")) {
-            expected = new String(Files.readAllBytes(Paths.get(
-                    getPath("ExpectedJavadocDetailNodeParserWindows.txt"))),
-                    StandardCharsets.UTF_8);
-        }
-        else {
-            expected = new String(Files.readAllBytes(Paths.get(
-                    getPath("ExpectedJavadocDetailNodeParser.txt"))),
-                    StandardCharsets.UTF_8);
-        }
-
-        assertEquals("Invalid parse result", expected, actual);
+        final String actual = toLfLineEnding(DetailNodeTreeStringPrinter.printTree(status.getTree(),
+                "", ""));
+        final String expected = toLfLineEnding(new String(Files.readAllBytes(Paths.get(
+                getPath("ExpectedJavadocDetailNodeParser.txt"))),
+                StandardCharsets.UTF_8));
+        assertEquals(expected, actual, "Invalid parse result");
     }
 
 }

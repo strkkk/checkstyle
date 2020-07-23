@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -60,6 +60,7 @@ public final class ScopeUtil {
 
     /**
      * Returns the scope of the surrounding "block".
+     *
      * @param node the node to return the scope for
      * @return the Scope of the surrounding block
      */
@@ -69,10 +70,7 @@ public final class ScopeUtil {
              token != null;
              token = token.getParent()) {
             final int type = token.getType();
-            if (type == TokenTypes.CLASS_DEF
-                || type == TokenTypes.INTERFACE_DEF
-                || type == TokenTypes.ANNOTATION_DEF
-                || type == TokenTypes.ENUM_DEF) {
+            if (TokenUtil.isTypeDeclaration(type)) {
                 final DetailAST mods =
                     token.findFirstToken(TokenTypes.MODIFIERS);
                 final Scope modScope = getScopeFromMods(mods);
@@ -138,11 +136,7 @@ public final class ScopeUtil {
             if (type == tokenType) {
                 returnValue = true;
             }
-            else if (type == TokenTypes.CLASS_DEF
-                || type == TokenTypes.ENUM_DEF
-                || type == TokenTypes.INTERFACE_DEF
-                || type == TokenTypes.ANNOTATION_DEF
-                || type == TokenTypes.LITERAL_NEW) {
+            else if (type == TokenTypes.LITERAL_NEW || TokenUtil.isTypeDeclaration(type)) {
                 break;
             }
         }
@@ -229,10 +223,7 @@ public final class ScopeUtil {
         for (DetailAST parent = node.getParent();
              parent != null;
              parent = parent.getParent()) {
-            if (parent.getType() == TokenTypes.CLASS_DEF
-                || parent.getType() == TokenTypes.INTERFACE_DEF
-                || parent.getType() == TokenTypes.ANNOTATION_DEF
-                || parent.getType() == TokenTypes.ENUM_DEF) {
+            if (TokenUtil.isTypeDeclaration(parent.getType())) {
                 returnValue = false;
                 break;
             }
@@ -245,6 +236,7 @@ public final class ScopeUtil {
      * Determines whether a node is a local variable definition.
      * I.e. if it is declared in a code block, a for initializer,
      * or a catch parameter.
+     *
      * @param node the node to check.
      * @return whether aAST is a local variable definition.
      */
@@ -274,6 +266,7 @@ public final class ScopeUtil {
      * Determines whether a node is a class field definition.
      * I.e. if a variable is not declared in a code block, a for initializer,
      * or a catch parameter.
+     *
      * @param node the node to check.
      * @return whether a node is a class field definition.
      */
@@ -283,6 +276,7 @@ public final class ScopeUtil {
 
     /**
      * Checks whether ast node is in a specific scope.
+     *
      * @param ast the node to check.
      * @param scope a {@code Scope} value.
      * @return true if the ast node is in the scope.

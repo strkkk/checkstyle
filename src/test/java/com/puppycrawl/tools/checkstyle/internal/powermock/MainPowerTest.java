@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -60,7 +60,7 @@ public class MainPowerTest {
      */
     @Test
     public void testJacocoWorkaround() throws Exception {
-        final String expected = "Missing required parameter: <files>" + EOL + SHORT_USAGE;
+        final String expected = "Missing required parameter: '<files>'" + EOL + SHORT_USAGE;
         mockStatic(System.class);
         Main.main();
         assertEquals("Unexpected output log", "", systemOut.getLog());

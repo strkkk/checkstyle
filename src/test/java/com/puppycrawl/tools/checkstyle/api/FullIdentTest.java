@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,13 +19,15 @@
 
 package com.puppycrawl.tools.checkstyle.api;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
+import com.puppycrawl.tools.checkstyle.DetailAstImpl;
 import com.puppycrawl.tools.checkstyle.JavaParser;
 
 public class FullIdentTest extends AbstractModuleTestSupport {
@@ -37,25 +39,25 @@ public class FullIdentTest extends AbstractModuleTestSupport {
 
     @Test
     public void testToString() {
-        final DetailAST ast = new DetailAST();
+        final DetailAstImpl ast = new DetailAstImpl();
         ast.setType(TokenTypes.LITERAL_NEW);
         ast.setColumnNo(14);
         ast.setLineNo(15);
         ast.setText("MyTest");
 
         final FullIdent indent = FullIdent.createFullIdent(ast);
-        Assert.assertEquals("Invalid full indent", "MyTest[15x14]", indent.toString());
-        Assert.assertEquals("Invalid text", "MyTest", indent.getText());
-        Assert.assertEquals("Invalid line", 15, indent.getLineNo());
-        Assert.assertEquals("Invalid column", 14, indent.getColumnNo());
+        assertEquals("MyTest[15x14]", indent.toString(), "Invalid full indent");
+        assertEquals("MyTest", indent.getText(), "Invalid text");
+        assertEquals(15, indent.getLineNo(), "Invalid line");
+        assertEquals(14, indent.getColumnNo(), "Invalid column");
     }
 
     @Test
     public void testCreateFullIdentBelow() {
-        final DetailAST ast = new DetailAST();
+        final DetailAST ast = new DetailAstImpl();
 
         final FullIdent indent = FullIdent.createFullIdentBelow(ast);
-        Assert.assertEquals("Invalid full indent", "", indent.getText());
+        assertEquals("", indent.getText(), "Invalid full indent");
     }
 
     @Test
@@ -66,19 +68,19 @@ public class FullIdentTest extends AbstractModuleTestSupport {
         final DetailAST packageDefinitionNode = JavaParser.parse(new FileContents(testFileText));
         final DetailAST packageName = packageDefinitionNode.getFirstChild().getNextSibling();
         final FullIdent ident = FullIdent.createFullIdent(packageName);
-        Assert.assertEquals("Invalid full indent", "com[1x8]", ident.getDetailAst().toString());
+        assertEquals("com[1x8]", ident.getDetailAst().toString(), "Invalid full indent");
     }
 
     @Test
     public void testNonValidCoordinatesWithNegative() {
         final FullIdent fullIdent = prepareFullIdentWithCoordinates(14, 15);
-        Assert.assertEquals("Invalid full indent", "MyTest.MyTestik[15x14]", fullIdent.toString());
+        assertEquals("MyTest.MyTestik[15x14]", fullIdent.toString(), "Invalid full indent");
     }
 
     @Test
     public void testNonValidCoordinatesWithZero() {
         final FullIdent fullIdent = prepareFullIdentWithCoordinates(0, 0);
-        Assert.assertEquals("Invalid full indent", "MyTest.MyTestik[15x14]", fullIdent.toString());
+        assertEquals("MyTest.MyTestik[15x14]", fullIdent.toString(), "Invalid full indent");
     }
 
     @Test
@@ -93,23 +95,23 @@ public class FullIdentTest extends AbstractModuleTestSupport {
                 .findFirstToken(TokenTypes.TYPE)
                 .getFirstChild();
         final FullIdent ident = FullIdent.createFullIdent(arrayDeclarator);
-        Assert.assertEquals("Invalid full indent", "int[][][5x12]", ident.toString());
+        assertEquals("int[][][5x12]", ident.toString(), "Invalid full indent");
     }
 
     private static FullIdent prepareFullIdentWithCoordinates(int columnNo, int lineNo) {
-        final DetailAST ast = new DetailAST();
+        final DetailAstImpl ast = new DetailAstImpl();
         ast.setType(TokenTypes.DOT);
         ast.setColumnNo(1);
         ast.setLineNo(2);
         ast.setText("Root");
 
-        final DetailAST ast2 = new DetailAST();
+        final DetailAstImpl ast2 = new DetailAstImpl();
         ast2.setType(TokenTypes.LE);
         ast2.setColumnNo(columnNo);
         ast2.setLineNo(lineNo);
         ast2.setText("MyTestik");
 
-        final DetailAST ast1 = new DetailAST();
+        final DetailAstImpl ast1 = new DetailAstImpl();
         ast1.setType(TokenTypes.LITERAL_NEW);
         ast1.setColumnNo(14);
         ast1.setLineNo(15);

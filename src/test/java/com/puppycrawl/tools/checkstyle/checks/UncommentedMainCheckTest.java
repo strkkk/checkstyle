@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,15 +20,17 @@
 package com.puppycrawl.tools.checkstyle.checks;
 
 import static com.puppycrawl.tools.checkstyle.checks.UncommentedMainCheck.MSG_KEY;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import antlr.CommonHiddenStreamToken;
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
-import com.puppycrawl.tools.checkstyle.api.DetailAST;
+import com.puppycrawl.tools.checkstyle.DetailAstImpl;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
 
@@ -46,10 +48,10 @@ public class UncommentedMainCheckTest
         final DefaultConfiguration checkConfig =
             createModuleConfig(UncommentedMainCheck.class);
         final String[] expected = {
-            "14: " + getCheckMessage(MSG_KEY),
-            "23: " + getCheckMessage(MSG_KEY),
-            "32: " + getCheckMessage(MSG_KEY),
-            "96: " + getCheckMessage(MSG_KEY),
+            "14:5: " + getCheckMessage(MSG_KEY),
+            "23:5: " + getCheckMessage(MSG_KEY),
+            "32:5: " + getCheckMessage(MSG_KEY),
+            "96:5: " + getCheckMessage(MSG_KEY),
         };
         verify(checkConfig, getPath("InputUncommentedMain.java"), expected);
     }
@@ -61,9 +63,9 @@ public class UncommentedMainCheckTest
             createModuleConfig(UncommentedMainCheck.class);
         checkConfig.addAttribute("excludedClasses", "\\.Main.*$");
         final String[] expected = {
-            "14: " + getCheckMessage(MSG_KEY),
-            "32: " + getCheckMessage(MSG_KEY),
-            "96: " + getCheckMessage(MSG_KEY),
+            "14:5: " + getCheckMessage(MSG_KEY),
+            "32:5: " + getCheckMessage(MSG_KEY),
+            "96:5: " + getCheckMessage(MSG_KEY),
         };
         verify(checkConfig, getPath("InputUncommentedMain.java"), expected);
     }
@@ -71,12 +73,12 @@ public class UncommentedMainCheckTest
     @Test
     public void testTokens() {
         final UncommentedMainCheck check = new UncommentedMainCheck();
-        Assert.assertNotNull("Required tokens should not be null", check.getRequiredTokens());
-        Assert.assertNotNull("Acceptable tokens should not be null", check.getAcceptableTokens());
-        Assert.assertArrayEquals("Invalid default tokens", check.getDefaultTokens(),
-                check.getAcceptableTokens());
-        Assert.assertArrayEquals("Invalid acceptable tokens", check.getDefaultTokens(),
-                check.getRequiredTokens());
+        assertNotNull(check.getRequiredTokens(), "Required tokens should not be null");
+        assertNotNull(check.getAcceptableTokens(), "Acceptable tokens should not be null");
+        assertArrayEquals(check.getDefaultTokens(),
+                check.getAcceptableTokens(), "Invalid default tokens");
+        assertArrayEquals(check.getDefaultTokens(),
+                check.getRequiredTokens(), "Invalid acceptable tokens");
     }
 
     @Test
@@ -91,7 +93,7 @@ public class UncommentedMainCheckTest
         final DefaultConfiguration checkConfig = createModuleConfig(UncommentedMainCheck.class);
         checkConfig.addAttribute("excludedClasses", "uncommentedmain\\.InputUncommentedMain5");
         final String[] expected = {
-            "14: " + getCheckMessage(MSG_KEY),
+            "14:5: " + getCheckMessage(MSG_KEY),
         };
         verify(checkConfig, getPath("InputUncommentedMain5.java"), expected);
     }
@@ -113,15 +115,14 @@ public class UncommentedMainCheckTest
     @Test
     public void testIllegalStateException() {
         final UncommentedMainCheck check = new UncommentedMainCheck();
-        final DetailAST ast = new DetailAST();
+        final DetailAstImpl ast = new DetailAstImpl();
         ast.initialize(new CommonHiddenStreamToken(TokenTypes.CTOR_DEF, "ctor"));
         try {
             check.visitToken(ast);
-            Assert.fail("IllegalStateException is expected");
+            fail("IllegalStateException is expected");
         }
         catch (IllegalStateException ex) {
-            assertEquals("Error message is unexpected",
-                    ast.toString(), ex.getMessage());
+            assertEquals(ast.toString(), ex.getMessage(), "Error message is unexpected");
         }
     }
 

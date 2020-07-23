@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -50,6 +50,7 @@ public class TreeTableModelAdapter extends AbstractTableModel {
 
     /**
      * Initialise tree and treeTableModel class attributes.
+     *
      * @param treeTableModel Tree table model.
      * @param tree JTree component.
      */
@@ -100,6 +101,7 @@ public class TreeTableModelAdapter extends AbstractTableModel {
 
     /**
      * Finds node for a given row.
+     *
      * @param row Row for which to find a related node.
      * @return Node for a given row.
      */

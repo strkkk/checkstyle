@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -30,7 +30,8 @@ import com.puppycrawl.tools.checkstyle.utils.ScopeUtil;
  * Checks for implicit modifiers on nested types in classes.
  * </p>
  * <p>
- * This check is effectively the opposite of <a href="#RedundantModifier">RedundantModifier</a>.
+ * This check is effectively the opposite of
+ * <a href="https://checkstyle.org/config_modifier.html#RedundantModifier">RedundantModifier</a>.
  * It checks the modifiers on nested types in classes, ensuring that certain modifiers are
  * explicitly specified even though they are actually redundant.
  * </p>
@@ -55,11 +56,13 @@ import com.puppycrawl.tools.checkstyle.utils.ScopeUtil;
  * <li>
  * Property {@code violateImpliedStaticOnNestedEnum} - Control whether to enforce that
  * {@code static} is explicitly coded on nested enums in classes.
+ * Type is {@code boolean}.
  * Default value is {@code true}.
  * </li>
  * <li>
  * Property {@code violateImpliedStaticOnNestedInterface} - Control whether to enforce that
  * {@code static} is explicitly coded on nested interfaces in classes.
+ * Type is {@code boolean}.
  * Default value is {@code true}.
  * </li>
  * </ul>
@@ -93,6 +96,18 @@ import com.puppycrawl.tools.checkstyle.utils.ScopeUtil;
  *   }
  * }
  * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code class.implied.modifier}
+ * </li>
+ * </ul>
+ *
  * @since 8.16
  */
 @StatelessCheck
@@ -122,6 +137,7 @@ public class ClassMemberImpliedModifierCheck
     /**
      * Setter to control whether to enforce that {@code static} is explicitly coded
      * on nested enums in classes.
+     *
      * @param violateImplied
      *        True to perform the check, false to turn the check off.
      */
@@ -132,6 +148,7 @@ public class ClassMemberImpliedModifierCheck
     /**
      * Setter to control whether to enforce that {@code static} is explicitly coded
      * on nested interfaces in classes.
+     *
      * @param violateImplied
      *        True to perform the check, false to turn the check off.
      */

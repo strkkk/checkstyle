@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -31,6 +31,7 @@ public abstract class AbstractTreeTestSupport extends AbstractPathTestSupport {
      * The path is formed base on the non-compilable resources location.
      * This implementation uses 'src/test/resources-noncompilable/com/puppycrawl/tools/checkstyle/'
      * as a non-compilable resource location.
+     *
      * @param filename file name.
      * @return canonical path for the file with the given file name.
      * @throws IOException if I/O exception occurs while forming the path.
@@ -42,6 +43,7 @@ public abstract class AbstractTreeTestSupport extends AbstractPathTestSupport {
 
     /**
      * Performs verification of the given text ast tree representation.
+     *
      * @param expectedTextPrintFileName expected text ast tree representation.
      * @param actualJavaFileName actual text ast tree representation.
      * @param withComments whether to perform verification of comment nodes in tree.
@@ -52,8 +54,8 @@ public abstract class AbstractTreeTestSupport extends AbstractPathTestSupport {
             throws Exception {
         final String expectedContents = readFile(expectedTextPrintFileName);
 
-        final String actualContents = AstTreeStringPrinter.printFileAst(
-                new File(actualJavaFileName), withComments).replaceAll(CRLF_REGEX, LF_REGEX);
+        final String actualContents = toLfLineEnding(AstTreeStringPrinter.printFileAst(
+                new File(actualJavaFileName), withComments));
 
         assertEquals("Generated AST from Java file should match pre-defined AST", expectedContents,
                 actualContents);
@@ -64,6 +66,7 @@ public abstract class AbstractTreeTestSupport extends AbstractPathTestSupport {
      * This implementation uses
      * {@link AbstractTreeTestSupport#verifyAst(String, String, JavaParser.Options)}
      * method inside.
+     *
      * @param expectedTextPrintFileName expected text ast tree representation.
      * @param actualJavaFileName actual text ast tree representation.
      * @throws Exception if exception occurs during verification.
@@ -77,6 +80,7 @@ public abstract class AbstractTreeTestSupport extends AbstractPathTestSupport {
     /**
      * Verifies the java and javadoc AST generated for the supplied java file against
      * the expected AST in supplied text file.
+     *
      * @param expectedTextPrintFilename name of the file having the expected ast.
      * @param actualJavaFilename name of the java file.
      * @throws Exception if exception occurs during verification.
@@ -85,8 +89,8 @@ public abstract class AbstractTreeTestSupport extends AbstractPathTestSupport {
                                                   String actualJavaFilename) throws Exception {
         final String expectedContents = readFile(expectedTextPrintFilename);
 
-        final String actualContents = AstTreeStringPrinter.printJavaAndJavadocTree(
-                new File(actualJavaFilename)).replaceAll(CRLF_REGEX, LF_REGEX);
+        final String actualContents = toLfLineEnding(AstTreeStringPrinter.printJavaAndJavadocTree(
+                new File(actualJavaFilename)));
 
         assertEquals("Generated AST from the java file should match the pre-defined AST",
                 expectedContents, actualContents);
@@ -95,6 +99,7 @@ public abstract class AbstractTreeTestSupport extends AbstractPathTestSupport {
     /**
      * Verifies the javadoc tree generated for the supplied javadoc file against the expected tree
      * in the supplied text file.
+     *
      * @param expectedTextPrintFilename name of the text file having the expected tree.
      * @param actualJavadocFilename name of the file containing the javadoc.
      * @throws Exception if exception occurs during verification.
@@ -103,8 +108,8 @@ public abstract class AbstractTreeTestSupport extends AbstractPathTestSupport {
                                             String actualJavadocFilename) throws Exception {
         final String expectedContents = readFile(expectedTextPrintFilename);
 
-        final String actualContents = DetailNodeTreeStringPrinter.printFileAst(
-                new File(actualJavadocFilename)).replaceAll(CRLF_REGEX, LF_REGEX);
+        final String actualContents = toLfLineEnding(DetailNodeTreeStringPrinter.printFileAst(
+                new File(actualJavadocFilename)));
 
         assertEquals("Generated tree from the javadoc file should match the pre-defined tree",
                 expectedContents, actualContents);

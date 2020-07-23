@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -33,35 +33,80 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
 
 /**
  * <p>
- * Outputs a JavaDoc tag as information. Can be used e.g. with the stylesheets
- * that sort the report by author name.
- * To define the format for a tag, set property tagFormat to a
- * regular expression.
- * This check uses two different severity levels. The normal one is used for
- * reporting when the tag is missing. The additional one (tagSeverity) is used
- * for the level of reporting when the tag exists. The default value for
- * tagSeverity is info.
+ * Requires user defined Javadoc tag to be present in Javadoc comment with defined format.
+ * To define the format for a tag, set property tagFormat to a regular expression.
+ * Property tagSeverity is used for severity of events when the tag exists.
  * </p>
- * <p> An example of how to configure the check for printing author name is:
- *</p>
+ * <ul>
+ * <li>
+ * Property {@code tag} - Specify the name of tag.
+ * Type is {@code java.lang.String}.
+ * Default value is {@code null}.
+ * </li>
+ * <li>
+ * Property {@code tagFormat} - Specify the regexp to match tag content.
+ * Type is {@code java.util.regex.Pattern}.
+ * Default value is {@code null}.
+ * </li>
+ * <li>
+ * Property {@code tagSeverity} - Specify the severity level when tag is found and printed.
+ * Type is {@code com.puppycrawl.tools.checkstyle.api.SeverityLevel}.
+ * Default value is {@code info}.
+ * </li>
+ * <li>
+ * Property {@code tokens} - tokens to check
+ * Type is {@code int[]}.
+ * Default value is:
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#INTERFACE_DEF">
+ * INTERFACE_DEF</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#CLASS_DEF">
+ * CLASS_DEF</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#ENUM_DEF">
+ * ENUM_DEF</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#ANNOTATION_DEF">
+ * ANNOTATION_DEF</a>.
+ * </li>
+ * </ul>
+ * <p>
+ * To configure the check for printing author name:
+ * </p>
  * <pre>
  * &lt;module name="WriteTag"&gt;
- *    &lt;property name="tag" value="@author"/&gt;
- *    &lt;property name="tagFormat" value="\S"/&gt;
+ *   &lt;property name="tag" value="@author"/&gt;
+ *   &lt;property name="tagFormat" value="\S"/&gt;
  * &lt;/module&gt;
  * </pre>
- * <p> An example of how to configure the check to print warnings if an
- * "@incomplete" tag is found, and not print anything if it is not found:
- *</p>
+ * <p>
+ * To configure the check to print warnings if an "@incomplete" tag is found,
+ * and not print anything if it is not found:
+ * </p>
  * <pre>
  * &lt;module name="WriteTag"&gt;
- *    &lt;property name="tag" value="@incomplete"/&gt;
- *    &lt;property name="tagFormat" value="\S"/&gt;
- *    &lt;property name="severity" value="ignore"/&gt;
- *    &lt;property name="tagSeverity" value="warning"/&gt;
+ *   &lt;property name="tag" value="@incomplete"/&gt;
+ *   &lt;property name="tagFormat" value="\S"/&gt;
+ *   &lt;property name="severity" value="ignore"/&gt;
+ *   &lt;property name="tagSeverity" value="warning"/&gt;
  * &lt;/module&gt;
  * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code javadoc.writeTag}
+ * </li>
+ * <li>
+ * {@code type.missingTag}
+ * </li>
+ * <li>
+ * {@code type.tagFormat}
+ * </li>
+ * </ul>
  *
+ * @since 4.2
  */
 @StatelessCheck
 public class WriteTagCheck
@@ -85,18 +130,19 @@ public class WriteTagCheck
      */
     public static final String MSG_TAG_FORMAT = "type.tagFormat";
 
-    /** Compiled regexp to match tag. **/
+    /** Compiled regexp to match tag. */
     private Pattern tagRegExp;
-    /** Compiled regexp to match tag content. **/
+    /** Specify the regexp to match tag content. */
     private Pattern tagFormat;
 
-    /** Regexp to match tag. */
+    /** Specify the name of tag. */
     private String tag;
-    /** The severity level of found tag reports. */
+    /** Specify the severity level when tag is found and printed. */
     private SeverityLevel tagSeverity = SeverityLevel.INFO;
 
     /**
-     * Sets the tag to check.
+     * Setter to specify the name of tag.
+     *
      * @param tag tag to check
      */
     public void setTag(String tag) {
@@ -105,7 +151,8 @@ public class WriteTagCheck
     }
 
     /**
-     * Set the tag format.
+     * Setter to specify the regexp to match tag content.
+     *
      * @param pattern a {@code String} value
      */
     public void setTagFormat(Pattern pattern) {
@@ -113,7 +160,7 @@ public class WriteTagCheck
     }
 
     /**
-     * Sets the tag severity level.
+     * Setter to specify the severity level when tag is found and printed.
      *
      * @param severity  The new severity level
      * @see SeverityLevel
@@ -165,6 +212,7 @@ public class WriteTagCheck
 
     /**
      * Verifies that a type definition has a required tag.
+     *
      * @param lineNo the line number for the type definition.
      * @param comment the Javadoc comment for the type definition.
      */
@@ -195,7 +243,7 @@ public class WriteTagCheck
     /**
      * Log a message.
      *
-     * @param line the line number where the error was found
+     * @param line the line number where the violation was found
      * @param tagName the javadoc tag to be logged
      * @param tagValue the contents of the tag
      *

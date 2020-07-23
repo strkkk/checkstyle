@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -23,7 +23,7 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
 import com.puppycrawl.tools.checkstyle.checks.sizes.OuterTypeNumberCheck;
@@ -38,7 +38,28 @@ public class XpathRegressionOuterTypeNumberTest extends AbstractXpathTestSupport
     }
 
     @Test
-    public void testOne() throws Exception {
+    public void testDefault() throws Exception {
+        final File fileToProcess =
+            new File(getPath("SuppressionXpathRegressionOuterTypeNumberDefault.java"));
+
+        final DefaultConfiguration moduleConfig =
+            createModuleConfig(OuterTypeNumberCheck.class);
+
+        final String[] expectedViolation = {
+            "1:1: " + getCheckMessage(OuterTypeNumberCheck.class,
+                OuterTypeNumberCheck.MSG_KEY, 2, 1),
+        };
+
+        final List<String> expectedXpathQueries = Collections.singletonList(
+            "/PACKAGE_DEF"
+        );
+
+        runVerifications(moduleConfig, fileToProcess, expectedViolation,
+            expectedXpathQueries);
+    }
+
+    @Test
+    public void testMax() throws Exception {
         final File fileToProcess =
                 new File(getPath("SuppressionXpathRegressionOuterTypeNumber.java"));
 

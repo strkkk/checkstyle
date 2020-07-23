@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,9 @@
 package com.puppycrawl.tools.checkstyle.checks.blocks;
 
 import static com.puppycrawl.tools.checkstyle.checks.blocks.EmptyCatchBlockCheck.MSG_KEY_CATCH_BLOCK_EMPTY;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
@@ -39,8 +39,8 @@ public class EmptyCatchBlockCheckTest extends AbstractModuleTestSupport {
     public void testGetRequiredTokens() {
         final EmptyCatchBlockCheck checkObj = new EmptyCatchBlockCheck();
         final int[] expected = {TokenTypes.LITERAL_CATCH};
-        assertArrayEquals("Default required tokens are invalid",
-            expected, checkObj.getRequiredTokens());
+        assertArrayEquals(expected, checkObj.getRequiredTokens(),
+                "Default required tokens are invalid");
     }
 
     @Test
@@ -48,8 +48,8 @@ public class EmptyCatchBlockCheckTest extends AbstractModuleTestSupport {
         final DefaultConfiguration checkConfig =
             createModuleConfig(EmptyCatchBlockCheck.class);
         final String[] expected = {
-            "35: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
-            "42: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
+            "35:31: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
+            "42:83: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
         };
         verify(checkConfig, getPath("InputEmptyCatchBlockDefault.java"), expected);
     }
@@ -61,16 +61,42 @@ public class EmptyCatchBlockCheckTest extends AbstractModuleTestSupport {
         checkConfig.addAttribute("exceptionVariableName", "expected|ignore|myException");
         checkConfig.addAttribute("commentFormat", "This is expected");
         final String[] expected = {
-            "35: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
-            "63: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
-            "97: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
-            "186: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
-            "195: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
-            "214: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
-            "230: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
-            "239: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
+            "35:31: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
+            "63:78: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
+            "97:29: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
+            "186:33: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
+            "195:33: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
+            "214:33: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
+            "230:33: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
+            "239:33: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
         };
         verify(checkConfig, getPath("InputEmptyCatchBlockDefault.java"), expected);
+    }
+
+    @Test
+    public void testLinesAreProperlySplitSystemIndependently() throws Exception {
+        final DefaultConfiguration checkConfig =
+            createModuleConfig(EmptyCatchBlockCheck.class);
+        checkConfig.addAttribute("exceptionVariableName", "expected|ignore|myException");
+        checkConfig.addAttribute("commentFormat", "This is expected");
+        final String[] expected = {
+            "35:31: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
+            "63:78: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
+            "97:29: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
+            "186:33: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
+            "195:33: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
+            "214:33: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
+            "230:33: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
+            "239:33: " + getCheckMessage(MSG_KEY_CATCH_BLOCK_EMPTY),
+        };
+        final String originalLineSeparator = System.getProperty("line.separator");
+        try {
+            System.setProperty("line.separator", "\r\n");
+            verify(checkConfig, getPath("InputEmptyCatchBlockDefaultLF.java"), expected);
+        }
+        finally {
+            System.setProperty("line.separator", originalLineSeparator);
+        }
     }
 
     @Test
@@ -78,7 +104,7 @@ public class EmptyCatchBlockCheckTest extends AbstractModuleTestSupport {
         final EmptyCatchBlockCheck constantNameCheckObj = new EmptyCatchBlockCheck();
         final int[] actual = constantNameCheckObj.getAcceptableTokens();
         final int[] expected = {TokenTypes.LITERAL_CATCH };
-        assertArrayEquals("Default acceptable tokens are invalid", expected, actual);
+        assertArrayEquals(expected, actual, "Default acceptable tokens are invalid");
     }
 
 }

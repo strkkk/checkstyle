@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -32,6 +32,7 @@ import java.lang.annotation.Target;
  * execution stage (but it still can set properties at the initialization stage).
  * Checker guarantees that there will be exactly one check instance during the audit.
  * This also means, that all files will be processed by the same check instance.
+ *
  * @noinspection AnnotationClass, ClassIndependentOfModule
  */
 @Retention(RetentionPolicy.RUNTIME)

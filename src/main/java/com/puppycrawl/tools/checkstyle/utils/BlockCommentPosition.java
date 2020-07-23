@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -36,6 +36,7 @@ public final class BlockCommentPosition {
 
     /**
      * Node is on type definition.
+     *
      * @param blockComment DetailAST
      * @return true if node is before class, interface, enum or annotation.
      */
@@ -48,6 +49,7 @@ public final class BlockCommentPosition {
 
     /**
      * Node is on class definition.
+     *
      * @param blockComment DetailAST
      * @return true if node is before class
      */
@@ -59,17 +61,30 @@ public final class BlockCommentPosition {
 
     /**
      * Node is on package definition.
+     *
      * @param blockComment DetailAST
      * @return true if node is before package
      */
     public static boolean isOnPackage(DetailAST blockComment) {
-        final DetailAST nextSibling = blockComment.getNextSibling();
-        return isOnTokenWithAnnotation(blockComment, TokenTypes.PACKAGE_DEF)
-                || nextSibling != null && nextSibling.getType() == TokenTypes.PACKAGE_DEF;
+        boolean result = isOnTokenWithAnnotation(blockComment, TokenTypes.PACKAGE_DEF);
+
+        if (!result) {
+            DetailAST nextSibling = blockComment.getNextSibling();
+
+            while (nextSibling != null
+                    && nextSibling.getType() == TokenTypes.SINGLE_LINE_COMMENT) {
+                nextSibling = nextSibling.getNextSibling();
+            }
+
+            result = nextSibling != null && nextSibling.getType() == TokenTypes.PACKAGE_DEF;
+        }
+
+        return result;
     }
 
     /**
      * Node is on interface definition.
+     *
      * @param blockComment DetailAST
      * @return true if node is before interface
      */
@@ -81,6 +96,7 @@ public final class BlockCommentPosition {
 
     /**
      * Node is on enum definition.
+     *
      * @param blockComment DetailAST
      * @return true if node is before enum
      */
@@ -92,6 +108,7 @@ public final class BlockCommentPosition {
 
     /**
      * Node is on annotation definition.
+     *
      * @param blockComment DetailAST
      * @return true if node is before annotation
      */
@@ -103,6 +120,7 @@ public final class BlockCommentPosition {
 
     /**
      * Node is on type member declaration.
+     *
      * @param blockComment DetailAST
      * @return true if node is before method, field, constructor, enum constant
      *     or annotation field
@@ -117,6 +135,7 @@ public final class BlockCommentPosition {
 
     /**
      * Node is on method declaration.
+     *
      * @param blockComment DetailAST
      * @return true if node is before method
      */
@@ -128,17 +147,23 @@ public final class BlockCommentPosition {
 
     /**
      * Node is on field declaration.
+     *
      * @param blockComment DetailAST
      * @return true if node is before field
      */
     public static boolean isOnField(DetailAST blockComment) {
         return isOnPlainClassMember(blockComment, TokenTypes.VARIABLE_DEF)
                 || isOnTokenWithModifiers(blockComment, TokenTypes.VARIABLE_DEF)
-                || isOnTokenWithAnnotation(blockComment, TokenTypes.VARIABLE_DEF);
+                    && blockComment.getParent().getParent().getParent()
+                        .getType() == TokenTypes.OBJBLOCK
+                || isOnTokenWithAnnotation(blockComment, TokenTypes.VARIABLE_DEF)
+                    && blockComment.getParent().getParent().getParent()
+                        .getParent().getType() == TokenTypes.OBJBLOCK;
     }
 
     /**
      * Node is on constructor.
+     *
      * @param blockComment DetailAST
      * @return true if node is before constructor
      */
@@ -150,23 +175,31 @@ public final class BlockCommentPosition {
 
     /**
      * Node is on enum constant.
+     *
      * @param blockComment DetailAST
      * @return true if node is before enum constant
      */
     public static boolean isOnEnumConstant(DetailAST blockComment) {
-        final boolean isOnPlainConst = blockComment.getParent() != null
-                && blockComment.getParent().getType() == TokenTypes.ENUM_CONSTANT_DEF
-                && getPrevSiblingSkipComments(blockComment).getType() == TokenTypes.ANNOTATIONS
-                && getPrevSiblingSkipComments(blockComment).getChildCount() == 0;
-        final boolean isOnConstWithAnnotation = !isOnPlainConst && blockComment.getParent() != null
-                && blockComment.getParent().getType() == TokenTypes.ANNOTATION
-                && blockComment.getParent().getParent().getParent().getType()
-                    == TokenTypes.ENUM_CONSTANT_DEF;
-        return isOnPlainConst || isOnConstWithAnnotation;
+        final DetailAST parent = blockComment.getParent();
+        boolean result = false;
+        if (parent != null) {
+            if (parent.getType() == TokenTypes.ENUM_CONSTANT_DEF) {
+                final DetailAST prevSibling = getPrevSiblingSkipComments(blockComment);
+                if (prevSibling.getType() == TokenTypes.ANNOTATIONS && !prevSibling.hasChildren()) {
+                    result = true;
+                }
+            }
+            else if (parent.getType() == TokenTypes.ANNOTATION
+                    && parent.getParent().getParent().getType() == TokenTypes.ENUM_CONSTANT_DEF) {
+                result = true;
+            }
+        }
+        return result;
     }
 
     /**
      * Node is on annotation field declaration.
+     *
      * @param blockComment DetailAST
      * @return true if node is before annotation field
      */
@@ -178,6 +211,7 @@ public final class BlockCommentPosition {
 
     /**
      * Checks that block comment is on specified token without any modifiers.
+     *
      * @param blockComment block comment start DetailAST
      * @param parentTokenType parent token type
      * @param nextTokenType next token type
@@ -187,12 +221,13 @@ public final class BlockCommentPosition {
             int parentTokenType, int nextTokenType) {
         return blockComment.getParent() != null
                 && blockComment.getParent().getType() == parentTokenType
-                && getPrevSiblingSkipComments(blockComment).getChildCount() == 0
+                && !getPrevSiblingSkipComments(blockComment).hasChildren()
                 && getNextSiblingSkipComments(blockComment).getType() == nextTokenType;
     }
 
     /**
      * Checks that block comment is on specified token with modifiers.
+     *
      * @param blockComment block comment start DetailAST
      * @param tokenType parent token type
      * @return true if block comment is on specified token with modifiers
@@ -206,6 +241,7 @@ public final class BlockCommentPosition {
 
     /**
      * Checks that block comment is on specified token with annotation.
+     *
      * @param blockComment block comment start DetailAST
      * @param tokenType parent token type
      * @return true if block comment is on specified token with annotation
@@ -220,6 +256,7 @@ public final class BlockCommentPosition {
 
     /**
      * Checks that block comment is on specified class member without any modifiers.
+     *
      * @param blockComment block comment start DetailAST
      * @param memberType parent token type
      * @return true if block comment is on specified token without modifiers
@@ -236,11 +273,13 @@ public final class BlockCommentPosition {
                     || parent.getType() == TokenTypes.TYPE_PARAMETERS)
                 && parent.getParent().getType() == memberType
                 // previous parent sibling is always TokenTypes.MODIFIERS
-                && parent.getPreviousSibling().getChildCount() == 0;
+                && !parent.getPreviousSibling().hasChildren()
+                && parent.getParent().getParent().getType() == TokenTypes.OBJBLOCK;
     }
 
     /**
      * Get next sibling node skipping any comment nodes.
+     *
      * @param node current node
      * @return next sibling
      */
@@ -255,6 +294,7 @@ public final class BlockCommentPosition {
 
     /**
      * Get previous sibling node skipping any comments.
+     *
      * @param node current node
      * @return previous sibling
      */

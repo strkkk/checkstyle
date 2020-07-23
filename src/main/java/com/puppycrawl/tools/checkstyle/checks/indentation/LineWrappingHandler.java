@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -27,6 +27,7 @@ import java.util.TreeMap;
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
+import com.puppycrawl.tools.checkstyle.utils.TokenUtil;
 
 /**
  * This class checks line-wrapping into definitions and expressions. The
@@ -52,6 +53,7 @@ public class LineWrappingHandler {
 
         /**
          * Builds enum value from boolean.
+         *
          * @param val value.
          * @return enum instance.
          *
@@ -262,7 +264,7 @@ public class LineWrappingHandler {
                     || node.getType() == TokenTypes.AT
                     && (parentNode.getParent().getType() == TokenTypes.MODIFIERS
                         || parentNode.getParent().getType() == TokenTypes.ANNOTATIONS)
-                    || node.getLineNo() == atNode.getLineNo()) {
+                    || TokenUtil.areOnSameLine(node, atNode)) {
                 logWarningMessage(node, firstNodeIndent);
             }
             else {
@@ -346,21 +348,21 @@ public class LineWrappingHandler {
      * Logs warning message if indentation is incorrect.
      *
      * @param currentNode
-     *            current node which probably invoked an error.
+     *            current node which probably invoked a violation.
      * @param currentIndent
      *            correct indentation.
      */
     private void logWarningMessage(DetailAST currentNode, int currentIndent) {
         if (indentCheck.isForceStrictCondition()) {
             if (expandedTabsColumnNo(currentNode) != currentIndent) {
-                indentCheck.indentationLog(currentNode.getLineNo(),
+                indentCheck.indentationLog(currentNode,
                         IndentationCheck.MSG_ERROR, currentNode.getText(),
                         expandedTabsColumnNo(currentNode), currentIndent);
             }
         }
         else {
             if (expandedTabsColumnNo(currentNode) < currentIndent) {
-                indentCheck.indentationLog(currentNode.getLineNo(),
+                indentCheck.indentationLog(currentNode,
                         IndentationCheck.MSG_ERROR, currentNode.getText(),
                         expandedTabsColumnNo(currentNode), currentIndent);
             }

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -57,6 +57,7 @@ public final class TagInfo {
 
     /**
      * Return name of tag.
+     *
      * @return Name of the tag.
      */
     public String getName() {
@@ -65,6 +66,7 @@ public final class TagInfo {
 
     /**
      * Return value of tag.
+     *
      * @return Value of the tag.
      */
     public String getValue() {
@@ -73,6 +75,7 @@ public final class TagInfo {
 
     /**
      * Return position of tag.
+     *
      * @return Value of the tag.
      */
     public LineColumn getPosition() {

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,14 +20,15 @@
 package com.puppycrawl.tools.checkstyle.checks.modifier;
 
 import static com.puppycrawl.tools.checkstyle.checks.modifier.InterfaceMemberImpliedModifierCheck.MSG_KEY;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
-import com.puppycrawl.tools.checkstyle.api.DetailAST;
+import com.puppycrawl.tools.checkstyle.DetailAstImpl;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
 
@@ -53,6 +54,20 @@ public class InterfaceMemberImpliedModifierCheckTest
         };
         verify(checkConfig, getPath("InputInterfaceMemberImpliedModifierMethodsOnInterface.java"),
             expected);
+    }
+
+    @Test
+    public void testGetRequiredTokens() {
+        final InterfaceMemberImpliedModifierCheck check = new InterfaceMemberImpliedModifierCheck();
+        final int[] actual = check.getRequiredTokens();
+        final int[] expected = {
+            TokenTypes.METHOD_DEF,
+            TokenTypes.VARIABLE_DEF,
+            TokenTypes.INTERFACE_DEF,
+            TokenTypes.CLASS_DEF,
+            TokenTypes.ENUM_DEF,
+        };
+        assertArrayEquals(expected, actual, "Required tokens are invalid");
     }
 
     @Test
@@ -391,22 +406,22 @@ public class InterfaceMemberImpliedModifierCheckTest
 
     @Test
     public void testIllegalState() {
-        final DetailAST init = new DetailAST();
+        final DetailAstImpl init = new DetailAstImpl();
         init.setType(TokenTypes.STATIC_INIT);
-        final DetailAST objBlock = new DetailAST();
+        final DetailAstImpl objBlock = new DetailAstImpl();
         objBlock.setType(TokenTypes.OBJBLOCK);
         objBlock.addChild(init);
-        final DetailAST interfaceAst = new DetailAST();
+        final DetailAstImpl interfaceAst = new DetailAstImpl();
         interfaceAst.setType(TokenTypes.INTERFACE_DEF);
         interfaceAst.addChild(objBlock);
         final InterfaceMemberImpliedModifierCheck check =
             new InterfaceMemberImpliedModifierCheck();
         try {
             check.visitToken(init);
-            Assert.fail("IllegalStateException is expected");
+            fail("IllegalStateException is expected");
         }
         catch (IllegalStateException ex) {
-            assertEquals("Error message is unexpected", init.toString(), ex.getMessage());
+            assertEquals(init.toString(), ex.getMessage(), "Error message is unexpected");
         }
     }
 

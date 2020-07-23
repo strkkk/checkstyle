@@ -41,7 +41,7 @@ public class InputInnerTypeLastClass {
 		}
 	}
 
-	void methodTest2() { //error
+	void methodTest2() { //violation
 		System.identityHashCode("test2");
 	}
 }
@@ -62,19 +62,19 @@ class Temp2 {
 		}
 	}
 
-	void methodTest2() { //error
+	void methodTest2() { //violation
 		System.identityHashCode("test2");
 	}
 
-	private int i = 0; //error
+	private int i = 0; //violation
 }
 
 class Temp3 {
-    
+
     class InnerCheck {
         private int I = 0;
     }
-    
+
     public int[] getDefaultTokens()
     {
         return new int[]{1, };
@@ -92,6 +92,6 @@ class Temp4 {
             private int a = 0;
         }
 
-        private int I = 0; // error
+        private int I = 0; // violation
     }
 }

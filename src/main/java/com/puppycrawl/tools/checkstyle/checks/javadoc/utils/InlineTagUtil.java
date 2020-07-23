@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -60,8 +60,10 @@ public final class InlineTagUtil {
 
     /**
      * Extract inline Javadoc tags from the given comment.
+     *
      * @param lines The Javadoc comment (as lines).
      * @return The extracted inline Javadoc tags.
+     * @throws IllegalArgumentException when comment lines contain newlines
      */
     public static List<TagInfo> extractInlineTags(String... lines) {
         for (String line : lines) {
@@ -99,6 +101,7 @@ public final class InlineTagUtil {
 
     /**
      * Convert array of string to single String.
+     *
      * @param lines A number of lines, in order.
      * @return The lines, joined together with newlines, as a single string.
      */
@@ -113,6 +116,7 @@ public final class InlineTagUtil {
 
     /**
      * Get LineColumn from string till index.
+     *
      * @param source Source string.
      * @param index An index into the string.
      * @return A position in the source representing what line and column that index appears on.
@@ -126,6 +130,7 @@ public final class InlineTagUtil {
 
     /**
      * Collapse whitespaces.
+     *
      * @param str Source string.
      * @return The given string with all whitespace collapsed.
      */
@@ -136,6 +141,7 @@ public final class InlineTagUtil {
 
     /**
      * Remove leading JavaDoc.
+     *
      * @param source A string to remove leading Javadoc from.
      * @return The given string with leading Javadoc "*" characters from each line removed.
      */

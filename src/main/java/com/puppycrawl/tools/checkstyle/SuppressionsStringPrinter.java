@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -53,6 +53,7 @@ public final class SuppressionsStringPrinter {
 
     /**
      * Prints generated suppressions.
+     *
      * @param file the file to process.
      * @param suppressionLineColumnNumber line and column number of the suppression
      * @param tabWidth length of the tab character
@@ -64,25 +65,25 @@ public final class SuppressionsStringPrinter {
                                            int tabWidth) throws IOException, CheckstyleException {
         final Matcher matcher =
                 VALID_SUPPRESSION_LINE_COLUMN_NUMBER_REGEX.matcher(suppressionLineColumnNumber);
-        if (matcher.matches()) {
-            final FileText fileText = new FileText(file.getAbsoluteFile(),
-                    System.getProperty("file.encoding", StandardCharsets.UTF_8.name()));
-            final DetailAST detailAST =
-                    JavaParser.parseFileText(fileText, JavaParser.Options.WITH_COMMENTS);
-            final int lineNumber = Integer.parseInt(matcher.group(1));
-            final int columnNumber = Integer.parseInt(matcher.group(2));
-            return generate(fileText, detailAST, lineNumber, columnNumber, tabWidth);
-        }
-        else {
+        if (!matcher.matches()) {
             final String exceptionMsg = String.format(Locale.ROOT,
                     "%s does not match valid format 'line:column'.",
                     suppressionLineColumnNumber);
             throw new IllegalStateException(exceptionMsg);
         }
+
+        final FileText fileText = new FileText(file.getAbsoluteFile(),
+                System.getProperty("file.encoding", StandardCharsets.UTF_8.name()));
+        final DetailAST detailAST =
+                JavaParser.parseFileText(fileText, JavaParser.Options.WITH_COMMENTS);
+        final int lineNumber = Integer.parseInt(matcher.group(1));
+        final int columnNumber = Integer.parseInt(matcher.group(2));
+        return generate(fileText, detailAST, lineNumber, columnNumber, tabWidth);
     }
 
     /**
      * Creates {@code XpathQueryGenerator} instance and generates suppressions.
+     *
      * @param fileText {@code FileText} object.
      * @param detailAST {@code DetailAST} object.
      * @param lineNumber line number.

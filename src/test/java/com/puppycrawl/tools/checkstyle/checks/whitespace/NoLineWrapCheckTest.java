@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,7 @@ package com.puppycrawl.tools.checkstyle.checks.whitespace;
 
 import static com.puppycrawl.tools.checkstyle.checks.whitespace.NoLineWrapCheck.MSG_KEY;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
@@ -46,9 +46,9 @@ public class NoLineWrapCheckTest
     public void testDefaultTokensLineWrapping() throws Exception {
         final DefaultConfiguration checkConfig = createModuleConfig(NoLineWrapCheck.class);
         final String[] expected = {
-            "1: " + getCheckMessage(MSG_KEY, "package"),
-            "6: " + getCheckMessage(MSG_KEY, "import"),
-            "10: " + getCheckMessage(MSG_KEY, "import"),
+            "1:1: " + getCheckMessage(MSG_KEY, "package"),
+            "6:1: " + getCheckMessage(MSG_KEY, "import"),
+            "10:1: " + getCheckMessage(MSG_KEY, "import"),
         };
         verify(checkConfig, getPath("InputNoLineWrapBad.java"), expected);
     }
@@ -60,11 +60,11 @@ public class NoLineWrapCheckTest
         checkConfig.addAttribute(
                 "tokens", "IMPORT, STATIC_IMPORT, CLASS_DEF, METHOD_DEF, ENUM_DEF");
         final String[] expected = {
-            "6: " + getCheckMessage(MSG_KEY, "import"),
-            "10: " + getCheckMessage(MSG_KEY, "import"),
-            "13: " + getCheckMessage(MSG_KEY, "CLASS_DEF"),
-            "16: " + getCheckMessage(MSG_KEY, "METHOD_DEF"),
-            "23: " + getCheckMessage(MSG_KEY, "ENUM_DEF"),
+            "6:1: " + getCheckMessage(MSG_KEY, "import"),
+            "10:1: " + getCheckMessage(MSG_KEY, "import"),
+            "13:1: " + getCheckMessage(MSG_KEY, "CLASS_DEF"),
+            "16:9: " + getCheckMessage(MSG_KEY, "METHOD_DEF"),
+            "23:1: " + getCheckMessage(MSG_KEY, "ENUM_DEF"),
         };
         verify(checkConfig, getPath("InputNoLineWrapBad.java"), expected);
     }

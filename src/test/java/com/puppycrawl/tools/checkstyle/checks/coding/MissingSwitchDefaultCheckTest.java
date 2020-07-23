@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,9 @@
 package com.puppycrawl.tools.checkstyle.checks.coding;
 
 import static com.puppycrawl.tools.checkstyle.checks.coding.MissingSwitchDefaultCheck.MSG_KEY;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
@@ -40,7 +40,9 @@ public class MissingSwitchDefaultCheckTest
         final DefaultConfiguration checkConfig =
                 createModuleConfig(MissingSwitchDefaultCheck.class);
         final String[] expected = {
-            "17: " + getCheckMessage(MSG_KEY, "default"),
+            "17:9: " + getCheckMessage(MSG_KEY, "default"),
+            "29:17: " + getCheckMessage(MSG_KEY, "default"),
+            "40:17: " + getCheckMessage(MSG_KEY, "default"),
         };
         verify(
             checkConfig,
@@ -51,9 +53,9 @@ public class MissingSwitchDefaultCheckTest
     @Test
     public void testTokensNotNull() {
         final MissingSwitchDefaultCheck check = new MissingSwitchDefaultCheck();
-        Assert.assertNotNull("Acceptable tokens should not be null", check.getAcceptableTokens());
-        Assert.assertNotNull("Default tokens should not be null", check.getDefaultTokens());
-        Assert.assertNotNull("Required tokens should not be null", check.getRequiredTokens());
+        assertNotNull(check.getAcceptableTokens(), "Acceptable tokens should not be null");
+        assertNotNull(check.getDefaultTokens(), "Default tokens should not be null");
+        assertNotNull(check.getRequiredTokens(), "Required tokens should not be null");
     }
 
 }

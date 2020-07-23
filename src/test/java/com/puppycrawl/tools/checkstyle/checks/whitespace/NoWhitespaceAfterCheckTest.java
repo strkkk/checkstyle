@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,15 +20,15 @@
 package com.puppycrawl.tools.checkstyle.checks.whitespace;
 
 import static com.puppycrawl.tools.checkstyle.checks.whitespace.NoWhitespaceAfterCheck.MSG_KEY;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import antlr.CommonHiddenStreamToken;
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
-import com.puppycrawl.tools.checkstyle.api.DetailAST;
+import com.puppycrawl.tools.checkstyle.DetailAstImpl;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 
 public class NoWhitespaceAfterCheckTest
@@ -229,10 +229,11 @@ public class NoWhitespaceAfterCheckTest
 
     @Test
     public void testVisitTokenSwitchReflection() {
-        //unexpected parent for ARRAY_DECLARATOR token
-        final DetailAST astImport = mockAST(TokenTypes.IMPORT, "import", "mockfile");
-        final DetailAST astArrayDeclarator = mockAST(TokenTypes.ARRAY_DECLARATOR, "[", "mockfile");
-        final DetailAST astRightBracket = mockAST(TokenTypes.RBRACK, "[", "mockfile");
+        // unexpected parent for ARRAY_DECLARATOR token
+        final DetailAstImpl astImport = mockAST(TokenTypes.IMPORT, "import", "mockfile");
+        final DetailAstImpl astArrayDeclarator = mockAST(TokenTypes.ARRAY_DECLARATOR, "[",
+                "mockfile");
+        final DetailAstImpl astRightBracket = mockAST(TokenTypes.RBRACK, "[", "mockfile");
         astImport.addChild(astArrayDeclarator);
         astArrayDeclarator.addChild(astRightBracket);
 
@@ -242,8 +243,8 @@ public class NoWhitespaceAfterCheckTest
             fail("no intended exception thrown");
         }
         catch (IllegalStateException ex) {
-            assertEquals("Invalid exception message",
-                "unexpected ast syntax import[0x-1]", ex.getMessage());
+            assertEquals("unexpected ast syntax import[0x-1]", ex.getMessage(),
+                    "Invalid exception message");
         }
     }
 
@@ -283,18 +284,19 @@ public class NoWhitespaceAfterCheckTest
 
     /**
      * Creates MOCK lexical token and returns AST node for this token.
+     *
      * @param tokenType type of token
      * @param tokenText text of token
      * @param tokenFileName file name of token
      * @return AST node for the token
      */
-    private static DetailAST mockAST(final int tokenType, final String tokenText,
+    private static DetailAstImpl mockAST(final int tokenType, final String tokenText,
             final String tokenFileName) {
         final CommonHiddenStreamToken tokenImportSemi = new CommonHiddenStreamToken();
         tokenImportSemi.setType(tokenType);
         tokenImportSemi.setText(tokenText);
         tokenImportSemi.setFilename(tokenFileName);
-        final DetailAST astSemi = new DetailAST();
+        final DetailAstImpl astSemi = new DetailAstImpl();
         astSemi.initialize(tokenImportSemi);
         return astSemi;
     }

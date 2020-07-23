@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -33,17 +33,40 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
 
 /**
  * <p>
- * Restrict using <a href =
- * "https://docs.oracle.com/javase/specs/jls/se8/html/jls-3.html#jls-3.3">
- * Unicode escapes</a> (such as <code>&#92;u221e</code>).
- * It is possible to allow using escapes for
+ * Restricts using
+ * <a href = "https://docs.oracle.com/javase/specs/jls/se11/html/jls-3.html#jls-3.3">
+ * Unicode escapes</a>
+ * (such as &#92;u221e). It is possible to allow using escapes for
  * <a href="https://en.wiktionary.org/wiki/Appendix:Control_characters">
- * non-printable(control) characters</a>.
+ * non-printable, control characters</a>.
  * Also, this check can be configured to allow using escapes
  * if trail comment is present. By the option it is possible to
- * allow using escapes if literal contains only them. By the option it
- * is possible to allow using escapes for space literals.
+ * allow using escapes if literal contains only them.
  * </p>
+ * <ul>
+ * <li>
+ * Property {@code allowEscapesForControlCharacters} - Allow use escapes for
+ * non-printable, control characters.
+ * Type is {@code boolean}.
+ * Default value is {@code false}.
+ * </li>
+ * <li>
+ * Property {@code allowByTailComment} - Allow use escapes if trail comment is present.
+ * Type is {@code boolean}.
+ * Default value is {@code false}.
+ * </li>
+ * <li>
+ * Property {@code allowIfAllCharactersEscaped} - Allow if all characters in literal are escaped.
+ * Type is {@code boolean}.
+ * Default value is {@code false}.
+ * </li>
+ * <li>
+ * Property {@code allowNonPrintableEscapes} - Allow use escapes for
+ * non-printable, whitespace characters.
+ * Type is {@code boolean}.
+ * Default value is {@code false}.
+ * </li>
+ * </ul>
  * <p>
  * Examples of using Unicode:</p>
  * <pre>
@@ -57,18 +80,18 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  * &lt;module name="AvoidEscapedUnicodeCharacters"/&gt;
  * </pre>
  * <p>
- * An example of non-printable(control) characters.
+ * An example of non-printable, control characters.
  * </p>
  * <pre>
  * return '&#92;ufeff' + content; // byte order mark
  * </pre>
  * <p>
  * An example of how to configure the check to allow using escapes
- * for non-printable(control) characters:
+ * for non-printable, control characters:
  * </p>
  * <pre>
  * &lt;module name="AvoidEscapedUnicodeCharacters"&gt;
- *     &lt;property name="allowEscapesForControlCharacters" value="true"/&gt;
+ *   &lt;property name="allowEscapesForControlCharacters" value="true"/&gt;
  * &lt;/module&gt;
  * </pre>
  * <p>
@@ -82,7 +105,7 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  * </p>
  * <pre>
  * &lt;module name="AvoidEscapedUnicodeCharacters"&gt;
- *     &lt;property name="allowByTailComment" value="true"/&gt;
+ *   &lt;property name="allowByTailComment" value="true"/&gt;
  * &lt;/module&gt;
  * </pre>
  * <p>Example of using escapes if literal contains only them:
@@ -95,18 +118,30 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  * </p>
  * <pre>
  * &lt;module name="AvoidEscapedUnicodeCharacters"&gt;
- *    &lt;property name="allowIfAllCharactersEscaped" value="true"/&gt;
+ *   &lt;property name="allowIfAllCharactersEscaped" value="true"/&gt;
  * &lt;/module&gt;
  * </pre>
- * <p>An example of how to configure the check to allow non-printable escapes:
+ * <p>An example of how to configure the check to allow using escapes
+ * for non-printable, whitespace characters:
  * </p>
  * <pre>
  * &lt;module name="AvoidEscapedUnicodeCharacters"&gt;
- *    &lt;property name="allowNonPrintableEscapes" value="true"/&gt;
+ *   &lt;property name="allowNonPrintableEscapes" value="true"/&gt;
  * &lt;/module&gt;
  * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code forbid.escaped.unicode.char}
+ * </li>
+ * </ul>
  *
- * @noinspection HtmlTagCanBeJavadocTag
+ * @since 5.8
  */
 @FileStatefulCheck
 public class AvoidEscapedUnicodeCharactersCheck
@@ -143,7 +178,7 @@ public class AvoidEscapedUnicodeCharactersCheck
     /** Regular expression for all escaped chars. */
     private static final Pattern ALL_ESCAPED_CHARS = Pattern.compile("^((\\\\u)[a-fA-F0-9]{4}"
             + "|\""
-            + "|\'"
+            + "|'"
             + "|\\\\"
             + "|\\\\b"
             + "|\\\\f"
@@ -232,7 +267,7 @@ public class AvoidEscapedUnicodeCharactersCheck
     /** C style comments. */
     private Map<Integer, List<TextBlock>> blockComments;
 
-    /** Allow use escapes for non-printable(control) characters.  */
+    /** Allow use escapes for non-printable, control characters. */
     private boolean allowEscapesForControlCharacters;
 
     /** Allow use escapes if trail comment is present. */
@@ -241,11 +276,12 @@ public class AvoidEscapedUnicodeCharactersCheck
     /** Allow if all characters in literal are escaped. */
     private boolean allowIfAllCharactersEscaped;
 
-    /** Allow escapes for space literals. */
+    /** Allow use escapes for non-printable, whitespace characters. */
     private boolean allowNonPrintableEscapes;
 
     /**
-     * Set allowIfAllCharactersEscaped.
+     * Setter to allow use escapes for non-printable, control characters.
+     *
      * @param allow user's value.
      */
     public final void setAllowEscapesForControlCharacters(boolean allow) {
@@ -253,7 +289,8 @@ public class AvoidEscapedUnicodeCharactersCheck
     }
 
     /**
-     * Set allowByTailComment.
+     * Setter to allow use escapes if trail comment is present.
+     *
      * @param allow user's value.
      */
     public final void setAllowByTailComment(boolean allow) {
@@ -261,7 +298,8 @@ public class AvoidEscapedUnicodeCharactersCheck
     }
 
     /**
-     * Set allowIfAllCharactersEscaped.
+     * Setter to allow if all characters in literal are escaped.
+     *
      * @param allow user's value.
      */
     public final void setAllowIfAllCharactersEscaped(boolean allow) {
@@ -269,7 +307,8 @@ public class AvoidEscapedUnicodeCharactersCheck
     }
 
     /**
-     * Set allowSpaceEscapes.
+     * Setter to allow use escapes for non-printable, whitespace characters.
+     *
      * @param allow user's value.
      */
     public final void setAllowNonPrintableEscapes(boolean allow) {
@@ -307,12 +346,13 @@ public class AvoidEscapedUnicodeCharactersCheck
                         && isOnlyUnicodeValidChars(literal, UNICODE_CONTROL)
                 || allowNonPrintableEscapes
                         && isOnlyUnicodeValidChars(literal, NON_PRINTABLE_CHARS))) {
-            log(ast.getLineNo(), MSG_KEY);
+            log(ast, MSG_KEY);
         }
     }
 
     /**
      * Checks if literal has Unicode chars.
+     *
      * @param literal String literal.
      * @return true if literal has Unicode chars.
      */
@@ -324,6 +364,7 @@ public class AvoidEscapedUnicodeCharactersCheck
 
     /**
      * Check if String literal contains Unicode control chars.
+     *
      * @param literal String literal.
      * @param pattern RegExp for valid characters.
      * @return true, if String literal contains Unicode control chars.
@@ -338,6 +379,7 @@ public class AvoidEscapedUnicodeCharactersCheck
 
     /**
      * Check if trail comment is present after ast token.
+     *
      * @param ast current token.
      * @return true if trail comment is present after ast token.
      */
@@ -360,6 +402,7 @@ public class AvoidEscapedUnicodeCharactersCheck
 
     /**
      * Whether the C style comment is trailing.
+     *
      * @param comment the comment to check.
      * @param line the line where the comment starts.
      * @return true if the comment is trailing.
@@ -371,6 +414,7 @@ public class AvoidEscapedUnicodeCharactersCheck
 
     /**
      * Count regexp matches into String literal.
+     *
      * @param pattern pattern.
      * @param target String literal.
      * @return count of regexp matches.
@@ -386,6 +430,7 @@ public class AvoidEscapedUnicodeCharactersCheck
 
     /**
      * Checks if all characters in String literal is escaped.
+     *
      * @param literal current literal.
      * @return true if all characters in String literal is escaped.
      */

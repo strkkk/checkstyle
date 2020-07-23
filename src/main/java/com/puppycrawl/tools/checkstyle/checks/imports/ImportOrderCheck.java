@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -56,33 +56,38 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  * </li>
  * <li>
  * arrange static imports: ensures the relative order between type imports and static imports
- * (see <a href="property_types.html#importOrder">import orders</a>)
+ * (see
+ * <a href="https://checkstyle.org/property_types.html#ImportOrderOption">ImportOrderOption</a>)
  * </li>
  * </ul>
  * <ul>
  * <li>
  * Property {@code option} - specify policy on the relative order between type imports and static
  * imports.
+ * Type is {@code com.puppycrawl.tools.checkstyle.checks.imports.ImportOrderOption}.
  * Default value is {@code under}.
  * </li>
  * <li>
  * Property {@code groups} - specify list of <b>type import</b> groups (every group identified
  * either by a common prefix string, or by a regular expression enclosed in forward slashes
- * (e.g.{@code /regexp/}). All type imports, which does not match any group, falls into an
+ * (e.g. {@code /regexp/}). All type imports, which does not match any group, falls into an
  * additional group, located at the end.
  * Thus, the empty list of type groups (the default value) means one group for all type imports.
+ * Type is {@code java.lang.String[]}.
  * Default value is {@code {}}.
  * </li>
  * <li>
  * Property {@code ordered} - control whether type imports within each group should be
  * sorted.
  * It doesn't affect sorting for static imports.
+ * Type is {@code boolean}.
  * Default value is true.
  * </li>
  * <li>
  * Property {@code separated} - control whether type import groups should be separated
  * by, at least, one blank line or comment and aren't separated internally.
  * It doesn't affect separations for static imports.
+ * Type is {@code boolean}.
  * Default value is false.
  * </li>
  * <li>
@@ -90,6 +95,7 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  * be separated by, at least, one blank line or comment and aren't separated internally.
  * This property has effect only when the property {@code option} is is set to {@code top}
  * or {@code bottom}.
+ * Type is {@code boolean}.
  * Default value is false.
  * </li>
  * <li>
@@ -97,29 +103,34 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  * sensitive or not. Case sensitive sorting is in
  * <a href="https://en.wikipedia.org/wiki/ASCII#Order">ASCII sort order</a>.
  * It affects both type imports and static imports.
+ * Type is {@code boolean}.
  * Default value is true.
  * </li>
  * <li>
  * Property {@code staticGroups} - specify list of <b>static</b> import groups (every group
  * identified either by a common prefix string, or by a regular expression enclosed in forward
- * slashes (e.g.{@code /regexp/}). All static imports, which does not match any group, falls into an
- * additional group, located at the end. Thus, the empty list of static groups (the default value)
- * means one group for all static imports. This property has effect only when the property
+ * slashes (e.g. {@code /regexp/}). All static imports, which does not match any group, falls into
+ * an additional group, located at the end. Thus, the empty list of static groups (the default
+ * value) means one group for all static imports. This property has effect only when the property
  * {@code option} is set to {@code top} or {@code bottom}.
+ * Type is {@code java.lang.String[]}.
  * Default value is {@code {}}.
  * </li>
  * <li>
  * Property {@code sortStaticImportsAlphabetically} - control whether
  * <b>static imports</b> located at <b>top</b> or <b>bottom</b> are sorted within the group.
+ * Type is {@code boolean}.
  * Default value is false.
  * </li>
  * <li>
  * Property {@code useContainerOrderingForStatic} - control whether to use container
  * ordering (Eclipse IDE term) for static imports or not.
+ * Type is {@code boolean}.
  * Default value is false.
  * </li>
  * <li>
  * Property {@code tokens} - tokens to check
+ * Type is {@code int[]}.
  * Default value is:
  * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#STATIC_IMPORT">
  * STATIC_IMPORT</a>.
@@ -212,7 +223,7 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  * </li>
  * </ul>
  * <p>
- * Note: a <a href="config_filters.html#SuppressionXpathSingleFilter">
+ * Note: a <a href="https://checkstyle.org/config_filters.html#SuppressionXpathSingleFilter">
  * suppression xpath single filter</a> is needed because
  * IDEA has no blank line between "javax" and "java".
  * ImportOrder has a limitation by design to enforce an empty line between groups ("java", "javax").
@@ -365,6 +376,23 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  *
  * public class InputEclipseStaticImportsOrder { }
  * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code import.groups.separated.internally}
+ * </li>
+ * <li>
+ * {@code import.ordering}
+ * </li>
+ * <li>
+ * {@code import.separation}
+ * </li>
+ * </ul>
  *
  * @since 3.2
  */
@@ -398,7 +426,7 @@ public class ImportOrderCheck
 
     /**
      * Specify list of <b>type import</b> groups (every group identified either by a common prefix
-     * string, or by a regular expression enclosed in forward slashes (e.g.{@code /regexp/}).
+     * string, or by a regular expression enclosed in forward slashes (e.g. {@code /regexp/}).
      * All type imports, which does not match any group, falls into an additional group,
      * located at the end. Thus, the empty list of type groups (the default value) means one group
      * for all type imports.
@@ -407,7 +435,7 @@ public class ImportOrderCheck
 
     /**
      * Specify list of <b>static</b> import groups (every group identified either by a common prefix
-     * string, or by a regular expression enclosed in forward slashes (e.g.{@code /regexp/}).
+     * string, or by a regular expression enclosed in forward slashes (e.g. {@code /regexp/}).
      * All static imports, which does not match any group, falls into an additional group, located
      * at the end. Thus, the empty list of static groups (the default value) means one group for all
      * static imports. This property has effect only when the property {@code option} is set to
@@ -452,7 +480,8 @@ public class ImportOrderCheck
     private boolean lastImportStatic;
     /** Whether there was any imports. */
     private boolean beforeFirstImport;
-    /** Whether static and type import groups should be split apart.
+    /**
+     * Whether static and type import groups should be split apart.
      * When the {@code option} property is set to {@code INFLOW}, {@code BELOW} or {@code UNDER},
      * both the type and static imports use the properties {@code groups} and {@code separated}.
      * When the {@code option} property is set to {@code TOP} or {@code BOTTOM}, static imports
@@ -479,6 +508,7 @@ public class ImportOrderCheck
 
     /**
      * Setter to specify policy on the relative order between type imports and static imports.
+     *
      * @param optionStr string to decode option from
      * @throws IllegalArgumentException if unable to decode
      */
@@ -489,7 +519,7 @@ public class ImportOrderCheck
     /**
      * Setter to specify list of <b>type import</b> groups (every group identified either by a
      * common prefix string, or by a regular expression enclosed in forward slashes
-     * (e.g.{@code /regexp/}). All type imports, which does not match any group, falls into an
+     * (e.g. {@code /regexp/}). All type imports, which does not match any group, falls into an
      * additional group, located at the end. Thus, the empty list of type groups (the default value)
      * means one group for all type imports.
      *
@@ -502,7 +532,7 @@ public class ImportOrderCheck
     /**
      * Setter to specify list of <b>static</b> import groups (every group identified either by a
      * common prefix string, or by a regular expression enclosed in forward slashes
-     * (e.g.{@code /regexp/}). All static imports, which does not match any group, falls into an
+     * (e.g. {@code /regexp/}). All static imports, which does not match any group, falls into an
      * additional group, located at the end. Thus, the empty list of static groups (the default
      * value) means one group for all static imports. This property has effect only when
      * the property {@code option} is set to {@code top} or {@code bottom}.
@@ -555,6 +585,7 @@ public class ImportOrderCheck
      * Case sensitive sorting is in
      * <a href="https://en.wikipedia.org/wiki/ASCII#Order">ASCII sort order</a>.
      * It affects both type imports and static imports.
+     *
      * @param caseSensitive
      *            whether string comparison should be case sensitive.
      */
@@ -565,6 +596,7 @@ public class ImportOrderCheck
     /**
      * Setter to control whether <b>static imports</b> located at <b>top</b> or
      * <b>bottom</b> are sorted within the group.
+     *
      * @param sortAlphabetically true or false.
      */
     public void setSortStaticImportsAlphabetically(boolean sortAlphabetically) {
@@ -574,6 +606,7 @@ public class ImportOrderCheck
     /**
      * Setter to control whether to use container ordering (Eclipse IDE term) for static
      * imports or not.
+     *
      * @param useContainerOrdering whether to use container ordering for static imports or not.
      */
     public void setUseContainerOrderingForStatic(boolean useContainerOrdering) {
@@ -609,7 +642,6 @@ public class ImportOrderCheck
     // -@cs[CyclomaticComplexity] SWITCH was transformed into IF-ELSE.
     @Override
     public void visitToken(DetailAST ast) {
-        final int line = ast.getLineNo();
         final FullIdent ident;
         final boolean isStatic;
 
@@ -627,15 +659,15 @@ public class ImportOrderCheck
         // https://github.com/checkstyle/checkstyle/issues/1387
         if (option == ImportOrderOption.TOP || option == ImportOrderOption.ABOVE) {
             final boolean isStaticAndNotLastImport = isStatic && !lastImportStatic;
-            doVisitToken(ident, isStatic, isStaticAndNotLastImport, line);
+            doVisitToken(ident, isStatic, isStaticAndNotLastImport, ast);
         }
         else if (option == ImportOrderOption.BOTTOM || option == ImportOrderOption.UNDER) {
             final boolean isLastImportAndNonStatic = lastImportStatic && !isStatic;
-            doVisitToken(ident, isStatic, isLastImportAndNonStatic, line);
+            doVisitToken(ident, isStatic, isLastImportAndNonStatic, ast);
         }
         else if (option == ImportOrderOption.INFLOW) {
             // "previous" argument is useless here
-            doVisitToken(ident, isStatic, true, line);
+            doVisitToken(ident, isStatic, true, ast);
         }
         else {
             throw new IllegalStateException(
@@ -654,25 +686,27 @@ public class ImportOrderCheck
      * @param isStatic whether the token is static or not.
      * @param previous previous non-static but current is static (above), or
      *                  previous static but current is non-static (under).
-     * @param line the line of the current import.
+     * @param ast node of the AST.
      */
-    private void doVisitToken(FullIdent ident, boolean isStatic, boolean previous, int line) {
+    private void doVisitToken(FullIdent ident, boolean isStatic, boolean previous, DetailAST ast) {
         final String name = ident.getText();
         final int groupIdx = getGroupNumber(isStatic && staticImportsApart, name);
 
         if (groupIdx > lastGroup) {
-            if (!beforeFirstImport && line - lastImportLine < 2 && needSeparator(isStatic)) {
-                log(line, MSG_SEPARATION, name);
+            if (!beforeFirstImport
+                && ast.getLineNo() - lastImportLine < 2
+                && needSeparator(isStatic)) {
+                log(ast, MSG_SEPARATION, name);
             }
         }
         else if (groupIdx == lastGroup) {
-            doVisitTokenInSameGroup(isStatic, previous, name, line);
+            doVisitTokenInSameGroup(isStatic, previous, name, ast);
         }
         else {
-            log(line, MSG_ORDERING, name);
+            log(ast, MSG_ORDERING, name);
         }
-        if (isSeparatorInGroup(groupIdx, isStatic, line)) {
-            log(line, MSG_SEPARATED_IN_GROUP, name);
+        if (isSeparatorInGroup(groupIdx, isStatic, ast.getLineNo())) {
+            log(ast, MSG_SEPARATED_IN_GROUP, name);
         }
 
         lastGroup = groupIdx;
@@ -681,6 +715,7 @@ public class ImportOrderCheck
 
     /**
      * Checks whether import groups should be separated.
+     *
      * @param isStatic whether the token is static or not.
      * @return true if imports groups should be separated.
      */
@@ -694,13 +729,14 @@ public class ImportOrderCheck
             staticImportSeparator = isStatic && separated;
         }
         final boolean separatorBetween = isStatic != lastImportStatic
-            && (separated || separatedStaticGroups) && staticImportsApart;
+            && (separated || separatedStaticGroups);
 
         return typeImportSeparator || staticImportSeparator || separatorBetween;
     }
 
     /**
      * Checks whether imports group separated internally.
+     *
      * @param groupIdx group number.
      * @param isStatic whether the token is static or not.
      * @param line the line of the current import.
@@ -713,6 +749,7 @@ public class ImportOrderCheck
 
     /**
      * Checks whether there is any separator before current import.
+     *
      * @param line the line of the current import.
      * @return true if there is separator before current import which isn't the first import.
      */
@@ -727,14 +764,14 @@ public class ImportOrderCheck
      * @param previous previous non-static but current is static (above), or
      *     previous static but current is non-static (under).
      * @param name the name of the current import.
-     * @param line the line of the current import.
+     * @param ast node of the AST.
      */
     private void doVisitTokenInSameGroup(boolean isStatic,
-            boolean previous, String name, int line) {
+            boolean previous, String name, DetailAST ast) {
         if (ordered) {
             if (option == ImportOrderOption.INFLOW) {
                 if (isWrongOrder(name, isStatic)) {
-                    log(line, MSG_ORDERING, name);
+                    log(ast, MSG_ORDERING, name);
                 }
             }
             else {
@@ -750,7 +787,7 @@ public class ImportOrderCheck
                     && isWrongOrder(name, isStatic);
 
                 if (shouldFireError) {
-                    log(line, MSG_ORDERING, name);
+                    log(ast, MSG_ORDERING, name);
                 }
             }
         }
@@ -758,6 +795,7 @@ public class ImportOrderCheck
 
     /**
      * Checks whether import name is in wrong order.
+     *
      * @param name import name.
      * @param isStatic whether it is a static import name.
      * @return true if import name is in wrong order.
@@ -841,6 +879,7 @@ public class ImportOrderCheck
      * import static HttpHeaders.setHeader   => HttpHeaders
      * import static HttpHeaders.Names.DATE  => HttpHeaders.Names
      * </p>
+     *
      * @param qualifiedImportName fully qualified import name.
      * @return import container name.
      */

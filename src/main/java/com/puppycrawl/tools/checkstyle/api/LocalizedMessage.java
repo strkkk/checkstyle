@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -81,7 +81,9 @@ public final class LocalizedMessage
     /** Key for the message format. **/
     private final String key;
 
-    /** Arguments for MessageFormat.
+    /**
+     * Arguments for MessageFormat.
+     *
      * @noinspection NonSerializableFieldInSerializableClass
      */
     private final Object[] args;
@@ -264,7 +266,7 @@ public final class LocalizedMessage
      * defaults to 0.
      *
      * @param lineNo line number associated with the message
-     * @param bundle name of a resource bundle that contains error messages
+     * @param bundle name of a resource bundle that contains audit event messages
      * @param key the key to locate the translation
      * @param args arguments for the translation
      * @param moduleId the id of the module the message is associated with
@@ -284,8 +286,102 @@ public final class LocalizedMessage
     }
 
     /**
+     * Gets the line number.
+     *
+     * @return the line number
+     */
+    public int getLineNo() {
+        return lineNo;
+    }
+
+    /**
+     * Gets the column number.
+     *
+     * @return the column number
+     */
+    public int getColumnNo() {
+        return columnNo;
+    }
+
+    /**
+     * Gets the column char index.
+     *
+     * @return the column char index
+     */
+    public int getColumnCharIndex() {
+        return columnCharIndex;
+    }
+
+    /**
+     * Gets the token type.
+     *
+     * @return the token type
+     */
+    public int getTokenType() {
+        return tokenType;
+    }
+
+    /**
+     * Gets the severity level.
+     *
+     * @return the severity level
+     */
+    public SeverityLevel getSeverityLevel() {
+        return severityLevel;
+    }
+
+    /**
+     * Returns id of module.
+     *
+     * @return the module identifier.
+     */
+    public String getModuleId() {
+        return moduleId;
+    }
+
+    /**
+     * Returns the message key to locate the translation, can also be used
+     * in IDE plugins to map audit event messages to corrective actions.
+     *
+     * @return the message key
+     */
+    public String getKey() {
+        return key;
+    }
+
+    /**
+     * Gets the name of the source for this LocalizedMessage.
+     *
+     * @return the name of the source for this LocalizedMessage
+     */
+    public String getSourceName() {
+        return sourceClass.getName();
+    }
+
+    /**
+     * Sets a locale to use for localization.
+     *
+     * @param locale the locale to use for localization
+     */
+    public static void setLocale(Locale locale) {
+        clearCache();
+        if (Locale.ENGLISH.getLanguage().equals(locale.getLanguage())) {
+            sLocale = Locale.ROOT;
+        }
+        else {
+            sLocale = locale;
+        }
+    }
+
+    /** Clears the cache. */
+    public static void clearCache() {
+        BUNDLE_CACHE.clear();
+    }
+
+    /**
      * Indicates whether some other object is "equal to" this one.
      * Suppression on enumeration is needed so code stays consistent.
+     *
      * @noinspection EqualsCalledOnEnumConstant
      */
     // -@cs[CyclomaticComplexity] equals - a lot of fields to check.
@@ -315,146 +411,6 @@ public final class LocalizedMessage
     public int hashCode() {
         return Objects.hash(lineNo, columnNo, columnCharIndex, tokenType, severityLevel, moduleId,
                 key, bundle, sourceClass, customMessage, Arrays.hashCode(args));
-    }
-
-    /** Clears the cache. */
-    public static void clearCache() {
-        BUNDLE_CACHE.clear();
-    }
-
-    /**
-     * Gets the translated message.
-     * @return the translated message
-     */
-    public String getMessage() {
-        String message = getCustomMessage();
-
-        if (message == null) {
-            try {
-                // Important to use the default class loader, and not the one in
-                // the GlobalProperties object. This is because the class loader in
-                // the GlobalProperties is specified by the user for resolving
-                // custom classes.
-                final ResourceBundle resourceBundle = getBundle(bundle);
-                final String pattern = resourceBundle.getString(key);
-                final MessageFormat formatter = new MessageFormat(pattern, Locale.ROOT);
-                message = formatter.format(args);
-            }
-            catch (final MissingResourceException ignored) {
-                // If the Check author didn't provide i18n resource bundles
-                // and logs error messages directly, this will return
-                // the author's original message
-                final MessageFormat formatter = new MessageFormat(key, Locale.ROOT);
-                message = formatter.format(args);
-            }
-        }
-        return message;
-    }
-
-    /**
-     * Returns the formatted custom message if one is configured.
-     * @return the formatted custom message or {@code null}
-     *          if there is no custom message
-     */
-    private String getCustomMessage() {
-        String message = null;
-        if (customMessage != null) {
-            final MessageFormat formatter = new MessageFormat(customMessage, Locale.ROOT);
-            message = formatter.format(args);
-        }
-        return message;
-    }
-
-    /**
-     * Find a ResourceBundle for a given bundle name. Uses the classloader
-     * of the class emitting this message, to be sure to get the correct
-     * bundle.
-     * @param bundleName the bundle name
-     * @return a ResourceBundle
-     */
-    private ResourceBundle getBundle(String bundleName) {
-        return BUNDLE_CACHE.computeIfAbsent(bundleName, name -> ResourceBundle.getBundle(
-                name, sLocale, sourceClass.getClassLoader(), new Utf8Control()));
-    }
-
-    /**
-     * Gets the line number.
-     * @return the line number
-     */
-    public int getLineNo() {
-        return lineNo;
-    }
-
-    /**
-     * Gets the column number.
-     * @return the column number
-     */
-    public int getColumnNo() {
-        return columnNo;
-    }
-
-    /**
-     * Gets the column char index.
-     * @return the column char index
-     */
-    public int getColumnCharIndex() {
-        return columnCharIndex;
-    }
-
-    /**
-     * Gets the token type.
-     * @return the token type
-     */
-    public int getTokenType() {
-        return tokenType;
-    }
-
-    /**
-     * Gets the severity level.
-     * @return the severity level
-     */
-    public SeverityLevel getSeverityLevel() {
-        return severityLevel;
-    }
-
-    /**
-     * Returns id of module.
-     * @return the module identifier.
-     */
-    public String getModuleId() {
-        return moduleId;
-    }
-
-    /**
-     * Returns the message key to locate the translation, can also be used
-     * in IDE plugins to map error messages to corrective actions.
-     *
-     * @return the message key
-     */
-    public String getKey() {
-        return key;
-    }
-
-    /**
-     * Gets the name of the source for this LocalizedMessage.
-     * @return the name of the source for this LocalizedMessage
-     */
-    public String getSourceName() {
-        return sourceClass.getName();
-    }
-
-    /**
-     * Sets a locale to use for localization.
-     * @param locale the locale to use for localization
-     */
-    public static void setLocale(Locale locale) {
-        clearCache();
-        if (Locale.ENGLISH.getLanguage().equals(locale.getLanguage())) {
-            sLocale = Locale.ROOT;
-        }
-        else {
-            sLocale = locale;
-        }
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -488,6 +444,66 @@ public final class LocalizedMessage
             result = Integer.compare(lineNo, other.lineNo);
         }
         return result;
+    }
+
+    /**
+     * Gets the translated message.
+     *
+     * @return the translated message
+     */
+    public String getMessage() {
+        String message = getCustomMessage();
+
+        if (message == null) {
+            try {
+                // Important to use the default class loader, and not the one in
+                // the GlobalProperties object. This is because the class loader in
+                // the GlobalProperties is specified by the user for resolving
+                // custom classes.
+                final ResourceBundle resourceBundle = getBundle(bundle);
+                final String pattern = resourceBundle.getString(key);
+                final MessageFormat formatter = new MessageFormat(pattern, Locale.ROOT);
+                message = formatter.format(args);
+            }
+            catch (final MissingResourceException ignored) {
+                // If the Check author didn't provide i18n resource bundles
+                // and logs audit event messages directly, this will return
+                // the author's original message
+                final MessageFormat formatter = new MessageFormat(key, Locale.ROOT);
+                message = formatter.format(args);
+            }
+        }
+        return message;
+    }
+
+    /**
+     * Returns the formatted custom message if one is configured.
+     *
+     * @return the formatted custom message or {@code null}
+     *          if there is no custom message
+     */
+    private String getCustomMessage() {
+        String message = null;
+        if (customMessage != null) {
+            final MessageFormat formatter = new MessageFormat(customMessage, Locale.ROOT);
+            message = formatter.format(args);
+        }
+        return message;
+    }
+
+    /**
+     * Find a ResourceBundle for a given bundle name. Uses the classloader
+     * of the class emitting this message, to be sure to get the correct
+     * bundle.
+     *
+     * @param bundleName the bundle name
+     * @return a ResourceBundle
+     */
+    private ResourceBundle getBundle(String bundleName) {
+        return BUNDLE_CACHE.computeIfAbsent(bundleName, name -> {
+            return ResourceBundle.getBundle(
+                name, sLocale, sourceClass.getClassLoader(), new Utf8Control());
+        });
     }
 
     /**

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,9 @@
 package com.puppycrawl.tools.checkstyle.checks.imports;
 
 import static com.puppycrawl.tools.checkstyle.checks.imports.IllegalImportCheck.MSG_KEY;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
@@ -39,8 +39,8 @@ public class IllegalImportCheckTest extends AbstractModuleTestSupport {
     public void testGetRequiredTokens() {
         final IllegalImportCheck checkObj = new IllegalImportCheck();
         final int[] expected = {TokenTypes.IMPORT, TokenTypes.STATIC_IMPORT};
-        assertArrayEquals("Default required tokens are invalid",
-            expected, checkObj.getRequiredTokens());
+        assertArrayEquals(expected, checkObj.getRequiredTokens(),
+                "Default required tokens are invalid");
     }
 
     @Test
@@ -76,7 +76,7 @@ public class IllegalImportCheckTest extends AbstractModuleTestSupport {
         final int[] actual = testCheckObject.getAcceptableTokens();
         final int[] expected = {TokenTypes.IMPORT, TokenTypes.STATIC_IMPORT};
 
-        assertArrayEquals("Default acceptable tokens are invalid", expected, actual);
+        assertArrayEquals(expected, actual, "Default acceptable tokens are invalid");
     }
 
     @Test
@@ -87,6 +87,20 @@ public class IllegalImportCheckTest extends AbstractModuleTestSupport {
         checkConfig.addAttribute("illegalClasses", "java.sql.Connection");
         final String[] expected = {
             "11:1: " + getCheckMessage(MSG_KEY, "java.sql.Connection"),
+            "15:1: " + getCheckMessage(MSG_KEY, "sun.applet.*"),
+            "28:1: " + getCheckMessage(MSG_KEY, "sun.*"),
+        };
+        verify(checkConfig, getNonCompilablePath("InputIllegalImportDefault.java"), expected);
+    }
+
+    @Test
+    public void testIllegalClassesStarImport()
+            throws Exception {
+        final DefaultConfiguration checkConfig =
+            createModuleConfig(IllegalImportCheck.class);
+        checkConfig.addAttribute("illegalClasses", "java.io.*");
+        final String[] expected = {
+            "9:1: " + getCheckMessage(MSG_KEY, "java.io.*"),
             "15:1: " + getCheckMessage(MSG_KEY, "sun.applet.*"),
             "28:1: " + getCheckMessage(MSG_KEY, "sun.*"),
         };

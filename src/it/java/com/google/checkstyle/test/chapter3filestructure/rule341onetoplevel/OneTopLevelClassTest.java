@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,14 +19,14 @@
 
 package com.google.checkstyle.test.chapter3filestructure.rule341onetoplevel;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import com.google.checkstyle.test.base.AbstractModuleTestSupport;
+import com.google.checkstyle.test.base.AbstractGoogleModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.api.Configuration;
 import com.puppycrawl.tools.checkstyle.checks.design.OneTopLevelClassCheck;
 import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
 
-public class OneTopLevelClassTest extends AbstractModuleTestSupport {
+public class OneTopLevelClassTest extends AbstractGoogleModuleTestSupport {
 
     @Override
     protected String getPackageLocation() {
@@ -39,12 +39,12 @@ public class OneTopLevelClassTest extends AbstractModuleTestSupport {
         final String messageKey = "one.top.level.class";
 
         final String[] expected = {
-            "25: " + getCheckMessage(clazz, messageKey, "NoSuperClone"),
-            "33: " + getCheckMessage(clazz, messageKey, "InnerClone"),
-            "50: " + getCheckMessage(clazz, messageKey, "CloneWithTypeArguments"),
-            "55: " + getCheckMessage(clazz, messageKey, "CloneWithTypeArgumentsAndNoSuper"),
-            "60: " + getCheckMessage(clazz, messageKey, "MyClassWithGenericSuperMethod"),
-            "77: " + getCheckMessage(clazz, messageKey, "AnotherClass"),
+            "25:1: " + getCheckMessage(clazz, messageKey, "NoSuperClone"),
+            "33:1: " + getCheckMessage(clazz, messageKey, "InnerClone"),
+            "50:1: " + getCheckMessage(clazz, messageKey, "CloneWithTypeArguments"),
+            "55:1: " + getCheckMessage(clazz, messageKey, "CloneWithTypeArgumentsAndNoSuper"),
+            "60:1: " + getCheckMessage(clazz, messageKey, "MyClassWithGenericSuperMethod"),
+            "77:1: " + getCheckMessage(clazz, messageKey, "AnotherClass"),
         };
 
         final Configuration checkConfig = getModuleConfig("OneTopLevelClass");
@@ -71,7 +71,8 @@ public class OneTopLevelClassTest extends AbstractModuleTestSupport {
         final String messageKey = "one.top.level.class";
 
         final String[] expected = {
-            "4: " + getCheckMessage(clazz, messageKey, "FooEnum"),
+            "4:1: " + getCheckMessage(clazz, messageKey, "FooEnum"),
+            "5:1: " + getCheckMessage(clazz, messageKey, "FooAt"),
         };
 
         final Configuration checkConfig = getModuleConfig("OneTopLevelClass");
@@ -87,8 +88,8 @@ public class OneTopLevelClassTest extends AbstractModuleTestSupport {
         final String messageKey = "one.top.level.class";
 
         final String[] expected = {
-            "5: " + getCheckMessage(clazz, messageKey, "FooIn"),
-            "7: " + getCheckMessage(clazz, messageKey, "FooClass"),
+            "5:1: " + getCheckMessage(clazz, messageKey, "FooIn"),
+            "7:1: " + getCheckMessage(clazz, messageKey, "FooClass"),
         };
 
         final Configuration checkConfig = getModuleConfig("OneTopLevelClass");

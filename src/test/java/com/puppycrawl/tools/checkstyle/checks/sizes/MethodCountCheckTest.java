@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -24,9 +24,9 @@ import static com.puppycrawl.tools.checkstyle.checks.sizes.MethodCountCheck.MSG_
 import static com.puppycrawl.tools.checkstyle.checks.sizes.MethodCountCheck.MSG_PRIVATE_METHODS;
 import static com.puppycrawl.tools.checkstyle.checks.sizes.MethodCountCheck.MSG_PROTECTED_METHODS;
 import static com.puppycrawl.tools.checkstyle.checks.sizes.MethodCountCheck.MSG_PUBLIC_METHODS;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
@@ -44,8 +44,8 @@ public class MethodCountCheckTest extends AbstractModuleTestSupport {
     public void testGetRequiredTokens() {
         final MethodCountCheck checkObj = new MethodCountCheck();
         final int[] expected = {TokenTypes.METHOD_DEF};
-        assertArrayEquals("Default required tokens are invalid",
-            expected, checkObj.getRequiredTokens());
+        assertArrayEquals(expected, checkObj.getRequiredTokens(),
+                "Default required tokens are invalid");
     }
 
     @Test
@@ -62,7 +62,7 @@ public class MethodCountCheckTest extends AbstractModuleTestSupport {
             TokenTypes.METHOD_DEF,
         };
 
-        assertArrayEquals("Default acceptable tokens are invalid", expected, actual);
+        assertArrayEquals(expected, actual, "Default acceptable tokens are invalid");
     }
 
     @Test
@@ -86,15 +86,15 @@ public class MethodCountCheckTest extends AbstractModuleTestSupport {
         checkConfig.addAttribute("maxTotal", "3");
 
         final String[] expected = {
-            "3: " + getCheckMessage(MSG_PACKAGE_METHODS, 5, 3),
-            "3: " + getCheckMessage(MSG_PRIVATE_METHODS, 5, 3),
-            "3: " + getCheckMessage(MSG_PROTECTED_METHODS, 5, 3),
-            "3: " + getCheckMessage(MSG_PUBLIC_METHODS, 5, 3),
-            "3: " + getCheckMessage(MSG_MANY_METHODS, 20, 3),
-            "9: " + getCheckMessage(MSG_PUBLIC_METHODS, 5, 3),
-            "9: " + getCheckMessage(MSG_MANY_METHODS, 5, 3),
-            "45: " + getCheckMessage(MSG_PUBLIC_METHODS, 5, 3),
-            "45: " + getCheckMessage(MSG_MANY_METHODS, 5, 3),
+            "3:1: " + getCheckMessage(MSG_PACKAGE_METHODS, 5, 3),
+            "3:1: " + getCheckMessage(MSG_PRIVATE_METHODS, 5, 3),
+            "3:1: " + getCheckMessage(MSG_PROTECTED_METHODS, 5, 3),
+            "3:1: " + getCheckMessage(MSG_PUBLIC_METHODS, 5, 3),
+            "3:1: " + getCheckMessage(MSG_MANY_METHODS, 20, 3),
+            "9:3: " + getCheckMessage(MSG_PUBLIC_METHODS, 5, 3),
+            "9:3: " + getCheckMessage(MSG_MANY_METHODS, 5, 3),
+            "45:3: " + getCheckMessage(MSG_PUBLIC_METHODS, 5, 3),
+            "45:3: " + getCheckMessage(MSG_MANY_METHODS, 5, 3),
         };
 
         verify(checkConfig, getPath("InputMethodCount.java"), expected);
@@ -108,8 +108,8 @@ public class MethodCountCheckTest extends AbstractModuleTestSupport {
         checkConfig.addAttribute("maxTotal", "2");
 
         final String[] expected = {
-            "9: " + getCheckMessage(MSG_PRIVATE_METHODS, 1, 0),
-            "9: " + getCheckMessage(MSG_MANY_METHODS, 3, 2),
+            "9:5: " + getCheckMessage(MSG_PRIVATE_METHODS, 1, 0),
+            "9:5: " + getCheckMessage(MSG_MANY_METHODS, 3, 2),
         };
 
         verify(checkConfig, getPath("InputMethodCount2.java"), expected);
@@ -122,7 +122,7 @@ public class MethodCountCheckTest extends AbstractModuleTestSupport {
         checkConfig.addAttribute("maxTotal", "2");
 
         final String[] expected = {
-            "3: " + getCheckMessage(MSG_MANY_METHODS, 5, 2),
+            "3:1: " + getCheckMessage(MSG_MANY_METHODS, 5, 2),
         };
 
         verify(checkConfig, getPath("InputMethodCount3.java"), expected);
@@ -144,7 +144,7 @@ public class MethodCountCheckTest extends AbstractModuleTestSupport {
         checkConfig.addAttribute("maxTotal", "1");
 
         final String[] expected = {
-            "3: " + getCheckMessage(MSG_MANY_METHODS, 2, 1),
+            "3:1: " + getCheckMessage(MSG_MANY_METHODS, 2, 1),
         };
 
         verify(checkConfig, getPath("InputMethodCount5.java"), expected);
@@ -168,7 +168,7 @@ public class MethodCountCheckTest extends AbstractModuleTestSupport {
         checkConfig.addAttribute("tokens", "ENUM_DEF");
 
         final String[] expected = {
-            "10: " + getCheckMessage(MSG_MANY_METHODS, 2, 1),
+            "10:5: " + getCheckMessage(MSG_MANY_METHODS, 2, 1),
         };
 
         verify(checkConfig, getPath("InputMethodCount7.java"), expected);

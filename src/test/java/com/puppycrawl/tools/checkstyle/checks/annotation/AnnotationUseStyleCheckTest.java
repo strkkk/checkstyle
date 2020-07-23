@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -24,11 +24,12 @@ import static com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseSty
 import static com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck.MSG_KEY_ANNOTATION_PARENS_PRESENT;
 import static com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck.MSG_KEY_ANNOTATION_TRAILING_COMMA_MISSING;
 import static com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationUseStyleCheck.MSG_KEY_ANNOTATION_TRAILING_COMMA_PRESENT;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
@@ -47,11 +48,11 @@ public class AnnotationUseStyleCheckTest extends AbstractModuleTestSupport {
      * valueOf() is uncovered.
      */
     @Test
-    public void testElementStyleValueOf() {
-        final AnnotationUseStyleCheck.ElementStyle option =
-            AnnotationUseStyleCheck.ElementStyle.valueOf("COMPACT");
-        assertEquals("Invalid valueOf result",
-            AnnotationUseStyleCheck.ElementStyle.COMPACT, option);
+    public void testElementStyleOptionValueOf() {
+        final AnnotationUseStyleCheck.ElementStyleOption option =
+            AnnotationUseStyleCheck.ElementStyleOption.valueOf("COMPACT");
+        assertEquals(AnnotationUseStyleCheck.ElementStyleOption.COMPACT, option,
+                "Invalid valueOf result");
     }
 
     /* Additional test for jacoco, since valueOf()
@@ -59,11 +60,11 @@ public class AnnotationUseStyleCheckTest extends AbstractModuleTestSupport {
      * valueOf() is uncovered.
      */
     @Test
-    public void testTrailingArrayCommaValueOf() {
-        final AnnotationUseStyleCheck.TrailingArrayComma option =
-            AnnotationUseStyleCheck.TrailingArrayComma.valueOf("ALWAYS");
-        assertEquals("Invalid valueOf result",
-            AnnotationUseStyleCheck.TrailingArrayComma.ALWAYS, option);
+    public void testTrailingArrayCommaOptionValueOf() {
+        final AnnotationUseStyleCheck.TrailingArrayCommaOption option =
+            AnnotationUseStyleCheck.TrailingArrayCommaOption.valueOf("ALWAYS");
+        assertEquals(AnnotationUseStyleCheck.TrailingArrayCommaOption.ALWAYS, option,
+                "Invalid valueOf result");
     }
 
     /* Additional test for jacoco, since valueOf()
@@ -71,28 +72,31 @@ public class AnnotationUseStyleCheckTest extends AbstractModuleTestSupport {
      * valueOf() is uncovered.
      */
     @Test
-    public void testClosingParensValueOf() {
-        final AnnotationUseStyleCheck.ClosingParens option =
-            AnnotationUseStyleCheck.ClosingParens.valueOf("ALWAYS");
-        assertEquals("Invalid valueOf result",
-            AnnotationUseStyleCheck.ClosingParens.ALWAYS, option);
+    public void testClosingParensOptionValueOf() {
+        final AnnotationUseStyleCheck.ClosingParensOption option =
+            AnnotationUseStyleCheck.ClosingParensOption.valueOf("ALWAYS");
+        assertEquals(AnnotationUseStyleCheck.ClosingParensOption.ALWAYS, option,
+                "Invalid valueOf result");
     }
 
     @Test
     public void testDefault() throws Exception {
         final DefaultConfiguration checkConfig = createModuleConfig(AnnotationUseStyleCheck.class);
         final String[] expected = {
-            "5: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
-            "13: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_PRESENT),
-            "20: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
-            "30: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_PRESENT),
-            "33: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_PRESENT),
-            "41: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
-            "43: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
-            "47: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
-            "71: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_PRESENT),
-            "75: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_PRESENT),
-            "77: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_PRESENT),
+            "4:1: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
+            "5:1: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
+            "11:1: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
+            "13:1: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_PRESENT),
+            "19:1: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
+            "20:1: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
+            "24:5: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
+            "30:1: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_PRESENT),
+            "33:5: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_PRESENT),
+            "41:5: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
+            "43:5: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
+            "47:1: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
+            "75:32: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_PRESENT),
+            "77:40: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_PRESENT),
         };
 
         verify(checkConfig, getPath("InputAnnotationUseStyleDifferentStyles.java"), expected);
@@ -108,11 +112,13 @@ public class AnnotationUseStyleCheckTest extends AbstractModuleTestSupport {
         checkConfig.addAttribute("elementStyle", "ignore");
         checkConfig.addAttribute("trailingArrayComma", "ignore");
         final String[] expected = {
-            "3: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_MISSING),
-            "18: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_MISSING),
-            "23: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_MISSING),
-            "71: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_MISSING),
-            "73: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_MISSING),
+            "3:1: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_MISSING),
+            "18:1: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_MISSING),
+            "23:5: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_MISSING),
+            "71:32: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_MISSING),
+            "73:40: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_MISSING),
+            "81:8: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_MISSING),
+            "81:30: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_MISSING),
         };
 
         verify(checkConfig, getPath("InputAnnotationUseStyleDifferentStyles.java"), expected);
@@ -128,12 +134,11 @@ public class AnnotationUseStyleCheckTest extends AbstractModuleTestSupport {
         checkConfig.addAttribute("elementStyle", "ignore");
         checkConfig.addAttribute("trailingArrayComma", "ignore");
         final String[] expected = {
-            "13: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_PRESENT),
-            "30: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_PRESENT),
-            "33: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_PRESENT),
-            "71: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_PRESENT),
-            "75: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_PRESENT),
-            "77: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_PRESENT),
+            "13:1: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_PRESENT),
+            "30:1: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_PRESENT),
+            "33:5: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_PRESENT),
+            "75:32: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_PRESENT),
+            "77:40: " + getCheckMessage(MSG_KEY_ANNOTATION_PARENS_PRESENT),
         };
 
         verify(checkConfig, getPath("InputAnnotationUseStyleDifferentStyles.java"), expected);
@@ -146,13 +151,16 @@ public class AnnotationUseStyleCheckTest extends AbstractModuleTestSupport {
         checkConfig.addAttribute("elementStyle", "EXPANDED");
         checkConfig.addAttribute("trailingArrayComma", "ignore");
         final String[] expected = {
-            "5: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "EXPANDED"),
-            "12: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "EXPANDED"),
-            "20: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "EXPANDED"),
-            "26: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "EXPANDED"),
-            "39: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "EXPANDED"),
-            "41: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "EXPANDED"),
-            "58: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "EXPANDED"),
+            "5:1: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "EXPANDED"),
+            "12:1: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "EXPANDED"),
+            "20:1: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "EXPANDED"),
+            "26:5: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "EXPANDED"),
+            "39:5: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "EXPANDED"),
+            "41:5: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "EXPANDED"),
+            "58:5: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "EXPANDED"),
+            "63:1: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "EXPANDED"),
+            "71:1: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "EXPANDED"),
+            "75:1: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "EXPANDED"),
         };
 
         verify(checkConfig, getPath("InputAnnotationUseStyleDifferentStyles.java"), expected);
@@ -165,11 +173,11 @@ public class AnnotationUseStyleCheckTest extends AbstractModuleTestSupport {
         checkConfig.addAttribute("elementStyle", "COMPACT");
         checkConfig.addAttribute("trailingArrayComma", "ignore");
         final String[] expected = {
-            "43: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT"),
-            "47: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT"),
-            "67: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT"),
-            "73: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT"),
-            "77: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT"),
+            "43:5: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT"),
+            "47:1: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT"),
+            "67:5: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT"),
+            "73:1: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT"),
+            "77:1: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT"),
         };
 
         verify(checkConfig, getPath("InputAnnotationUseStyleDifferentStyles.java"), expected);
@@ -182,11 +190,15 @@ public class AnnotationUseStyleCheckTest extends AbstractModuleTestSupport {
         checkConfig.addAttribute("elementStyle", "COMPACT_NO_ARRAY");
         checkConfig.addAttribute("trailingArrayComma", "ignore");
         final String[] expected = {
-            "5: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
-            "20: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
-            "41: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
-            "43: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
-            "47: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
+            "4:1: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
+            "5:1: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
+            "11:1: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
+            "19:1: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
+            "20:1: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
+            "24:5: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
+            "41:5: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
+            "43:5: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
+            "47:1: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
         };
 
         verify(checkConfig, getPath("InputAnnotationUseStyleDifferentStyles.java"), expected);
@@ -263,8 +275,10 @@ public class AnnotationUseStyleCheckTest extends AbstractModuleTestSupport {
         final DefaultConfiguration checkConfig = createModuleConfig(AnnotationUseStyleCheck.class);
         checkConfig.addAttribute("trailingArrayComma", "ignore");
         final String[] expected = {
-            "9: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
-            "16: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
+            "9:5: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
+            "16:13: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
+            "27:5: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
+            "33:9: " + getCheckMessage(MSG_KEY_ANNOTATION_INCORRECT_STYLE, "COMPACT_NO_ARRAY"),
         };
 
         verify(checkConfig, getPath("InputAnnotationUseStyleWithTrailingComma.java"), expected);
@@ -326,7 +340,7 @@ public class AnnotationUseStyleCheckTest extends AbstractModuleTestSupport {
         final AnnotationUseStyleCheck constantNameCheckObj = new AnnotationUseStyleCheck();
         final int[] actual = constantNameCheckObj.getAcceptableTokens();
         final int[] expected = {TokenTypes.ANNOTATION };
-        Assert.assertArrayEquals("Invalid acceptable tokens", expected, actual);
+        assertArrayEquals(expected, actual, "Invalid acceptable tokens");
     }
 
     @Test
@@ -334,13 +348,13 @@ public class AnnotationUseStyleCheckTest extends AbstractModuleTestSupport {
         final AnnotationUseStyleCheck check = new AnnotationUseStyleCheck();
         try {
             check.setElementStyle("SHOULD_PRODUCE_ERROR");
-            Assert.fail("ConversionException is expected");
+            fail("ConversionException is expected");
         }
         catch (IllegalArgumentException ex) {
             final String messageStart = "unable to parse";
 
-            assertTrue("Invalid exception message, should start with: " + messageStart,
-                ex.getMessage().startsWith(messageStart));
+            assertTrue(ex.getMessage().startsWith(messageStart),
+                    "Invalid exception message, should start with: " + messageStart);
         }
     }
 

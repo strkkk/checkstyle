@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -23,7 +23,7 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
 import com.puppycrawl.tools.checkstyle.checks.coding.NestedTryDepthCheck;
@@ -58,5 +58,33 @@ public class XpathRegressionNestedTryDepthTest extends AbstractXpathTestSupport 
 
         runVerifications(moduleConfig, fileToProcess, expectedViolation,
                 expectedXpathQueries);
+    }
+
+    @Test
+    public void testMax() throws Exception {
+        final File fileToProcess =
+            new File(getPath("SuppressionXpathRegressionNestedTryDepthMax.java"));
+
+        final DefaultConfiguration moduleConfig =
+            createModuleConfig(NestedTryDepthCheck.class);
+        moduleConfig.addAttribute("max", "3");
+
+        final String[] expectedViolation = {
+            "9:25: " + getCheckMessage(NestedTryDepthCheck.class,
+                NestedTryDepthCheck.MSG_KEY, 4, 3),
+        };
+
+        final List<String> expectedXpathQueries = Collections.singletonList(
+            "/CLASS_DEF[./IDENT[@text='SuppressionXpathRegressionNestedTryDepthMax']]"
+                + "/OBJBLOCK/METHOD_DEF[./IDENT[@text='test']]"
+                + "/SLIST/LITERAL_TRY"
+                + "/SLIST/LITERAL_TRY"
+                + "/SLIST/LITERAL_TRY"
+                + "/SLIST/LITERAL_TRY"
+                + "/SLIST/LITERAL_TRY"
+        );
+
+        runVerifications(moduleConfig, fileToProcess, expectedViolation,
+            expectedXpathQueries);
     }
 }

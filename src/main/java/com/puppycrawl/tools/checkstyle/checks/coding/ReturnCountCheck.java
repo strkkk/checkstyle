@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -30,8 +30,8 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 
 /**
  * <p>
- * Restricts the number of return statements in methods, constructors and lambda expressions
- * (2 by default). Ignores specified methods ({@code equals()} by default).
+ * Restricts the number of return statements in methods, constructors and lambda expressions.
+ * Ignores specified methods ({@code equals} by default).
  * </p>
  * <p>
  * <b>max</b> property will only check returns in methods and lambdas that
@@ -46,10 +46,111 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
  * of 0.
  * </p>
  * <p>
- * Rationale: Too many return points can be indication that code is
+ * Rationale: Too many return points can mean that code is
  * attempting to do too much or may be difficult to understand.
  * </p>
+ * <ul>
+ * <li>
+ * Property {@code max} - Specify maximum allowed number of return statements
+ * in non-void methods/lambdas.
+ * Type is {@code int}.
+ * Default value is {@code 2}.
+ * </li>
+ * <li>
+ * Property {@code maxForVoid} - Specify maximum allowed number of return statements
+ * in void methods/constructors/lambdas.
+ * Type is {@code int}.
+ * Default value is {@code 1}.
+ * </li>
+ * <li>
+ * Property {@code format} - Specify method names to ignore.
+ * Type is {@code java.util.regex.Pattern}.
+ * Default value is {@code "^equals$"}.
+ * </li>
+ * <li>
+ * Property {@code tokens} - tokens to check
+ * Type is {@code int[]}.
+ * Default value is:
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#CTOR_DEF">
+ * CTOR_DEF</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#METHOD_DEF">
+ * METHOD_DEF</a>,
+ * <a href="https://checkstyle.org/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#LAMBDA">
+ * LAMBDA</a>.
+ * </li>
+ * </ul>
+ * <p>
+ * To configure the check so that it doesn't allow more than three return statements per method
+ * (ignoring the {@code equals()} method):
+ * </p>
+ * <pre>
+ * &lt;module name=&quot;ReturnCount&quot;&gt;
+ *   &lt;property name=&quot;max&quot; value=&quot;3&quot;/&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>
+ * To configure the check so that it doesn't allow any return statements per void method:
+ * </p>
+ * <pre>
+ * &lt;module name=&quot;ReturnCount&quot;&gt;
+ *   &lt;property name=&quot;maxForVoid&quot; value=&quot;0&quot;/&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>
+ * To configure the check so that it doesn't allow more than 2 return statements per method
+ * (ignoring the {@code equals()} method) and more than 1 return statements per void method:
+ * </p>
+ * <pre>
+ * &lt;module name=&quot;ReturnCount&quot;&gt;
+ *   &lt;property name=&quot;max&quot; value=&quot;2&quot;/&gt;
+ *   &lt;property name=&quot;maxForVoid&quot; value=&quot;1&quot;/&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>
+ * To configure the check so that it doesn't allow more than three
+ * return statements per method for all methods:
+ * </p>
+ * <pre>
+ * &lt;module name=&quot;ReturnCount&quot;&gt;
+ *   &lt;property name=&quot;max&quot; value=&quot;3&quot;/&gt;
+ *   &lt;property name=&quot;format&quot; value=&quot;^$&quot;/&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>
+ * To configure the check so that it doesn't allow any return statements in constructors,
+ * more than one return statement in all lambda expressions and more than two return
+ * statements in methods:
+ * </p>
+ * <pre>
+ * &lt;module name=&quot;ReturnCount&quot;&gt;
+ *   &lt;property name=&quot;max&quot; value=&quot;0&quot;/&gt;
+ *   &lt;property name=&quot;tokens&quot; value=&quot;CTOR_DEF&quot;/&gt;
+ * &lt;/module&gt;
+ * &lt;module name=&quot;ReturnCount&quot;&gt;
+ *   &lt;property name=&quot;max&quot; value=&quot;1&quot;/&gt;
+ *   &lt;property name=&quot;tokens&quot; value=&quot;LAMBDA&quot;/&gt;
+ * &lt;/module&gt;
+ * &lt;module name=&quot;ReturnCount&quot;&gt;
+ *   &lt;property name=&quot;max&quot; value=&quot;2&quot;/&gt;
+ *   &lt;property name=&quot;tokens&quot; value=&quot;METHOD_DEF&quot;/&gt;
+ * &lt;/module&gt;
+ * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code return.count}
+ * </li>
+ * <li>
+ * {@code return.countVoid}
+ * </li>
+ * </ul>
  *
+ * @since 3.2
  */
 @FileStatefulCheck
 public final class ReturnCountCheck extends AbstractCheck {
@@ -68,12 +169,12 @@ public final class ReturnCountCheck extends AbstractCheck {
     /** Stack of method contexts. */
     private final Deque<Context> contextStack = new ArrayDeque<>();
 
-    /** The regexp to match against. */
+    /** Specify method names to ignore. */
     private Pattern format = Pattern.compile("^equals$");
 
-    /** Maximum allowed number of return statements. */
+    /** Specify maximum allowed number of return statements in non-void methods/lambdas. */
     private int max = 2;
-    /** Maximum allowed number of return statements for void methods. */
+    /** Specify maximum allowed number of return statements in void methods/constructors/lambdas. */
     private int maxForVoid = 1;
     /** Current method context. */
     private Context context;
@@ -104,7 +205,8 @@ public final class ReturnCountCheck extends AbstractCheck {
     }
 
     /**
-     * Set the format for the specified regular expression.
+     * Setter to specify method names to ignore.
+     *
      * @param pattern a pattern.
      */
     public void setFormat(Pattern pattern) {
@@ -112,7 +214,9 @@ public final class ReturnCountCheck extends AbstractCheck {
     }
 
     /**
-     * Setter for max property.
+     * Setter to specify maximum allowed number of return statements
+     * in non-void methods/lambdas.
+     *
      * @param max maximum allowed number of return statements.
      */
     public void setMax(int max) {
@@ -120,7 +224,9 @@ public final class ReturnCountCheck extends AbstractCheck {
     }
 
     /**
-     * Setter for maxForVoid property.
+     * Setter to specify maximum allowed number of return statements
+     * in void methods/constructors/lambdas.
+     *
      * @param maxForVoid maximum allowed number of return statements for void methods.
      */
     public void setMaxForVoid(int maxForVoid) {
@@ -169,6 +275,7 @@ public final class ReturnCountCheck extends AbstractCheck {
 
     /**
      * Creates new method context and places old one on the stack.
+     *
      * @param ast method definition for check.
      */
     private void visitMethodDef(DetailAST ast) {
@@ -180,6 +287,7 @@ public final class ReturnCountCheck extends AbstractCheck {
 
     /**
      * Checks number of return statements and restore previous context.
+     *
      * @param ast node to leave.
      */
     private void leave(DetailAST ast) {
@@ -197,6 +305,7 @@ public final class ReturnCountCheck extends AbstractCheck {
 
     /**
      * Examines the return statement and tells context about it.
+     *
      * @param ast return statement to check.
      */
     private void visitReturn(DetailAST ast) {
@@ -226,6 +335,7 @@ public final class ReturnCountCheck extends AbstractCheck {
 
         /**
          * Creates new method context.
+         *
          * @param checking should we check this method or not.
          */
         /* package */ Context(boolean checking) {
@@ -234,14 +344,13 @@ public final class ReturnCountCheck extends AbstractCheck {
 
         /**
          * Increase the number of return statements and set context return type.
+         *
          * @param maxAssigned Maximum allowed number of return statements.
          * @param voidReturn Identifies if context is void.
          */
         public void visitLiteralReturn(int maxAssigned, Boolean voidReturn) {
             isVoidContext = voidReturn;
-            if (maxAllowed == null) {
-                maxAllowed = maxAssigned;
-            }
+            maxAllowed = maxAssigned;
 
             ++count;
         }
@@ -249,6 +358,7 @@ public final class ReturnCountCheck extends AbstractCheck {
         /**
          * Checks if number of return statements in the method are more
          * than allowed.
+         *
          * @param ast method def associated with this context.
          */
         public void checkCount(DetailAST ast) {

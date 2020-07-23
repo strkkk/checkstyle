@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -29,32 +29,70 @@ import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.DetailNode;
 import com.puppycrawl.tools.checkstyle.api.JavadocTokenTypes;
 import com.puppycrawl.tools.checkstyle.utils.JavadocUtil;
+import com.puppycrawl.tools.checkstyle.utils.TokenUtil;
 
 /**
- * Checks that a JavaDoc block can fit on a single line and doesn't
- * contain at-clauses. Javadoc comment that contains at least one at-clause
- * should be formatted in a few lines.<br>
- * All inline at-clauses are ignored by default.
- *
- * <p>The Check has the following properties:
- * <br><b>ignoredTags</b> - allows to specify a list of at-clauses
- * (including custom at-clauses) to be ignored by the check.
- * <br><b>ignoreInlineTags</b> - whether inline at-clauses must be ignored.
+ * <p>
+ * Checks that a Javadoc block can fit in a single line and doesn't contain at-clauses.
+ * Javadoc comment that contains at least one at-clause should be formatted in a few lines.
  * </p>
- *
- * <p>Default configuration:
+ * <ul>
+ * <li>
+ * Property {@code violateExecutionOnNonTightHtml} - Control when to print violations
+ * if the Javadoc being examined by this check violates the tight html rules defined at
+ * <a href="https://checkstyle.org/writingjavadocchecks.html#Tight-HTML_rules">Tight-HTML Rules</a>.
+ * Type is {@code boolean}.
+ * Default value is {@code false}.
+ * </li>
+ * <li>
+ * Property {@code ignoredTags} - Specify at-clauses which are ignored by the check.
+ * Type is {@code java.lang.String[]}.
+ * Default value is {@code {}}.
+ * </li>
+ * <li>
+ * Property {@code ignoreInlineTags} - Control whether inline tags must be ignored.
+ * Type is {@code boolean}.
+ * Default value is {@code true}.
+ * </li>
+ * </ul>
+ * <p>
+ * To configure the check:
+ * </p>
  * <pre>
  * &lt;module name=&quot;SingleLineJavadoc&quot;/&gt;
  * </pre>
- * To specify a list of ignored at-clauses and make inline at-clauses not ignored in general:
+ * <p>
+ * To configure the check with a list of ignored at-clauses
+ * and make inline at-clauses not ignored:
+ * </p>
  * <pre>
  * &lt;module name=&quot;SingleLineJavadoc&quot;&gt;
- *     &lt;property name=&quot;ignoredTags&quot; value=&quot;&#64;inheritDoc, &#64;link&quot;/&gt;
- *     &lt;property name=&quot;ignoreInlineTags&quot; value=&quot;false&quot;/&gt;
+ *   &lt;property name=&quot;ignoredTags&quot; value=&quot;&#64;inheritDoc, &#64;see&quot;/&gt;
+ *   &lt;property name=&quot;ignoreInlineTags&quot; value=&quot;false&quot;/&gt;
  * &lt;/module&gt;
  * </pre>
+ * <p>
+ * Parent is {@code com.puppycrawl.tools.checkstyle.TreeWalker}
+ * </p>
+ * <p>
+ * Violation Message Keys:
+ * </p>
+ * <ul>
+ * <li>
+ * {@code javadoc.missed.html.close}
+ * </li>
+ * <li>
+ * {@code javadoc.parse.rule.error}
+ * </li>
+ * <li>
+ * {@code javadoc.wrong.singleton.html.tag}
+ * </li>
+ * <li>
+ * {@code singleline.javadoc}
+ * </li>
+ * </ul>
  *
- *
+ * @since 6.0
  */
 @StatelessCheck
 public class SingleLineJavadocCheck extends AbstractJavadocCheck {
@@ -66,15 +104,15 @@ public class SingleLineJavadocCheck extends AbstractJavadocCheck {
     public static final String MSG_KEY = "singleline.javadoc";
 
     /**
-     * Allows to specify a list of tags to be ignored by check.
+     * Specify at-clauses which are ignored by the check.
      */
     private List<String> ignoredTags = new ArrayList<>();
 
-    /** Whether inline tags must be ignored. **/
+    /** Control whether inline tags must be ignored. */
     private boolean ignoreInlineTags = true;
 
     /**
-     * Sets a list of tags to be ignored by check.
+     * Setter to specify at-clauses which are ignored by the check.
      *
      * @param tags to be ignored by check.
      */
@@ -83,7 +121,7 @@ public class SingleLineJavadocCheck extends AbstractJavadocCheck {
     }
 
     /**
-     * Sets whether inline tags must be ignored.
+     * Setter to control whether inline tags must be ignored.
      *
      * @param ignoreInlineTags whether inline tags must be ignored.
      */
@@ -119,7 +157,7 @@ public class SingleLineJavadocCheck extends AbstractJavadocCheck {
      */
     private static boolean isSingleLineJavadoc(DetailAST blockCommentStart) {
         final DetailAST blockCommentEnd = blockCommentStart.getLastChild();
-        return blockCommentStart.getLineNo() == blockCommentEnd.getLineNo();
+        return TokenUtil.areOnSameLine(blockCommentStart, blockCommentEnd);
     }
 
     /**

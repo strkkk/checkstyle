@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code for adherence to a set of rules.
-// Copyright (C) 2001-2019 the original author or authors.
+// Copyright (C) 2001-2020 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,15 +19,15 @@
 
 package com.google.checkstyle.test.chapter3filestructure.rule332nolinewrap;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import com.google.checkstyle.test.base.AbstractModuleTestSupport;
+import com.google.checkstyle.test.base.AbstractGoogleModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.api.Configuration;
 import com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck;
 import com.puppycrawl.tools.checkstyle.checks.whitespace.NoLineWrapCheck;
 import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
 
-public class NoLineWrapTest extends AbstractModuleTestSupport {
+public class NoLineWrapTest extends AbstractGoogleModuleTestSupport {
 
     @Override
     protected String getPackageLocation() {
@@ -37,9 +37,9 @@ public class NoLineWrapTest extends AbstractModuleTestSupport {
     @Test
     public void testBadLineWrap() throws Exception {
         final String[] expected = {
-            "1: " + getCheckMessage(NoLineWrapCheck.class, "no.line.wrap", "package"),
-            "6: " + getCheckMessage(NoLineWrapCheck.class, "no.line.wrap", "import"),
-            "10: " + getCheckMessage(NoLineWrapCheck.class, "no.line.wrap", "import"),
+            "1:1: " + getCheckMessage(NoLineWrapCheck.class, "no.line.wrap", "package"),
+            "6:1: " + getCheckMessage(NoLineWrapCheck.class, "no.line.wrap", "import"),
+            "10:1: " + getCheckMessage(NoLineWrapCheck.class, "no.line.wrap", "import"),
         };
 
         final Configuration checkConfig = getModuleConfig("NoLineWrap");
