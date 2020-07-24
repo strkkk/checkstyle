@@ -44,19 +44,19 @@ jobs:
      - name: Parsing content of PR description
        id: parse
        run: |
-        grep "^Diff Regression projects:" text > temp || echo "" > temp
+        grep "^Diff Regression projects:" text | cat > temp
         sed 's/Diff Regression projects: //' temp > projects_link
         echo ::set-output name=projects_link::$(cat projects_link)
 
-        grep "^Diff Regression config:" text > temp || echo "" > temp
+        grep "^Diff Regression config:" text | cat > temp
         sed 's/Diff Regression config: //' temp > config_link
         echo ::set-output name=config_link::$(cat config_link)
 
-        grep "^New module config:" text > temp || echo "" > temp
+        grep "^New module config:" text | cat > temp
         sed 's/New module config: //' temp > new_module_config_link
         echo ::set-output name=new_module_config_link::$(cat new_module_config_link)
 
-        grep "^Diff Regression patch config:" text > temp || echo "" > temp
+        grep "^Diff Regression patch config:" text | cat > temp
         sed 's/Diff Regression patch config: //' temp > patch_config_link
         echo ::set-output name=patch_config_link::$(cat patch_config_link)
         
@@ -70,9 +70,9 @@ jobs:
   make_report:
     runs-on: ubuntu-latest
     needs: parse_body
-    if: needs.parse_body.outputs.projects_link != '' &&
-        (needs.parse_body.outputs.config_link != '' ||
-          needs.parse_body.outputs.new_module_config_link != '')
+    if: needs.parse_body.outputs.projects_link != ''
+          && (needs.parse_body.outputs.config_link != ''
+            || needs.parse_body.outputs.new_module_config_link != '')
     outputs:
       message: ${{ steps.out.outputs.message}}
     steps: 
@@ -82,15 +82,15 @@ jobs:
         wget -q "${{needs.parse_body.outputs.projects_link}}" -O project.properties
 
         if [ ! -z  "${{needs.parse_body.outputs.new_module_config_link}}" ]; then
-         wget -q "${{needs.parse_body.outputs.new_module_config_link}}" -O new_module_config.xml
+          wget -q "${{needs.parse_body.outputs.new_module_config_link}}" -O new_module_config.xml
         fi
 
         if [ ! -z  "${{needs.parse_body.outputs.config_link}}" ]; then
-         wget -q "${{needs.parse_body.outputs.config_link}}" -O diff_config.xml
+          wget -q "${{needs.parse_body.outputs.config_link}}" -O diff_config.xml
         fi
 
         if [ ! -z  "${{needs.parse_body.outputs.patch_config_link}}" ]; then
-         wget -q "${{needs.parse_body.outputs.patch_config_link}}" -O patch_config.xml
+          wget -q "${{needs.parse_body.outputs.patch_config_link}}" -O patch_config.xml
         fi
         
      # fetch-depth - number of commits to fetch.
@@ -134,13 +134,13 @@ jobs:
          REF="origin/${{needs.parse_body.outputs.branch}}"
          REPO="../../checkstyle"
          if [ -f new_module_config.xml ]; then
-          groovy diff.groovy -r $REPO -p $REF -pc new_module_config.xml -m single\
-          -l project.properties
+           groovy diff.groovy -r $REPO -p $REF -pc new_module_config.xml -m single\
+             -l project.properties
          elif [ -f patch_config.xml ]; then
-          groovy diff.groovy -r $REPO -b master -p $REF -bc diff_config.xml -pc patch_config.xml\
-          -l project.properties
+           groovy diff.groovy -r $REPO -b master -p $REF -bc diff_config.xml -pc patch_config.xml\
+             -l project.properties
          else
-          groovy diff.groovy -r $REPO -b master -p $REF -c diff_config.xml -l project.properties
+           groovy diff.groovy -r $REPO -b master -p $REF -c diff_config.xml -l project.properties
          fi
 
      - name: Copy Report to AWS S3 Bucket
@@ -167,18 +167,18 @@ jobs:
       - name: Get message
         run: |
          if [ -z  "${{needs.make_report.outputs.message}}" ]; then
-          JOBS_LINK="https://github.com/checkstyle/checkstyle/actions/runs/${{github.run_id}}"
-          API_LINK="https://api.github.com/repos/checkstyle/checkstyle/actions/runs/"
-          API_LINK="${API_LINK}${{github.run_id}}/jobs"
-          wget $API_LINK -O info.json
-          jq '.jobs' info.json > jobs
-          jq '.[] | select(.conclusion == "failure") | .name' jobs > job_name
-          jq '.[] | select(.conclusion == "failure") | .steps' jobs > steps
-          jq '.[] | select(.conclusion == "failure") | .name' steps > step_name
-          echo "Report generation job failed on phase $(cat job_name)," > message
-          echo "step $(cat step_name).<br>Link: $JOBS_LINK" >> message
+           JOBS_LINK="https://github.com/checkstyle/checkstyle/actions/runs/${{github.run_id}}"
+           API_LINK="https://api.github.com/repos/checkstyle/checkstyle/actions/runs/"
+           API_LINK="${API_LINK}${{github.run_id}}/jobs"
+           wget $API_LINK -O info.json
+           jq '.jobs' info.json > jobs
+           jq '.[] | select(.conclusion == "failure") | .name' jobs > job_name
+           jq '.[] | select(.conclusion == "failure") | .steps' jobs > steps
+           jq '.[] | select(.conclusion == "failure") | .name' steps > step_name
+           echo "Report generation job failed on phase $(cat job_name)," > message
+           echo "step $(cat step_name).<br>Link: $JOBS_LINK" >> message
          else  
-          echo "${{needs.make_report.outputs.message}}" > message
+           echo "${{needs.make_report.outputs.message}}" > message
          fi
      
       - name: Set message
