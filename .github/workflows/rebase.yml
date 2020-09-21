@@ -1,18 +1,25 @@
-on: 
+#------------------------------------------------------------------------------------
+# Github Action to rebase pull request.
+#
+# Workflow starts when pr comment created or edited
+#
+# Note: it will not work if patch branch name is 'master'
+#------------------------------------------------------------------------------------
+on:
   issue_comment:
-    types: [created]
+    types: [created, edited]
 name: Automatic Rebase
 jobs:
   rebase:
-    name: Rebase
-    if: github.event.issue.pull_request != '' && contains(github.event.comment.body, '/rebase')
+    name: Rebase PR
+    if: github.event.issue.pull_request != '' && github.event.comment.body == 'GitHub, rebase'
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout the latest code
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Automatic Rebase
-      uses: cirrus-actions/rebase@1.3.1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout the latest code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Automatic Rebase
+        uses: cirrus-actions/rebase@1.3.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
