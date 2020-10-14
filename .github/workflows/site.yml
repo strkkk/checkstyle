@@ -34,6 +34,12 @@ jobs:
         echo "${{github.event.issue.user.login}}" > user
         wget -q "${{github.event.issue.pull_request.url}}" -O info.json
         jq .head.ref info.json > branch
+        
+     - name: Set branch and username
+       id: branch
+       run: |
+        echo ::set-output name=user::$(cat user)
+        echo ::set-output name=ref::$(cat branch)
 
   generate_site:
     needs: parse_pr_info
