@@ -79,7 +79,9 @@ jobs:
           FOLDER="${{needs.parse_pr_info.outputs.branch}}_$TIME"
           SITE="./checkstyle/target/site"
           LINK="https://${{env.AWS_BUCKET_NAME}}.s3.${{env.AWS_REGION}}.amazonaws.com"
-          aws s3 cp $DIFF s3://${{env.AWS_BUCKET_NAME}}/$FOLDER/ --recursive
+          # remove line below later
+          echo $LINK/$FOLDER/index.html
+          aws s3 cp $SITE s3://${{env.AWS_BUCKET_NAME}}/$FOLDER/ --recursive
           echo $LINK/$FOLDER/index.html > message
 
       - name: Set output
