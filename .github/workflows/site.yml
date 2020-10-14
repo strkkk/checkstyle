@@ -39,7 +39,7 @@ jobs:
        id: branch
        run: |
         echo ::set-output name=user::$(cat user)
-        echo ::set-output name=ref::$(cat branch)
+        echo ::set-output name=ref::$(cat branch | xargs)
 
   generate_site:
     needs: parse_pr_info
