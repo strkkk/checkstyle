@@ -22,24 +22,24 @@ on:
 jobs:
   parse_pr_info:
     if: github.event.comment.body == 'GitHub, generate web site'
+          || github.event.comment.body == 'GitHub, generate site'
     runs-on: ubuntu-latest
     outputs:
       user: ${{ steps.branch.outputs.user }}
       branch: ${{ steps.branch.outputs.ref }}
-      
+
     steps:
-    
-     - name: Getting PR description
-       run: |
-        echo "${{github.event.issue.user.login}}" > user
-        wget -q "${{github.event.issue.pull_request.url}}" -O info.json
-        jq .head.ref info.json > branch
-        
-     - name: Set branch and username
-       id: branch
-       run: |
-        echo ::set-output name=user::$(cat user)
-        echo ::set-output name=ref::$(cat branch | xargs)
+      - name: Getting PR description
+        run: |
+          echo "${{github.event.issue.user.login}}" > user
+          wget -q "${{github.event.issue.pull_request.url}}" -O info.json
+          jq .head.ref info.json > branch
+
+      - name: Set branch and username
+        id: branch
+        run: |
+          echo ::set-output name=user::$(cat user)
+          echo ::set-output name=ref::$(cat branch | xargs)
 
   generate_site:
     needs: parse_pr_info
@@ -79,8 +79,6 @@ jobs:
           FOLDER="${{needs.parse_pr_info.outputs.branch}}_$TIME"
           SITE="./checkstyle/target/site"
           LINK="https://${{env.AWS_BUCKET_NAME}}.s3.${{env.AWS_REGION}}.amazonaws.com"
-          # remove line below later
-          echo $LINK/$FOLDER/index.html
           aws s3 cp $SITE s3://${{env.AWS_BUCKET_NAME}}/$FOLDER/ --recursive
           echo $LINK/$FOLDER/index.html > message
 
@@ -94,7 +92,6 @@ jobs:
     needs: [generate_site]
     if: failure() || success()
     steps:
-
       - name: Get message
         run: |
           if [ -z  "${{needs.generate_site.outputs.message}}" ]; then
