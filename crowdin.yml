@@ -1,6 +1,6 @@
 files:
-  - source: /translation/source/*.xml
-    translation: /translation/dest/%file_name%/%locale%.%file_extension%
+  - source: src/main/resources/com/puppycrawl/tools/checkstyle/checks/coding/messages.properties
+    translation: src/main/resources/com/puppycrawl/tools/checkstyle/checks/coding/messages_%two_letters_code%.properties
     translate_attributes: 0
     update_option: update_without_changes
 commit_message: 'New translations: %original_file_name% (%language%)'
