@@ -1,6 +1,6 @@
 files:
-  - source: /src/main/resources/messages.properties
-    translation: /src/main/resources/messages_%two_letters_code%.properties
+  - source: /src/main/resources/com/puppycrawl/tools/checkstyle/messages.properties
+    translation: /src/main/resources/com/puppycrawl/tools/checkstyle/messages_%two_letters_code%.properties
     translate_attributes: 0
     update_option: update_without_changes
 commit_message: 'New translations: %original_file_name% (%language%)'
