@@ -1,7 +1,7 @@
 files:
-  - source: /src/main/resources/com/puppycrawl/tools/checkstyle/messages.properties
+  - source: /**/messages.properties
     translation: >-
-      /src/main/resources/com/puppycrawl/tools/checkstyle/messages_%two_letters_code%.properties
+      %original_path%/messages_%two_letters_code%.properties
     update_option: update_without_changes
 commit_message: 'New translations: %original_file_name% (%language%)'
 append_commit_message: false
