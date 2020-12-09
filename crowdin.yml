@@ -1,7 +1,23 @@
 files:
-  - source: /**/messages.properties
+  - source: /src/main/resources/com/puppycrawl/tools/checkstyle/checks/design/messages.properties
     translation: >-
-      %original_path%/messages_%two_letters_code%.properties
+      /src/main/resources/com/puppycrawl/tools/checkstyle/checks/design/messages_%two_letters_code%.properties
+    update_option: update_without_changes
+  - source: /src/main/resources/com/puppycrawl/tools/checkstyle/checks/coding/messages.properties
+    translation: >-
+      /src/main/resources/com/puppycrawl/tools/checkstyle/checks/coding/messages_%two_letters_code%.properties
+    update_option: update_without_changes
+  - source: /src/main/resources/com/puppycrawl/tools/checkstyle/checks/blocks/messages.properties
+    translation: >-
+      /src/main/resources/com/puppycrawl/tools/checkstyle/checks/blocks/messages_%two_letters_code%.properties
+    update_option: update_without_changes
+  - source: /src/main/resources/com/puppycrawl/tools/checkstyle/checks/annotation/messages.properties
+    translation: >-
+      /src/main/resources/com/puppycrawl/tools/checkstyle/checks/annotation/messages_%two_letters_code%.properties
+    update_option: update_without_changes
+  - source: /src/main/resources/com/puppycrawl/tools/checkstyle/messages.properties
+    translation: >-
+      /src/main/resources/com/puppycrawl/tools/checkstyle/messages_%two_letters_code%.properties
     update_option: update_without_changes
 commit_message: 'New translations: %original_file_name% (%language%)'
 append_commit_message: false
