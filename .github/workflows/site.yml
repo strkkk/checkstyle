@@ -41,6 +41,14 @@ jobs:
           echo ::set-output name=user::$(cat user)
           echo ::set-output name=ref::$(cat branch | xargs)
 
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
   generate_site:
     needs: parse_pr_info
     runs-on: ubuntu-latest
