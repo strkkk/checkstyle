@@ -41,14 +41,6 @@ jobs:
           echo ::set-output name=user::$(cat user)
           echo ::set-output name=ref::$(cat branch | xargs)
 
-      - name: Cache local Maven repository
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
   generate_site:
     needs: parse_pr_info
     runs-on: ubuntu-latest
@@ -73,6 +65,14 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+          
+      - name: Setup local maven cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: checkstyle-site-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            checkstyle-site-maven-cache
 
       - name: Generate site
         run: |
