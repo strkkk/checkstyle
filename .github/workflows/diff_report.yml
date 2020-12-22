@@ -119,10 +119,10 @@ jobs:
          cd ../
 
      - name: Setup local maven cache
-         uses: actions/cache@v2
-         with:
-           path: ~/.m2/repository
-           key: checkstyle-maven-cache-${{ hashFiles('**/pom.xml') }}
+       uses: actions/cache@v2
+       with:
+         path: ~/.m2/repository
+         key: checkstyle-maven-cache-${{ hashFiles('**/pom.xml') }}
 
      # fetch-depth default: 1
      # Don't need history for all branches and tags here.
