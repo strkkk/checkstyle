@@ -15,6 +15,8 @@ name: Diff-Report
 env:
   AWS_REGION: us-east-2
   AWS_BUCKET_NAME: "checkstyle-diff-reports"
+  ISSUE_BODY: ${{github.event.issue.body}}
+
 on:
   issue_comment:
     types: [created, edited]
@@ -36,7 +38,7 @@ jobs:
     
      - name: Getting PR description
        run: |
-        echo "${{github.event.issue.body}}" > text
+        echo "$ISSUE_BODY" > text
         echo "${{github.event.issue.user.login}}" > user
         wget -q "${{github.event.issue.pull_request.url}}" -O info.json
         jq .head.ref info.json > branch
@@ -104,7 +106,24 @@ jobs:
         ref: master
         path: checkstyle
         fetch-depth: 0
-     
+
+     # set main checkstyle repo as an upstream
+     # Diff report will be generated taking upstream's master branch as a base branch
+     - name: set upstream
+       run: |
+         cd checkstyle
+         bash
+         MAIN_REPO_GIT_URL="https://github.com/checkstyle/checkstyle.git"
+         git remote add upstream $MAIN_REPO_GIT_URL
+         git fetch upstream
+         cd ../
+
+     - name: Setup local maven cache
+         uses: actions/cache@v2
+         with:
+           path: ~/.m2/repository
+           key: checkstyle-maven-cache-${{ hashFiles('**/pom.xml') }}
+
      # fetch-depth default: 1
      # Don't need history for all branches and tags here.
      - name: Download contribution
@@ -133,14 +152,16 @@ jobs:
          bash
          REF="origin/${{needs.parse_body.outputs.branch}}"
          REPO="../../checkstyle"
+         BASE_BRANCH="upstream/master"
          if [ -f new_module_config.xml ]; then
            groovy diff.groovy -r $REPO -p $REF -pc new_module_config.xml -m single\
              -l project.properties
          elif [ -f patch_config.xml ]; then
-           groovy diff.groovy -r $REPO -b master -p $REF -bc diff_config.xml -pc patch_config.xml\
-             -l project.properties
+           groovy diff.groovy -r $REPO -b $BASE_BRANCH -p $REF -bc diff_config.xml\
+             -pc patch_config.xml -l project.properties
          else
-           groovy diff.groovy -r $REPO -b master -p $REF -c diff_config.xml -l project.properties
+           groovy diff.groovy -r $REPO -b $BASE_BRANCH -p $REF -c diff_config.xml\
+             -l project.properties
          fi
 
      - name: Copy Report to AWS S3 Bucket
