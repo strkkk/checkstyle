@@ -185,7 +185,7 @@ jobs:
         DIFF="./contribution/checkstyle-tester/reports/diff"
         LINK="https://${{env.AWS_BUCKET_NAME}}.s3.${{env.AWS_REGION}}.amazonaws.com"
         aws s3 cp $DIFF s3://${{env.AWS_BUCKET_NAME}}/$FOLDER/reports/diff/ --recursive
-        if [ ! -z "${{needs.parse_body.outputs.report_label}}" ]; then
+        if [ -n "${{needs.parse_body.outputs.report_label}}" ]; then
           echo "${{needs.parse_body.outputs.report_label}}: " > message
         fi
         echo $LINK/$FOLDER/reports/diff/index.html >> message
