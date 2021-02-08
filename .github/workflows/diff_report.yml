@@ -86,9 +86,8 @@ jobs:
   make_report:
     runs-on: ubuntu-latest
     needs: parse_body
-    if: needs.parse_body.outputs.projects_link != ''
-          && (needs.parse_body.outputs.config_link != ''
-            || needs.parse_body.outputs.new_module_config_link != '')
+    if: needs.parse_body.outputs.config_link != ''
+            || needs.parse_body.outputs.new_module_config_link != ''
     outputs:
       message: ${{ steps.out.outputs.message}}
     steps: 
