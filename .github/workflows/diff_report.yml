@@ -94,11 +94,9 @@ jobs:
        
      - name: Download files
        run: |
-        if [ -n "${{needs.parse_body.outputs.projects_link}}" ]; then
-          wget -q "${{needs.parse_body.outputs.projects_link}}" -O project.properties
-        else
-          wget -q "$DEFAULT_PROJECTS_LINK" -O project.properties
-        fi
+        LINK_FROM_PR="${{needs.parse_body.outputs.projects_link}}"
+        LINK="${LINK_FROM_PR:-$DEFAULT_PROJECTS_LINK}"
+        wget -q "$LINK" -O project.properties
 
         if [ -n "${{needs.parse_body.outputs.new_module_config_link}}" ]; then
           wget -q "${{needs.parse_body.outputs.new_module_config_link}}" -O new_module_config.xml
