@@ -33,11 +33,11 @@ jobs:
           GITHUB_HOST="https://github.com"
 
           # collect issues where full link is used
-          grep -Pohr "(after|[Tt]il[l]?) $GITHUB_HOST/[\w.-]+/[\w.-]+/issues/\d{1,5}" . \
+          grep -IPohr "(after|[Tt]il[l]?) $GITHUB_HOST/[\w.-]+/[\w.-]+/issues/\d{1,5}" . \
             | sed -e 's/.*github.com\///' >> $MENTIONED_ISSUES
 
           # collect checkstyle issues where only hash sign is used
-          grep -Pohr "[Tt]il[l]? #\d{1,5}" . \
+          grep -IPohr "[Tt]il[l]? #\d{1,5}" . \
             | sed -e 's/.*#/checkstyle\/checkstyle\/issues\//' >> $MENTIONED_ISSUES
 
           for issue in $(sort -u $MENTIONED_ISSUES); do
@@ -48,7 +48,7 @@ jobs:
               echo "$GITHUB_HOST/$issue" >> $CLOSED_ISSUES
             fi
           done
-          exit 2
+          
           if [ -f "$CLOSED_ISSUES" ]; then
               echo "Following issues are mentioned in code to do something after they are closed:"
               cat $CLOSED_ISSUES
