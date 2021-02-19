@@ -22,6 +22,8 @@ jobs:
           fetch-depth: 0
 
       - name: Check Issues
+        env:
+           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
         run: |
           cd checkstyle
           
@@ -39,7 +41,7 @@ jobs:
             | sed -e 's/.*#/checkstyle\/checkstyle\/issues\//' >> $MENTIONED_ISSUES
 
           for issue in $(sort -u $MENTIONED_ISSUES); do
-            STATE=$(curl -s -H "Authorization: token $READ_ONLY_TOKEN" "$API_GITHUB_PREFIX/$issue" \
+            STATE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "$API_GITHUB_PREFIX/$issue" \
              | jq '.state' | xargs)
             echo "$issue -> $STATE" 
             if [ "$STATE" = "closed" ]; then
