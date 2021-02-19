@@ -1,7 +1,7 @@
 #!/bin/bash
 # Attention, there is no "-x" to avoid problems on Travis
 set -e
-
+echo "test"
 MENTIONED_ISSUES=/tmp/mentioned_issues
 CLOSED_ISSUES=/tmp/failed_issues
 API_GITHUB_PREFIX="https://api.github.com/repos"
