@@ -43,7 +43,6 @@ jobs:
           for issue in $(sort -u $MENTIONED_ISSUES); do
             STATE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "$API_GITHUB_PREFIX/$issue" \
              | jq '.state' | xargs)
-            echo "$issue -> $STATE" 
             if [ "$STATE" = "closed" ]; then
               echo "$GITHUB_HOST/$issue" >> $CLOSED_ISSUES
             fi
