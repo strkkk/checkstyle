@@ -24,7 +24,7 @@ jobs:
       - name: Check Issues
         run: |
           cd checkstyle
-          echo "test"
+          
           MENTIONED_ISSUES=/tmp/mentioned_issues
           CLOSED_ISSUES=/tmp/failed_issues
           API_GITHUB_PREFIX="https://api.github.com/repos"
@@ -41,11 +41,12 @@ jobs:
           for issue in $(sort -u $MENTIONED_ISSUES); do
             STATE=$(curl -s -H "Authorization: token $READ_ONLY_TOKEN" "$API_GITHUB_PREFIX/$issue" \
              | jq '.state' | xargs)
+            echo "$issue -> $STATE" 
             if [ "$STATE" = "closed" ]; then
               echo "$GITHUB_HOST/$issue" >> $CLOSED_ISSUES
             fi
           done
-
+          exit 2
           if [ -f "$CLOSED_ISSUES" ]; then
               echo "Following issues are mentioned in code to do something after they are closed:"
               cat $CLOSED_ISSUES
