@@ -24,4 +24,4 @@ jobs:
       - name: Check Issues
         run: |
           cd checkstyle
-          ./.ci/no_old_refs.sh
+          sh ./.ci/no_old_refs.sh
