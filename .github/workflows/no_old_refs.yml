@@ -1,10 +1,10 @@
-#------------------------------------------------------------------------------------
+#####################################################################################
 # Github Action to check references to closed issues in code.
 #
 # Workflow starts when:
 # 1) push on master branch
 #
-#------------------------------------------------------------------------------------
+#####################################################################################
 name: "Check no closed issue references"
 
 on:
@@ -21,7 +21,6 @@ jobs:
           repository: checkstyle/checkstyle
           ref: master
           path: checkstyle
-          fetch-depth: 0
 
       - name: Check Issues
         env:
