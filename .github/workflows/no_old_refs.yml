@@ -1,10 +1,12 @@
 #------------------------------------------------------------------------------------
-# Github Action to check references to old issues in code.
+# Github Action to check references to closed issues in code.
 #
 # Workflow starts when:
 # 1) push on master branch
 #
 #------------------------------------------------------------------------------------
+name: "Check no closed issue references"
+
 on:
   push:
     branches: [ master ]
@@ -30,15 +32,15 @@ jobs:
           GITHUB_HOST: 'https://github.com'
         run: |
           cd checkstyle
-          
+
           # collect issues where full link is used
           grep -IPohr "(after|[Tt]il[l]?) $GITHUB_HOST/[\w.-]+/[\w.-]+/issues/\d{1,5}" . \
             | sed -e 's/.*github.com\///' >> $MENTIONED_ISSUES
-          
+
           # collect checkstyle issues where only hash sign is used
           grep -IPohr "[Tt]il[l]? #\d{1,5}" . \
             | sed -e 's/.*#/checkstyle\/checkstyle\/issues\//' >> $MENTIONED_ISSUES
-          
+
           for issue in $(sort -u $MENTIONED_ISSUES); do
             STATE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "$API_GITHUB_PREFIX/$issue" \
              | jq '.state' | xargs)
