@@ -28,4 +28,6 @@ jobs:
         run: |
           cd checkstyle
           chmod +x test.sh
+          ls -la
+          pwd
           ./test.sh
