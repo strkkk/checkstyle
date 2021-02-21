@@ -27,6 +27,5 @@ jobs:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
         run: |
           cd checkstyle
-          chmod +x test.sh
           ./test.sh
          
