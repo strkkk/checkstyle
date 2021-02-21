@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 MENTIONED_ISSUES=/tmp/mentioned_issues
 CLOSED_ISSUES=/tmp/failed_issues
