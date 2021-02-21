@@ -27,5 +27,6 @@ jobs:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
         run: |
           cd checkstyle
-          ./test.sh
+          chmod +x ./.ci/no_old_refs.sh
+          ./.ci/no_old_refs.sh
          
