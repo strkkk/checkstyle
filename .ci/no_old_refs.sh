@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 MENTIONED_ISSUES=/tmp/mentioned_issues
 CLOSED_ISSUES=/tmp/failed_issues
@@ -16,9 +17,6 @@ grep -IPohr "[Tt]il[l]? #\d{1,5}" . \
 for issue in $(sort -u $MENTIONED_ISSUES); do
   STATE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "$API_GITHUB_PREFIX/$issue" \
    | jq '.state' | xargs)
-   
-   echo "$issue has state: $STATE"
-   
   if [ "$STATE" = "closed" ]; then
     echo "$GITHUB_HOST/$issue" >> $CLOSED_ISSUES
   fi
