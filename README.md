@@ -14,7 +14,7 @@
 
 [![][mavenbadge img]][mavenbadge]
 [![][sonar img]][sonar]
-![][closed_issues]
+[![closed issues img]][closed issues]
 
 Members chat: [![][gitter_mem img]][gitter_mem]
 Contributors chat: [![][gitter_con img]][gitter_con]
@@ -184,4 +184,5 @@ are in the file named "LICENSE.apache20" in this directory.
 [dependabot]:https://dependabot.com
 [dependabot img]:https://api.dependabot.com/badges/status?host=github&repo=checkstyle/checkstyle
 
-[closed_issues]:https://github.com/strkkk/checkstyle/actions/workflows/no_old_refs.yml/badge.svg
+[closed issues]:https://github.com/strkkk/checkstyle/actions/workflows/no_old_refs.yml
+[closed issues img]:https://github.com/strkkk/checkstyle/actions/workflows/no_old_refs.yml/badge.svg
