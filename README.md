@@ -14,7 +14,8 @@
 
 [![][mavenbadge img]][mavenbadge]
 [![][sonar img]][sonar]
-[![closed issues img]][closed issues]
+
+[![][closed issues img]][closed issues]
 
 Members chat: [![][gitter_mem img]][gitter_mem]
 Contributors chat: [![][gitter_con img]][gitter_con]
