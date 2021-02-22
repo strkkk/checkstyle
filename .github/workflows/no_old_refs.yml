@@ -18,7 +18,7 @@ jobs:
       - name: Download checkstyle
         uses: actions/checkout@v2
         with:
-          repository: strkkk/checkstyle
+          repository: checkstyle/checkstyle
           ref: master
           path: checkstyle
 
@@ -27,6 +27,6 @@ jobs:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
         run: |
           cd checkstyle
-          chmod +x ./.ci/no_old_refs.sh
+          
           ./.ci/no_old_refs.sh
          
