@@ -27,6 +27,7 @@ jobs:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
         run: |
           cd checkstyle
-          
+          ls -la ./.ci/no_old_refs.sh
+          echo "echo 1" >> ./.ci/no_old_refs.sh  
           ./.ci/no_old_refs.sh
          
