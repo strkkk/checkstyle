@@ -121,7 +121,7 @@ jobs:
      - name: Download checkstyle
        uses: actions/checkout@v2
        with:
-        repository: "$USER_LOGIN"/checkstyle
+        repository: ${{ env.USER_LOGIN }}/checkstyle
         ref: master
         path: checkstyle
         fetch-depth: 0
