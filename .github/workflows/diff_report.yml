@@ -121,7 +121,7 @@ jobs:
      - name: Download checkstyle
        uses: actions/checkout@v2
        with:
-        repository: $USER_LOGIN/checkstyle
+        repository: "$USER_LOGIN"/checkstyle
         ref: master
         path: checkstyle
         fetch-depth: 0
@@ -184,6 +184,8 @@ jobs:
          fi
 
      - name: Copy Report to AWS S3 Bucket
+       env:
+         LABEL: ${{ needs.parse_body.outputs.report_label }}
        run: |
         bash
         TIME=`date +%Y%H%M%S`
@@ -191,7 +193,6 @@ jobs:
         DIFF="./contribution/checkstyle-tester/reports/diff"
         LINK="https://${{env.AWS_BUCKET_NAME}}.s3.${{env.AWS_REGION}}.amazonaws.com"
         aws s3 cp $DIFF s3://${{env.AWS_BUCKET_NAME}}/$FOLDER/reports/diff/ --recursive
-        LABEL="${{needs.parse_body.outputs.report_label}}"
         if [ -n "$LABEL" ]; then
           echo "$LABEL: " > message
         fi
