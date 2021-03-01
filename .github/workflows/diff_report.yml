@@ -43,11 +43,12 @@ jobs:
          reaction: rocket
        env:
          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-         ISSUE_BODY: ${{ github.event.issue.body }}
-         PULL_REQUEST_URL: ${{ github.event.issue.pull_request.url }}
      - run: 'echo We print it here for this action to work'
        if: 'true'
      - name: Getting PR description
+       env:
+         ISSUE_BODY: ${{ github.event.issue.body }}
+         PULL_REQUEST_URL: ${{ github.event.issue.pull_request.url }}
        run: |
         echo "$ISSUE_BODY" > text
         echo "$USER_LOGIN" > user
