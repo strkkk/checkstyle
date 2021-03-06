@@ -167,7 +167,7 @@ jobs:
          
      - name: Generate report
        env:
-         BRANCH: ${{ needs.parse_pr_info.outputs.branch }}
+         BRANCH: ${{ needs.parse_body.outputs.branch }}
        run: |
          cd contribution/checkstyle-tester
          bash
@@ -187,7 +187,7 @@ jobs:
 
      - name: Copy Report to AWS S3 Bucket
        env:
-         BRANCH: ${{ needs.parse_pr_info.outputs.branch }}
+         BRANCH: ${{ needs.parse_body.outputs.branch }}
          LABEL: ${{ needs.parse_body.outputs.report_label }}
        run: |
         bash
