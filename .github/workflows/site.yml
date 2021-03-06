@@ -88,10 +88,12 @@ jobs:
           mvn -e --no-transfer-progress clean site -Pno-validations
 
       - name: Copy site to AWS S3 Bucket
+        env:
+          BRANCH: ${{ needs.parse_pr_info.outputs.branch }}
         run: |
           bash
           TIME=`date +%Y%H%M%S`
-          FOLDER="${{needs.parse_pr_info.outputs.branch}}_$TIME"
+          FOLDER="$BRANCH_$TIME"
           SITE="./checkstyle/target/site"
           LINK="https://${{env.AWS_BUCKET_NAME}}.s3.${{env.AWS_REGION}}.amazonaws.com"
           aws s3 cp $SITE s3://${{env.AWS_BUCKET_NAME}}/$FOLDER/ --recursive
@@ -108,8 +110,10 @@ jobs:
     if: failure() || success()
     steps:
       - name: Get message
+        env:
+          MESSAGE: ${{ needs.generate_site.outputs.message }}
         run: |
-          if [ -z  "${{needs.generate_site.outputs.message}}" ]; then
+          if [ -z "$MESSAGE" ]; then
             JOBS_LINK="https://github.com/checkstyle/checkstyle/actions/runs/${{github.run_id}}"
             API_LINK="https://api.github.com/repos/checkstyle/checkstyle/actions/runs/"
             API_LINK="${API_LINK}${{github.run_id}}/jobs"
@@ -121,7 +125,7 @@ jobs:
             echo "Site generation job failed on phase $(cat job_name)," > message
             echo "step $(cat step_name).<br>Link: $JOBS_LINK" >> message
           else
-            echo "${{needs.generate_site.outputs.message}}" > message
+            echo "$MESSAGE" > message
           fi
 
       - name: Set message
