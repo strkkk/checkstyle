@@ -166,11 +166,10 @@ jobs:
         aws-region: ${{ env.AWS_REGION }}    
          
      - name: Generate report
-       env:
-         REF: origin/${{ needs.parse_body.outputs.branch }}
        run: |
          cd contribution/checkstyle-tester
          bash
+         REF="origin/${{needs.parse_body.outputs.branch}}"
          REPO="../../checkstyle"
          BASE_BRANCH="upstream/master"
          if [ -f new_module_config.xml ]; then
@@ -186,12 +185,13 @@ jobs:
 
      - name: Copy Report to AWS S3 Bucket
        env:
-         BRANCH: ${{ needs.parse_body.outputs.branch }}
          LABEL: ${{ needs.parse_body.outputs.report_label }}
+         BRANCH: ${{ needs.parse_body.outputs.branch }}
        run: |
         bash
         TIME=`date +%Y%H%M%S`
-        FOLDER="$BRANCH_$TIME"
+        # Generate folder name, 10 chars hash + date
+        FOLDER="$(sha1sum <<< "$BRANCH" | cut -c 1-10)_$TIME"
         DIFF="./contribution/checkstyle-tester/reports/diff"
         LINK="https://${{env.AWS_BUCKET_NAME}}.s3.${{env.AWS_REGION}}.amazonaws.com"
         aws s3 cp $DIFF s3://${{env.AWS_BUCKET_NAME}}/$FOLDER/reports/diff/ --recursive
@@ -212,10 +212,8 @@ jobs:
     steps:
 
       - name: Get message
-        env:
-          MESSAGE: ${{ needs.make_report.outputs.message }}
         run: |
-         if [ -z "$MESSAGE" ]; then
+         if [ -z "${{needs.make_report.outputs.message}}" ]; then
            JOBS_LINK="https://github.com/checkstyle/checkstyle/actions/runs/${{github.run_id}}"
            API_LINK="https://api.github.com/repos/checkstyle/checkstyle/actions/runs/"
            API_LINK="${API_LINK}${{github.run_id}}/jobs"
@@ -227,7 +225,7 @@ jobs:
            echo "Report generation job failed on phase $(cat job_name)," > message
            echo "step $(cat step_name).<br>Link: $JOBS_LINK" >> message
          else  
-           echo "$MESSAGE" > message
+           echo "${{needs.make_report.outputs.message}}" > message
          fi
      
       - name: Set message
