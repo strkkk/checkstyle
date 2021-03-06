@@ -167,11 +167,10 @@ jobs:
          
      - name: Generate report
        env:
-         BRANCH: ${{ needs.parse_body.outputs.branch }}
+         REF: origin/${{ needs.parse_body.outputs.branch }}
        run: |
          cd contribution/checkstyle-tester
          bash
-         REF="origin/$BRANCH"
          REPO="../../checkstyle"
          BASE_BRANCH="upstream/master"
          if [ -f new_module_config.xml ]; then
