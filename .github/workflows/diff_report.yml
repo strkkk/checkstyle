@@ -52,7 +52,9 @@ jobs:
        run: |
         echo "$ISSUE_BODY" > text
         echo "$USER_LOGIN" > user
+        echo "${{ github.event }}"
         wget -q "$PULL_REQUEST_URL" -O info.json
+        cat info.json
         jq .head.ref info.json > branch
         
      - name: Parsing content of PR description
