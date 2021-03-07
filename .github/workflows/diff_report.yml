@@ -52,9 +52,7 @@ jobs:
        run: |
         echo "$ISSUE_BODY" > text
         echo "$USER_LOGIN" > user
-        echo "${{ github.event }}"
         wget -q "$PULL_REQUEST_URL" -O info.json
-        cat info.json
         jq .head.ref info.json > branch
         
      - name: Parsing content of PR description
@@ -172,17 +170,16 @@ jobs:
          cd contribution/checkstyle-tester
          bash
          REF="origin/${{needs.parse_body.outputs.branch}}"
-         REPO="../../checkstyle"
-         BASE_BRANCH="upstream/master"
-       
+         
      - name: Copy Report to AWS S3 Bucket
        env:
          LABEL: ${{ needs.parse_body.outputs.report_label }}
+         COMMIT_SHA: ${{ github.event.head.sha }}
        run: |
         bash
         TIME=`date +%Y%H%M%S`
         # Generate folder name, 10 chars hash + date
-        FOLDER="$(cut -c 1-7 <<< "$GITHUB_SHA")_$TIME"
+        FOLDER="$(cut -c 1-7 <<< $COMMIT_SHA)_$TIME"
         DIFF="./contribution/checkstyle-tester/reports/diff"
         LINK="https://${{env.AWS_BUCKET_NAME}}.s3.${{env.AWS_REGION}}.amazonaws.com"
         # aws s3 cp $DIFF s3://${{env.AWS_BUCKET_NAME}}/$FOLDER/reports/diff/ --recursive
