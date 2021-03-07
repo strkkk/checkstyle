@@ -84,7 +84,7 @@ jobs:
        id: branch
        run: |
         echo ::set-output name=ref::$(cat branch)
-        echo ::set-output name=commit_sha::$(cat commit_sha | cut -c 1-7)
+        echo ::set-output name=commit_sha::$(cat commit_sha | xargs | cut -c 1-7)
 
   make_report:
     runs-on: ubuntu-latest
