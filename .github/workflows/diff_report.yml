@@ -190,7 +190,7 @@ jobs:
         bash
         TIME=`date +%Y%H%M%S`
         # Generate folder name, 10 chars hash + date
-        FOLDER="$(sha1sum <<< "$GITHUB_SHA" | cut -c 1-7)_$TIME"
+        FOLDER="$(cut -c 1-7 <<< "$GITHUB_SHA")_$TIME"
         DIFF="./contribution/checkstyle-tester/reports/diff"
         LINK="https://${{env.AWS_BUCKET_NAME}}.s3.${{env.AWS_REGION}}.amazonaws.com"
         aws s3 cp $DIFF s3://${{env.AWS_BUCKET_NAME}}/$FOLDER/reports/diff/ --recursive
