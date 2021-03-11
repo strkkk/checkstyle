@@ -1,10 +1,12 @@
-#------------------------------------------------------------------------------------
+#####################################################################################
 # Github Action to rebase pull request.
 #
 # Workflow starts when pr comment created or edited
 #
-# Note: it will not work if patch branch name is 'master'
-#------------------------------------------------------------------------------------
+# Job will not work if:
+# 1. Patch branch name is 'master'
+# 2. There was an updates in github actions in target branch (restriction by github)
+#####################################################################################
 on:
   issue_comment:
     types: [created, edited]
@@ -15,6 +17,15 @@ jobs:
     if: github.event.issue.pull_request != '' && github.event.comment.body == 'GitHub, rebase'
     runs-on: ubuntu-latest
     steps:
+      - uses: khan/pull-request-comment-trigger@master
+        name: React with rocket on run
+        with:
+          trigger: ','
+          reaction: rocket
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+      - run: 'echo We print it here for this action to work'
+        if: 'true'
       - name: Checkout the latest code
         uses: actions/checkout@v2
         with:
