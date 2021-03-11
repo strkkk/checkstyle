@@ -173,7 +173,18 @@ jobs:
          bash
          REF="origin/${{needs.parse_body.outputs.branch}}"
          REPO="../../checkstyle"
-         
+         BASE_BRANCH="upstream/master"
+         if [ -f new_module_config.xml ]; then
+           groovy diff.groovy -r $REPO -p $REF -pc new_module_config.xml -m single\
+             -l project.properties
+         elif [ -f patch_config.xml ]; then
+           groovy diff.groovy -r $REPO -b $BASE_BRANCH -p $REF -bc diff_config.xml\
+             -pc patch_config.xml -l project.properties
+         else
+           groovy diff.groovy -r $REPO -b $BASE_BRANCH -p $REF -c diff_config.xml\
+             -l project.properties
+         fi
+
      - name: Copy Report to AWS S3 Bucket
        env:
          LABEL: ${{ needs.parse_body.outputs.report_label }}
@@ -183,11 +194,11 @@ jobs:
         FOLDER="${{needs.parse_body.outputs.commit_sha}}_$TIME"
         DIFF="./contribution/checkstyle-tester/reports/diff"
         LINK="https://${{env.AWS_BUCKET_NAME}}.s3.${{env.AWS_REGION}}.amazonaws.com"
-        # aws s3 cp $DIFF s3://${{env.AWS_BUCKET_NAME}}/$FOLDER/reports/diff/ --recursive
+        aws s3 cp $DIFF s3://${{env.AWS_BUCKET_NAME}}/$FOLDER/reports/diff/ --recursive
         if [ -n "$LABEL" ]; then
           echo "$LABEL: " > message
         fi
-        echo $LINK/$FOLDER/reports/diff/index.html
+        echo $LINK/$FOLDER/reports/diff/index.html >> message
 
      - name: Set output
        id: out
