@@ -1,42 +1,42 @@
+# ![](https://raw.githubusercontent.com/checkstyle/resources/master/img/checkstyle-logos/checkstyle-logo-260x99.png)
+
+Checkstyle is a tool for checking Java source code for adherence to a Code Standard
+or set of validation rules (best practices).
+
 [![][travis img]][travis]
 [![][appveyor img]][appveyor]
 [![][teamcity img]][teamcity]
 [![][circleci img]][circleci]
+[![][cirrusci img]][cirrusci]
 [![][wercker img]][wercker]
 [![][shippable img]][shippable]
 [![][coverage img]][coverage]
 [![][snyk img]][snyk]
 [![][semaphoreci img]][semaphoreci]
+[![][azure img]][azure]
+[![][drone img]][drone]
 
-[![][codeship img]][codeship]
 [![][dependabot img]][dependabot]
-[![][buddy img]][buddy]
 
 [![][mavenbadge img]][mavenbadge]
 [![][sonar img]][sonar]
 
 [![][closed issues img]][closed issues]
+[![][link check img]][link check]
 
 Members chat: [![][gitter_mem img]][gitter_mem]
 Contributors chat: [![][gitter_con img]][gitter_con]
-
-![](https://raw.githubusercontent.com/checkstyle/resources/master/img/checkstyle-logos/checkstyle-logo-260x99.png)
-
-
-Checkstyle is a tool for checking Java source code for adherence to a Code Standard
-or set of validation rules (best practices).
 
 The latest release version can be found at
 [GitHub releases](https://github.com/checkstyle/checkstyle/releases/)
 or at [Maven repo](https://repo1.maven.org/maven2/com/puppycrawl/tools/checkstyle/).
 
 Each-commit builds of maven artifacts can be found at
-[Maven Snapshot repository](https://oss.sonatype.org/content/repositories/snapshots/com/puppycrawl/tools/checkstyle/) .
+[Maven Snapshot repository](https://oss.sonatype.org/content/repositories/snapshots/com/puppycrawl/tools/checkstyle/).
 
 Documentation is available in HTML format, see https://checkstyle.org/checks.html.
 
-Build instructions and Contribution
-======================
+## Build instructions and Contribution
 
 [Build instructions](https://checkstyle.org/contributing.html#Build)
 
@@ -50,8 +50,8 @@ Build instructions and Contribution
 
 [Report Issue](https://checkstyle.org/contributing.html#Report_an_issue)
 
-Continuous integration and Quality reports
-======================
+## Continuous integration and Quality reports
+
 Travis (Linux & MacOS build): [![][travis img]][travis]
 AppVeyor (Windows build): [![][appveyor img]][appveyor]
 
@@ -59,8 +59,7 @@ Quality reports: https://checkstyle.org/project-reports.html
 
 JavaScript, CSS and Java source file analysis on Codacy: [![][codacy img]][codacy]
 
-Feedback/Support
-========
+## Feedback/Support
 
 Please send any feedback to https://groups.google.com/forum/?hl=en#!forum/checkstyle
 
@@ -68,9 +67,7 @@ Questions and Answers from community: [![][stackoverflow img]][stackoverflow]
 
 Bugs and Feature requests (not the questions): https://github.com/checkstyle/checkstyle/issues
 
-
-Support/Sponsor checkstyle
-========
+## Support/Sponsor checkstyle
 
 If you want to speed up fixing of issue and want to encourage somebody in
 internet to resolve any issue:
@@ -81,9 +78,7 @@ internet to resolve any issue:
 [![][backers.opencollective img]][backers.opencollective]
 [![][sponsors.opencollective img]][sponsors.opencollective]
 
-
-Licensing
-=========
+## Licensing
 
 [![][license img]][license]
 
@@ -143,20 +138,17 @@ are in the file named "LICENSE.apache20" in this directory.
 [teamcity]:https://teamcity.jetbrains.com/viewType.html?buildTypeId=Checkstyle_IdeaInspectionsMaster
 [teamcity img]:https://teamcity.jetbrains.com/app/rest/builds/buildType:(id:Checkstyle_IdeaInspectionsMaster)/statusIcon
 
-[codeship]: https://codeship.com/projects/124310
-[codeship img]:https://codeship.com/projects/67b814a0-8fee-0133-9b59-02a170289b8c/status?branch=master
-
 [circleci]: https://circleci.com/gh/checkstyle/checkstyle/tree/master
 [circleci img]: https://circleci.com/gh/checkstyle/checkstyle/tree/master.svg?style=svg
+
+[cirrusci]: https://cirrus-ci.com/github/checkstyle/checkstyle
+[cirrusci img]: https://api.cirrus-ci.com/github/checkstyle/checkstyle.svg?branch=master
 
 [wercker]: https://app.wercker.com/project/bykey/cd383127330ff96f89f1a78e8fd1a557
 [wercker img]: https://app.wercker.com/status/cd383127330ff96f89f1a78e8fd1a557/s/master
 
 [shippable]: https://app.shippable.com/projects/577032be3be4f4faa56adb38
 [shippable img]: https://img.shields.io/shippable/577032be3be4f4faa56adb38/master.svg?label=shippable
-
-[buddy]: https://app.buddy.works/ivanovjr/checkstyle/pipelines/pipeline/135806
-[buddy img]: https://app.buddy.works/ivanovjr/checkstyle/pipelines/pipeline/135806/badge.svg?token=240176b1ce495d0a03a141f3f2f77971f43fe892a98de31cbc0e392ce5341f76 "buddy pipeline"
 
 [snyk]: https://snyk.io/test/github/checkstyle/checkstyle?targetFile=pom.xml
 [snyk img]: https://snyk.io/test/github/checkstyle/checkstyle/badge.svg
@@ -166,6 +158,9 @@ are in the file named "LICENSE.apache20" in this directory.
 
 [flattr]:https://flattr.com/submit/auto?fid=g39d10&amp;url=https%3A%2F%2Fcheckstyle.org
 [flattr img]:https://button.flattr.com/flattr-badge-large.png
+
+[azure]:https://dev.azure.com/romanivanovjr/romanivanovjr/_build/latest?definitionId=1&branchName=master
+[azure img]:https://dev.azure.com/romanivanovjr/romanivanovjr/_apis/build/status/checkstyle.checkstyle?branchName=master
 
 [liberapay]:https://liberapay.com/checkstyle/
 [liberapay img]:https://liberapay.com/assets/widgets/donate.svg
@@ -185,5 +180,11 @@ are in the file named "LICENSE.apache20" in this directory.
 [dependabot]:https://dependabot.com
 [dependabot img]:https://api.dependabot.com/badges/status?host=github&repo=checkstyle/checkstyle
 
-[closed issues]:https://github.com/strkkk/checkstyle/actions/workflows/no_old_refs.yml
-[closed issues img]:https://github.com/strkkk/checkstyle/actions/workflows/no_old_refs.yml/badge.svg
+[drone]:https://cloud.drone.io/checkstyle/checkstyle
+[drone img]:https://cloud.drone.io/api/badges/checkstyle/checkstyle/status.svg
+
+[closed issues]:https://github.com/checkstyle/checkstyle/actions/workflows/no_old_refs.yml
+[closed issues img]:https://github.com/checkstyle/checkstyle/actions/workflows/no_old_refs.yml/badge.svg
+
+[link check]:https://github.com/strkkk/checkstyle/actions/workflows/run_link_check.yml
+[link check img]:https://github.com/strkkk/checkstyle/actions/workflows/run_link_check.yml/badge.svg
